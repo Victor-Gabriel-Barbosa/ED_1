@@ -43,6 +43,7 @@ int main() {
     {19, 9, "Avengers: Endgame"},
     {20, 10, "Avengers: Endgame"}
   };
+  
   for (int i = 0; i < 10; i++) {
     disponiveis = Insere_elem(disponiveis, ing1[i]);
   }

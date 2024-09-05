@@ -29,15 +29,13 @@ Lista* Libera_lista(Lista* Ptl);
 
 int E_vazia(Lista* Ptl);
 
-int E_cheia(Lista* Ptl);
-
 Lista* Insere_elem(Lista* Ptl, Ingresso elem);
 
 Lista* Remove_elem(Lista* Ptl, Ingresso elem);
 
 int Tamanho_lista(Lista* Ptl);
 
-int Consulta_nodo(Lista* Ptl, int ID, Ingresso *elem);
+int Consulta_nodo(Lista* Ptl, Ingresso *elem, int ID);
 
 int Vender_ingresso(Lista** Ptl, Lista** Ptc, int ID);
 

@@ -44,26 +44,21 @@ int E_vazia(Lista *Ptl) { // Verifica se a lista está vazia
   return 0;
 }
 
-int E_cheia(Lista *Ptl) { // Verifica se a lista está cheia
-  return 0;
-}  
-
-Lista* Insere_elem(Lista *Ptl, Ingresso elem) { // Insere um novo elemento no final da lista
+Lista* Insere_elem(Lista *Ptl, Ingresso elem) { // Insere um elemento na lista
   Lista *Ptnodo = (Lista*)malloc(sizeof(Lista));
-  if (Ptnodo == NULL) return Ptl;
-  Ptnodo->info = elem; 
-  Ptnodo->prox = NULL;   
-  Ptnodo->ant = NULL;   
-  if (Ptl == NULL) return Ptnodo;
+  if (Ptnodo == NULL) return Ptl; 
+  Ptnodo->info = elem;
+  Ptnodo->prox = NULL;
+  Ptnodo->ant = NULL;
+  if (Ptl == NULL) return Ptnodo; 
   Lista *pt = Ptl;
   while (pt->prox != NULL) {
     pt = pt->prox;
   }
-  pt->prox = Ptnodo;
+  pt->prox = Ptnodo; 
   Ptnodo->ant = pt;
-  return Ptl; 
+  return Ptl;
 }
-
 
 Lista* Remove_elem(Lista *Ptl, Ingresso elem) { // Remove um elemento da lista
   Lista *atual;
@@ -91,7 +86,7 @@ int Tamanho_lista(Lista *Ptl) { // Retorna o número de elementos na lista
   return cont;
 }
 
-int Consulta_nodo(Lista* Ptl, int ID, Ingresso* elem) { // Consulta um elemento na lista
+int Consulta_nodo(Lista* Ptl, Ingresso* elem, int ID) { // Consulta um elemento na lista
   Lista *pt;
   pt = Ptl;
   while (pt != NULL && pt->info.ID != ID) {
@@ -104,7 +99,7 @@ int Consulta_nodo(Lista* Ptl, int ID, Ingresso* elem) { // Consulta um elemento 
 
 int Vender_ingresso(Lista** Ptl, Lista** Ptc, int ID) { // Vende um ingresso
   Ingresso elem;
-  if (Consulta_nodo(*Ptl, ID, &elem) == 0) return 0;
+  if (Consulta_nodo(*Ptl, &elem, ID) == 0) return 0;
     *Ptl = Remove_elem(*Ptl, elem);
     *Ptc = Insere_elem(*Ptc, elem);
   return 1;
@@ -112,7 +107,7 @@ int Vender_ingresso(Lista** Ptl, Lista** Ptc, int ID) { // Vende um ingresso
 
 int Cancelar_venda(Lista** Ptl, Lista** Ptc, int ID) { // Cancela uma venda
   Ingresso elem;  
-  if (Consulta_nodo(*Ptc, ID, &elem) == 0) return 0;
+  if (Consulta_nodo(*Ptc, &elem, ID) == 0) return 0;
   *Ptc = Remove_elem(*Ptc, elem);
   *Ptl = Insere_elem(*Ptl, elem);
   return 1;
@@ -160,7 +155,11 @@ void Limpa_buffer() { // Limpa o buffer do teclado para evitar problemas com sca
 void Limpa_tela(char *msg) { // Limpa a tela e exibe uma mensagem
   printf("\n%s\n", msg);
   Limpa_buffer();
-  printf("\033[H\033[2J");
+  #ifdef _WIN32
+    system("cls");
+  #else 
+    system("clear");
+  #endif 
 }
 
 int Escolhe_ID() { // Escolhe um ID para um ingresso
