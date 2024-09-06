@@ -51,7 +51,7 @@ int main() {
     disponiveis = Insere_elem(disponiveis, ing2[i]);
   }
   
-  int opcao, loop = 1, min = 0, max = 10;
+  int opcao, loop = 1, max = 10;
   while (loop) { // Menu principal
     if ((opcao = Escolha_menu()) == 0) {
       Limpa_tela("Aperte [ENTER] para continuar...");
