@@ -17,11 +17,7 @@ typedef struct ingresso {
     char filme[100];
 } Ingresso;
 
-typedef struct no {
-    struct no* ant;
-    Ingresso info;
-    struct no* prox;
-} Lista;
+typedef struct no Lista;
 
 Lista* Cria_lista();
 

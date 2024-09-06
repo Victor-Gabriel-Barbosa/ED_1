@@ -25,6 +25,12 @@ const char *verm = "\033[38;5;196m";
 const char *mage = "\033[38;5;201m";
 const char *amar = "\033[38;5;220m";
 
+struct no {
+  struct no* ant;
+  Ingresso info;
+  struct no* prox;
+};
+
 Lista* Cria_lista(Lista *Ptl) { // Cria uma lista vazia
   return NULL;
 }
