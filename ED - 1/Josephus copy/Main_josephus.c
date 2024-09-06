@@ -34,22 +34,9 @@ int main() {
     Limpa_buffer();
     strcpy(temp.nome, nome);
     temp.num = i;
-    josephus = Insere_elem(josephus, temp);  // Insere a pessoa na lista circular
+    josephus = Insere_elem(josephus, temp);
   }
-  while (Tamanho_lista(josephus) > 1) {
-    int k = (rand() % Tamanho_lista(josephus)) + 1;
-    Lista* aux = josephus;
-    for (int i = 1; i < k; i++) {
-      aux = aux->prox; 
-    }
-    Pessoas saida = aux->dados;
-    printf("\nSaída: %s (%d)\n", saida.nome, saida.num);
-    Grava_arquivo(saida, "saida.txt");  
-    josephus = Remove_elem(josephus, saida);  
-  }
-  Pessoas ultimo = josephus->dados;
-  printf("\nÚltimo(a) restante: %s (%d)\n", ultimo.nome, ultimo.num);
-  Grava_ganhador(ultimo, "ultimo.txt");  
+  josephus = Jogo_josephus(josephus, N);
   josephus = Libera_lista(josephus);  
   return 0;
 }

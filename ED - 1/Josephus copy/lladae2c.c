@@ -1,7 +1,14 @@
 #include "lladae2c.h"
 #include <stdio.h>
 #include <stdlib.h>
-           
+#include <time.h>
+
+struct no {
+  Pessoas dados;
+  struct no* prox;
+  struct no* ant;
+};
+
 Lista* Cria_lista(void) { // Cria uma lista vazia
   return NULL;
 }
@@ -162,4 +169,24 @@ void Grava_ganhador(Pessoas dados, char* nome_arq) {
   fprintf(arq, "\nÚltimo(a) restante: %s (%d)\n", dados.nome, dados.num);
   fprintf(arq, "Parabéns! Você é o(a) grande vencedor(a) e recebe um prêmio de 1 milhão de moedas de ouro!\n");
   fclose(arq);
+}
+
+Lista* Jogo_josephus(Lista* josephus, int N) { // Jogo de Josephus
+  srand(time(NULL));
+  while (Tamanho_lista(josephus) > 1) {
+    int k = (rand() % Tamanho_lista(josephus)) + 1;
+    Lista* aux = josephus;
+    for (int i = 1; i < k; i++) {
+      aux = aux->prox;
+    }
+    Pessoas saida = aux->dados;
+    printf("\nSaída: %s (%d)\n", saida.nome, saida.num);
+    Grava_arquivo(saida, "saida.txt");
+
+    josephus = Remove_elem(josephus, saida);
+  }
+  Pessoas ultimo = josephus->dados;
+  printf("\nÚltimo(a) restante: %s (%d)\n", ultimo.nome, ultimo.num);
+  Grava_ganhador(ultimo, "ultimo.txt");
+  return josephus;
 }
