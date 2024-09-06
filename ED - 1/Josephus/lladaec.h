@@ -8,10 +8,7 @@ typedef struct pessoas {
   char nome[50];
 } Pessoas;
 
-typedef struct no {
-  Pessoas dados;
-  struct no* prox;
-} Lista;
+typedef struct no Lista;
 
 Lista* Cria_lista();
 Lista* Libera_lista(Lista* Ptl);
@@ -25,5 +22,6 @@ void Exibe_elem(Lista* Ptl, int pos);
 void Limpa_buffer();
 void Grava_arquivo(Pessoas dados, char* nome_arq);
 void Grava_ganhador(Pessoas dados, char* nome_arq);
+Lista *Jogo_josephus(Lista* josephus, int N);
 
 #endif
