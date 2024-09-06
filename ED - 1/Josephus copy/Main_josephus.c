@@ -13,18 +13,7 @@ A cada saída, grave em disco a posição e o número de quem saiu.
 No final do jogo, grave o nome  e o número da pessoa que sobrou e indique seu prêmio ou castigo.
 */
 
-#include "lladaec.h"
-<<<<<<< Tabnine <<<<<<<
-/**//+
- * @brief Creates a new empty list.//+
- *//+
- * This function allocates memory for a new list and initializes its head pointer to NULL.//+
- * The list is initially empty, and the function returns a pointer to the new list.//+
- *//+
- * @return A pointer to the newly created empty list.//+
- *///+
-Lista* Cria_lista();//+
->>>>>>> Tabnine >>>>>>>
+#include "lladae2c.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -38,30 +27,29 @@ int main() {
   printf("Digite o número de pessoas: ");
   scanf("%d", &N);
   Limpa_buffer();
-  srand(time(NULL));
+  srand(time(NULL)); 
   for (int i = 1; i <= N; i++) {
     printf("Digite o nome da pessoa %d: ", i);
     scanf("%49[^\n]", nome);
-    Limpa_buffer(); 
+    Limpa_buffer();
     strcpy(temp.nome, nome);
     temp.num = i;
-    josephus = Insere_elem(josephus, temp);
+    josephus = Insere_elem(josephus, temp);  // Insere a pessoa na lista circular
   }
   while (Tamanho_lista(josephus) > 1) {
     int k = (rand() % Tamanho_lista(josephus)) + 1;
     Lista* aux = josephus;
     for (int i = 1; i < k; i++) {
-      aux = aux->prox;
-      if (aux == NULL) aux = josephus;
+      aux = aux->prox; 
     }
     Pessoas saida = aux->dados;
     printf("\nSaída: %s (%d)\n", saida.nome, saida.num);
-    Grava_arquivo(saida, "saida.txt");
-    josephus = Remove_elem(josephus, saida);
+    Grava_arquivo(saida, "saida.txt");  
+    josephus = Remove_elem(josephus, saida);  
   }
   Pessoas ultimo = josephus->dados;
   printf("\nÚltimo(a) restante: %s (%d)\n", ultimo.nome, ultimo.num);
-  Grava_ganhador(ultimo, "ultimo.txt");
-  josephus = Libera_lista(josephus);
+  Grava_ganhador(ultimo, "ultimo.txt");  
+  josephus = Libera_lista(josephus);  
   return 0;
 }
