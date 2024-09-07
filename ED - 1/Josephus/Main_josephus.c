@@ -21,7 +21,7 @@ int main() {
   Lista* josephus = Cria_lista();
   Pessoas temp;
   int N;
-  char nome[50];
+  char nome[50]; 
   printf("Digite o número de pessoas: ");
   scanf("%d", &N);
   Limpa_buffer();
