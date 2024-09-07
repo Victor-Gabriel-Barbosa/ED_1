@@ -46,8 +46,6 @@ int main() {
   
   for (int i = 0; i < 10; i++) {
     disponiveis = Insere_elem(disponiveis, ing1[i]);
-  }
-  for (int i = 0; i < 10; i++) {
     disponiveis = Insere_elem(disponiveis, ing2[i]);
   }
   
