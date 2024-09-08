@@ -10,7 +10,7 @@ outra para os ingressos disponíveis. Seu programa deverá permitir:
  Cancelar um ingresso
  Listar todos os ingressos disponíveis para um filme específico
  Exibir todos os ingressos vendidos em ordem de compra 
-*/
+*/ 
 
 #include <stdio.h>
 #include <stdlib.h>
