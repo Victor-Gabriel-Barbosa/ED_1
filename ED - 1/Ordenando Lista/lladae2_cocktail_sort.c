@@ -23,9 +23,6 @@ typedef struct lista { // Estrutura que armazena a lista
   int tam;
 } Lista;
 
-No *no_atual = NULL; // Nó atual para destacar
-No *no_proximo = NULL; // Próximo nó para destacar
-
 /* Cria uma nova lista vazia */ 
 Lista *listaCria() {
   Lista *Ptl = (Lista *)malloc(sizeof(Lista));
@@ -72,13 +69,13 @@ Lista *listaInsereFim(Lista *Ptl, const int dado) {
 
 /* Remove um elemento da lista */
 Lista *listaRemove(Lista *Ptl, const int dado) {
-  if (Ptl == NULL || Ptl->inicio == NULL) return Ptl;
+  if (Ptl == NULL) return Ptl;
   No *atual = Ptl->inicio;
   while (atual != NULL) { // Percorre a lista
     if (atual->dado == dado) { // Se encontrou o dado, remove e retorna a lista
-      if (atual->ant) atual->ant->prox = atual->prox;
+      if (atual->ant != NULL) atual->ant->prox = atual->prox;
       else Ptl->inicio = atual->prox;
-      if (atual->prox) atual->prox->ant = atual->ant;
+      if (atual->prox != NULL) atual->prox->ant = atual->ant;
       else Ptl->fim = atual->ant;
       free(atual);
       Ptl->tam--;
@@ -91,7 +88,7 @@ Lista *listaRemove(Lista *Ptl, const int dado) {
 
 /* Libera toda a memória alocada para a lista */
 Lista *listaLibera(Lista *Ptl) {
-  if (Ptl == NULL || Ptl->inicio == NULL) return Ptl;
+  if (Ptl == NULL) return Ptl;
   No *atual = Ptl->inicio;
   No *prox;
   while (atual != NULL) { // Libera todos os nós da lista
@@ -117,10 +114,10 @@ int listaImprimeTroca(Lista *Ptl, No *Ptatual) {
   if (Ptl == NULL || Ptl->inicio == NULL) return 0;
   No *atual = Ptl->inicio;
   while (atual != NULL) { // Mostra todos os elementos da lista
-    if (atual == no_atual) {
-      printf("%s%d%s ", C_AZUL, atual->dado, C_RSET);
-    } else if (atual == no_atual->prox) {
+    if (atual == Ptatual) {
       printf("%s%d%s ", C_VERD, atual->dado, C_RSET);
+    } else if (atual == Ptatual->prox) {
+      printf("%s%d%s ", C_AZUL, atual->dado, C_RSET);
     } else {
       printf("%d ", atual->dado);
     }
@@ -129,8 +126,46 @@ int listaImprimeTroca(Lista *Ptl, No *Ptatual) {
   return 1;
 }
 
+
 /* Ordena a lista usando o algoritmo Cocktail Sort */
-Lista *listaCocktailSort(Lista *Ptl) {
+Lista *listaCocktailSortV1(Lista *Ptl) {
+  if (Ptl == NULL || Ptl->inicio == NULL) return Ptl;
+  int trocou, temp;
+  No *inicio = Ptl->inicio; 
+  No *fim = Ptl->fim;
+  No *atual;
+  do { // Repete enquanto houver trocas
+    trocou = 0;
+    atual = inicio;
+    while (atual != fim) { // Percorre da esquerda para a direita
+      if (atual->dado > atual->prox->dado) { // Troca os valores dos nós se o dado atual for maior que o próximo
+        temp = atual->dado;
+        atual->dado = atual->prox->dado;
+        atual->prox->dado = temp;
+        trocou = 1;
+      }
+      atual = atual->prox;
+    }
+    if (!trocou) continue; // A lista já está ordenada se não houve trocas
+    fim = fim->ant; // Atualiza o ponteiro fim para a próxima iteração
+    trocou = 0;
+    atual = fim;
+    while (atual != inicio) {  // Percorre da direita para a esquerda
+      if (atual->dado < atual->ant->dado) { // Troca os valores dos nós se o dado atual for menor que o anterior
+        temp = atual->dado;
+        atual->dado = atual->ant->dado;
+        atual->ant->dado = temp;
+        trocou = 1;
+      }
+      atual = atual->ant;
+    }
+    inicio = inicio->prox; // Atualiza o ponteiro início para a próxima iteração
+  } while (trocou);
+  return Ptl;
+}
+
+/* Ordena a lista usando o algoritmo Cocktail Sort */
+Lista *listaCocktailSortV2(Lista *Ptl) {
   if (Ptl == NULL || Ptl->inicio == NULL) return Ptl;
   int trocou, temp;
   No *inicio = Ptl->inicio; 
@@ -141,33 +176,33 @@ Lista *listaCocktailSort(Lista *Ptl) {
     atual = inicio;
     printf("\n%s</>%s Esquerda ⥅ Direita %s</>%s\n", C_MAGE, C_CIAN, C_MAGE, C_RSET);
     while (atual != fim) { // Percorre da esquerda para a direita
-      if (atual->dado > atual->prox->dado) { // Troca os valores dos nós se o dado atual for maior que o próximo
+      if (atual->dado > atual->prox->dado) { // Troca os valores dos nós, se o dado atual for maior que o próximo
         temp = atual->dado;
         atual->dado = atual->prox->dado;
         atual->prox->dado = temp;
         trocou = 1;
         listaImprimeTroca(Ptl, atual);
-        printf("%s[%d]%s ⥂ %s[%d]%s\n", C_VERD, atual->prox->dado, C_CIAN, C_AZUL, atual->dado, C_RSET);
+        printf("%s[%d]%s ⥂ %s[%d]%s\n", C_AZUL, atual->prox->dado, C_CIAN, C_VERD, atual->dado, C_RSET);
       }
       atual = atual->prox;
     }
     if (!trocou) continue; // A lista já está ordenada se não houve trocas
-    fim = fim->ant;
+    fim = fim->ant; // Atualiza o ponteiro fim para a próxima iteração
     trocou = 0;
     atual = fim;
     printf("\n%s</>%s Esquerda ⥆ Direita %s</>%s\n", C_MAGE, C_CIAN, C_MAGE, C_RSET);
     while (atual != inicio) {  // Percorre da direita para a esquerda
-      if (atual->dado < atual->ant->dado) { // Troca os valores dos nós se o dado atual for menor que o anterior
+      if (atual->dado < atual->ant->dado) { // Troca os valores dos nós, se o dado atual for menor que o anterior
         temp = atual->dado;
         atual->dado = atual->ant->dado;
         atual->ant->dado = temp;
         trocou = 1;
         listaImprimeTroca(Ptl, atual->ant);
-        printf("%s[%d]%s ⥃ %s[%d]%s\n", C_VERD, atual->dado, C_CIAN, C_AZUL, atual->ant->dado, C_RSET);
+        printf("%s[%d]%s ⥃ %s[%d]%s\n", C_AZUL, atual->dado, C_CIAN, C_VERD, atual->ant->dado, C_RSET);
       }
       atual = atual->ant;
     }
-    inicio = inicio->prox;
+    inicio = inicio->prox; // Atualiza o ponteiro início para a próxima iteração
   } while (trocou);
   return Ptl;
 }
@@ -178,7 +213,7 @@ Lista *listaMescla(Lista *Ptl1, Lista *Ptl2) {
   No *n2 = Ptl2->inicio;
   Lista *novaLista = listaCria();
   while (n1 != NULL && n2 != NULL) { // Percorre as duas listas
-    if (n1->dado <= n2->dado) { // Insere o menor elemento da lista
+    if (n1->dado < n2->dado) { // Insere o menor elemento da lista
       listaInsereFim(novaLista, n1->dado);
       n1 = n1->prox;
     } else {

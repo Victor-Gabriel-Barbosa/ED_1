@@ -36,7 +36,10 @@ Lista *listaLibera(Lista *list);
 int listaImprime(Lista *list); 
 
 /* Ordena a lista usando o algoritmo Cocktail Sort */
-Lista *listaCocktailSort(Lista *list);
+Lista *listaCocktailSortV1(Lista *list);
+
+/* Ordena a lista usando o algoritmo Cocktail Sort */
+Lista *listaCocktailSortV2(Lista *list);
 
 /* Mescla duas listas */
 Lista *listaMescla(Lista *list1, Lista *list2);
