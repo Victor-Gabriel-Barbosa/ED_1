@@ -36,10 +36,7 @@ Lista *listaLibera(Lista *list);
 int listaImprime(Lista *list); 
 
 /* Ordena a lista usando o algoritmo Cocktail Sort */
-Lista *listaCocktailSortV1(Lista *list);
-
-/* Ordena a lista usando o algoritmo Cocktail Sort */
-Lista *listaCocktailSortV2(Lista *list);
+Lista *listaCocktailSort(Lista *list);
 
 /* Mescla duas listas */
 Lista *listaMescla(Lista *list1, Lista *list2);
@@ -49,5 +46,14 @@ void limpaBuffer();
 
 /* Limpa a tela do terminal */
 void limpaTela(const char *msg);
+
+/* Insere todos os números de um arquivo em uma lista */
+Lista *arquivoCarrega(Lista *Ptl, const char *nome, int qtde);
+
+/* Gera números aleatórios e armazena em um arquivo */
+void geraNumerosAleatorios(const char *nome, const int qtde, const int min, const int max);
+
+/* Faz uma operação de pontência */
+double potencia(double a, double b);
 
 #endif 

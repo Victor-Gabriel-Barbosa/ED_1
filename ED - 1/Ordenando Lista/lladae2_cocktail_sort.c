@@ -102,33 +102,19 @@ Lista *listaLibera(Lista *Ptl) {
 /* Imprime a lista */
 int listaImprime(Lista *Ptl) {
   if (Ptl == NULL || Ptl->inicio == NULL) return 0;
+  int cont = 0;
   No *atual = Ptl->inicio;
   while (atual != NULL) { // Mostra todos os elementos da lista
-    printf("%d ", atual->dado);
+    printf("%d", atual->dado);
+    printf((cont + 1) % 10 == 0 ? "\n" : " ");
+    cont == 9 ? cont = 0 : cont++;
     atual = atual->prox;
   }
   return 1;
 } 
 
-int listaImprimeTroca(Lista *Ptl, No *Ptatual) {
-  if (Ptl == NULL || Ptl->inicio == NULL) return 0;
-  No *atual = Ptl->inicio;
-  while (atual != NULL) { // Mostra todos os elementos da lista
-    if (atual == Ptatual) {
-      printf("%s%d%s ", C_VERD, atual->dado, C_RSET);
-    } else if (atual == Ptatual->prox) {
-      printf("%s%d%s ", C_AZUL, atual->dado, C_RSET);
-    } else {
-      printf("%d ", atual->dado);
-    }
-    atual = atual->prox;
-  }
-  return 1;
-}
-
-
 /* Ordena a lista usando o algoritmo Cocktail Sort */
-Lista *listaCocktailSortV1(Lista *Ptl) {
+Lista *listaCocktailSort(Lista *Ptl) {
   if (Ptl == NULL || Ptl->inicio == NULL) return Ptl;
   int trocou, temp;
   No *inicio = Ptl->inicio; 
@@ -164,69 +150,30 @@ Lista *listaCocktailSortV1(Lista *Ptl) {
   return Ptl;
 }
 
-/* Ordena a lista usando o algoritmo Cocktail Sort */
-Lista *listaCocktailSortV2(Lista *Ptl) {
-  if (Ptl == NULL || Ptl->inicio == NULL) return Ptl;
-  int trocou, temp;
-  No *inicio = Ptl->inicio; 
-  No *fim = Ptl->fim;
-  No *atual;
-  do { // Repete enquanto houver trocas
-    trocou = 0;
-    atual = inicio;
-    printf("\n%s</>%s Esquerda ⥅ Direita %s</>%s\n", C_MAGE, C_CIAN, C_MAGE, C_RSET);
-    while (atual != fim) { // Percorre da esquerda para a direita
-      if (atual->dado > atual->prox->dado) { // Troca os valores dos nós, se o dado atual for maior que o próximo
-        temp = atual->dado;
-        atual->dado = atual->prox->dado;
-        atual->prox->dado = temp;
-        trocou = 1;
-        listaImprimeTroca(Ptl, atual);
-        printf("%s[%d]%s ⥂ %s[%d]%s\n", C_AZUL, atual->prox->dado, C_CIAN, C_VERD, atual->dado, C_RSET);
-      }
-      atual = atual->prox;
-    }
-    if (!trocou) continue; // A lista já está ordenada se não houve trocas
-    fim = fim->ant; // Atualiza o ponteiro fim para a próxima iteração
-    trocou = 0;
-    atual = fim;
-    printf("\n%s</>%s Esquerda ⥆ Direita %s</>%s\n", C_MAGE, C_CIAN, C_MAGE, C_RSET);
-    while (atual != inicio) {  // Percorre da direita para a esquerda
-      if (atual->dado < atual->ant->dado) { // Troca os valores dos nós, se o dado atual for menor que o anterior
-        temp = atual->dado;
-        atual->dado = atual->ant->dado;
-        atual->ant->dado = temp;
-        trocou = 1;
-        listaImprimeTroca(Ptl, atual->ant);
-        printf("%s[%d]%s ⥃ %s[%d]%s\n", C_AZUL, atual->dado, C_CIAN, C_VERD, atual->ant->dado, C_RSET);
-      }
-      atual = atual->ant;
-    }
-    inicio = inicio->prox; // Atualiza o ponteiro início para a próxima iteração
-  } while (trocou);
-  return Ptl;
-}
-
 /* Mescla duas listas */
 Lista *listaMescla(Lista *Ptl1, Lista *Ptl2) {
   No *n1 = Ptl1->inicio;
   No *n2 = Ptl2->inicio;
   Lista *novaLista = listaCria();
   while (n1 != NULL && n2 != NULL) { // Percorre as duas listas
-    if (n1->dado < n2->dado) { // Insere o menor elemento da lista
-      listaInsereFim(novaLista, n1->dado);
+    if (n1->dado < n2->dado) { // Insere o menor elemento das listas
+      novaLista = listaInsereFim(novaLista, n1->dado);
       n1 = n1->prox;
+    } else if (n1->dado == n2->dado) { // Insere apenas um dos dados repetidos na lista
+      novaLista = listaInsereFim(novaLista, n1->dado);
+      n1 = n1->prox;
+      n2 = n2->prox;
     } else {
-      listaInsereFim(novaLista, n2->dado);
+      novaLista = listaInsereFim(novaLista, n2->dado);
       n2 = n2->prox;
     }
   }
   while (n1 != NULL) { // Insere os elementos restantes da lista 1
-    listaInsereFim(novaLista, n1->dado);
+    novaLista = listaInsereFim(novaLista, n1->dado);
     n1 = n1->prox;
   }
   while (n2 != NULL) { // Insere os elementos restantes da lista 2
-    listaInsereFim(novaLista, n2->dado);
+    novaLista = listaInsereFim(novaLista, n2->dado);
     n2 = n2->prox;
   }
   return novaLista;
@@ -246,4 +193,46 @@ void limpaTela(const char *msg) {
   #else 
     system("clear");
   #endif 
+}
+
+/* Insere todos os números de um arquivo em uma lista */
+Lista *arquivoCarrega(Lista *Ptl, const char *nome, int qtde) {
+  FILE *arqv = fopen(nome, "r");
+  if (arqv == NULL) {
+    printf("\nErro ao abrir o arquivo!\n");
+    return Ptl;
+  }
+  int dado;
+  printf("\nQtde %d\n", qtde);
+  while (fscanf(arqv, "%d", &dado) == 1 && qtde > 0) {
+    Ptl = (rand() % 2 == 0) ? listaInsereInicio(Ptl, dado) : listaInsereFim(Ptl, dado);
+    qtde--;
+  }
+  fclose(arqv); 
+  return Ptl;
+}
+
+void geraNumerosAleatorios(const char *nome, const int qtde, const int min, const int max) { 
+    FILE *arquivo;
+    arquivo = fopen(nome, "w"); // Abre o arquivo para escrita
+    if (arquivo == NULL) {
+      printf("Erro ao criar o arquivo!\n");
+      return;
+    }
+    for (int i = 0; i < qtde; i++) { // Gera números aleatórios entre min e max
+      int numero = rand() % (max - min + 1) + min; 
+      fprintf(arquivo, "%d", numero);
+      fprintf(arquivo, (i + 1) % 10 == 0 ? "\n" : " "); // Quebra de linha a cada 10 números
+    }
+    fclose(arquivo); // Fecha o arquivo
+    printf("Arquivo '%s' gerado com sucesso!\n", nome);
+}
+
+/* Faz uma operação de pontência */
+double potencia(double a, double b) {
+  double resultado = 1;
+  for (int i = 0; i < b; i++) {
+    resultado *= a;
+  }
+  return resultado;
 }

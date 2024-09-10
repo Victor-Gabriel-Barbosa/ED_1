@@ -12,24 +12,6 @@ extern const char *verm;
 extern const char *mage;
 extern const char *amar;
 
-/* Variáveis que armazenam formatos de bordas */
-extern const char *brd_vaz[];
-extern const char *brd_dup[];
-extern const char *brd_lev[];
-extern const char *brd_dlv[];
-extern const char *brd_lin[];
-extern const char *brd_neg[];
-extern const char *brd_crv[];
-extern const char *brd_dcr[];
-extern const char *brd_rsc[];
-extern const char *brd_nrc[];
-extern const char *brd_grd[];
-extern const char *brd_grs[];
-extern const char *brd_esp[];
-extern const char *brd_trc[];
-extern const char *brd_pnt[];
-
-
 /* Estrutura p/ armazenar datas */
 typedef struct { 
   int dia, mes, ano;

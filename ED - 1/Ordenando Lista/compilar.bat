@@ -1,1 +1,0 @@
-gcc "C:\Users\usuario\Desktop\Programas\ED_1\ED - 1\Ordenando Lista\main.c" "C:\Users\usuario\Desktop\Programas\ED_1\ED - 1\Ordenando Lista\lladae2_cocktail_sort.c" -o "C:\Users\usuario\Desktop\Programas\ED_1\ED - 1\Ordenando Lista\t"
