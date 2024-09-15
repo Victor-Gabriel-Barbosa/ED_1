@@ -7,8 +7,8 @@
 extern const char *C_RSET;
 extern const char *C_AZUL;
 extern const char *C_VERD;
-extern const char *C_CIAN;
-extern const char *C_VERM;
+extern const char *C_CIAN; 
+extern const char *C_VERM; 
 extern const char *C_MAGE;
 extern const char *C_AMAR;
 
@@ -18,25 +18,25 @@ typedef struct lista Lista;
 Lista *listaCria();
 
 /* Tamanho da lista */
-int listaSize(Lista *Ptl);
+int listaSize(Lista *Ptd);
 
 /* Insere um novo elemento no início da lista */
-Lista *listaInsereInicio(Lista *list, const int dado);
+Lista *listaInsereInicio(Lista *Ptd, const int dado);
 
 /* Insere um novo elemento no fim da lista */
-Lista *listaInsereFim(Lista *list, const int dado);
+Lista *listaInsereFim(Lista *Ptd, const int dado);
 
 /* Remove um elemento da lista */
-Lista *listaRemove(Lista *list, const int dado);
+Lista *listaRemove(Lista *Ptd, const int dado);
 
-/* Libera toda a memória alocada para a lista */
-Lista *listaLibera(Lista *list); 
+/* Libera toda a memória alocada p/ a lista */
+Lista *listaLibera(Lista *Ptd); 
 
 /* Imprime a lista */
-int listaImprime(Lista *list); 
+int listaImprime(Lista *Ptd); 
 
 /* Ordena a lista usando o algoritmo Cocktail Sort */
-Lista *listaCocktailSort(Lista *list);
+Lista *listaCocktailSort(Lista *Ptd);
 
 /* Mescla duas listas */
 Lista *listaMescla(Lista *list1, Lista *list2);
@@ -44,16 +44,37 @@ Lista *listaMescla(Lista *list1, Lista *list2);
 /* Limpa o buffer do teclado */
 void limpaBuffer(); 
 
-/* Limpa a tela do terminal */
+/* Limpa a tela */
+void cls();
+
+/* Espera uma entrada do usuário p/ limpar a tela */
 void limpaTela(const char *msg);
 
-/* Insere todos os números de um arquivo em uma lista */
-Lista *arquivoCarrega(Lista *Ptl, const char *nome, int qtde);
+/* Faz uma operação de potência */ 
+double potencia(double a, int b);
 
-/* Gera números aleatórios e armazena em um arquivo */
-void geraNumerosAleatorios(const char *nome, const int qtde, const int min, const int max);
+/* Confirma uma ação */
+int simOuNao(const char *msg);
 
-/* Faz uma operação de pontência */
-double potencia(double a, double b);
+/* Insere todos os nºs de um arquivo em uma lista */
+Lista *arquivoCarrega(Lista *Ptd, const char *nome_arqv, int qtd); 
+ 
+/* Gera nºs aleatórios e armazena em um arquivo */
+int arquivoAleatoriza(const char *nome_arqv, const int min, const int max, const int qtd);
 
-#endif 
+/* Salva os dados da lista em um arquivo */
+int arquivoSalva(Lista *Ptd, const char *nome_arqv);
+
+/* Exclui todas as ocorrências de um arquivo */
+int arquivoExclui(const char *nome_arqv);
+ 
+/* Pede um nº dentro de um intervalo ao usuário */
+int intervalo(const char *msg, int min, int max);
+
+/* Pede o nome de um arquivo ao usuário */
+char *arquivoNome(const char *msg);
+
+/* Mostra todo o conteúdo de um arquivo na tela */
+int printArquivo(const char *nome, const char *cor);
+
+#endif  
