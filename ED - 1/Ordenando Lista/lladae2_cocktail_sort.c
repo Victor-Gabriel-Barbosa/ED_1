@@ -3,16 +3,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
+#include "cores.h"
+#include "utils.h"
 #include "lladae2_cocktail_sort.h"
-
-/* Variáveis que armazenam cores de texto */
-const char *C_RSET = "\033[0m";
-const char *C_AZUL = "\033[38;5;39m"; 
-const char *C_VERD = "\033[38;5;46m";
-const char *C_CIAN = "\033[38;5;51m";
-const char *C_VERM = "\033[38;5;196m";
-const char *C_MAGE = "\033[38;5;201m";
-const char *C_AMAR = "\033[38;5;220m";
 
 typedef struct no { // Estrutura que armazena os nós da lista
   int dado;
@@ -44,7 +37,7 @@ int listaSize(Lista *Ptd) {
 
 /* Insere um novo elemento no início da lista */
 Lista* listaInsereInicio(Lista *Ptd, const int dado) {
-  No *novo = (No *)malloc(sizeof(No));
+  No *novo = (No *)malloc(sizeof(No)); 
   if (novo == NULL) return Ptd; 
   novo->dado = dado;
   novo->prox = Ptd->inicio;
@@ -153,9 +146,9 @@ Lista *listaCocktailSort(Lista *Ptd) {
 }
 
 /* Mescla duas listas */
-Lista *listaMescla(Lista *Ptl1, Lista *Ptl2) {
-  No *n1 = Ptl1->inicio;
-  No *n2 = Ptl2->inicio;
+Lista *listaMescla(Lista *Ptd1, Lista *Ptd2) {
+  No *n1 = Ptd1->inicio;
+  No *n2 = Ptd2->inicio;
   Lista *novaLista = listaCria();
   while (n1 != NULL && n2 != NULL) { // Percorre as duas listas
     if (n1->dado < n2->dado) { // Insere o menor elemento das listas
@@ -209,60 +202,74 @@ double potencia(double a, int b) {
 /* Confirma uma ação */
 int simOuNao(const char *msg) { 
   while (1) { // Confirma uma ação
-    printf("\nDeseja %s%s%s?\n", C_VERM, msg, C_RSET);
-    printf("%s[S%s/%sN]%s: ", C_AZUL, C_MAGE, C_VERM, C_RSET);
+    printf("\nDeseja %s%s%s?\n", C_VERMELHO, msg, C_RESET);
+    printf("%s[S%s/%sN]%s: ", C_AZUL, C_MAGENTA, C_VERMELHO, C_RESET);
     char op = tolower(getchar());
     limpaBuffer();
     if (op == 's') return 1;
     if (op == 'n') return 0;
     cls();
-    printf("\n%s[Opção inválida!]%s\n", C_VERM, C_RSET);
+    printf(C_FMT_ERRO("\n[Opção inválida!]\n"));
   }
 }
+
+/* Pede um nº dentro de um intervalo ao usuário */
+int intervalo(const char *msg, int min, int max) {
+  while (1) { // Confirma se o nº está no intervalo
+    int num = -1;
+    printf("\nDigite %s%s%s\n", C_MAGENTA, msg, C_RESET);
+    printf("%s[%d%s-%s%d]%s: ", C_VERDE, min, C_MAGENTA, C_AZUL, max, C_RESET);
+    scanf("%d", &num);
+    limpaBuffer();
+    if (num >= min && num <= max) return num; // Retorna o nº se ele estiver dentro do intervalo
+    cls();
+    printf(C_FMT_ERRO("\n[Nº inválido! Tente novamente!]\n"));
+  }
+} 
 
 /* Insere todos os nºs de um arquivo em uma lista */
 Lista *arquivoCarrega(Lista *Ptd, const char *nome_arqv, int qtd) {
   FILE *arquivo = fopen(nome_arqv, "r");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
-    printf("\n%s[Erro ao abrir o arquivo!]: %s%s\n", C_VERM, strerror(errno), C_RSET);
+    printf(C_FMT_ERRO("\n[Erro ao abrir o arquivo!]: %s\n"), strerror(errno));
     return Ptd;
   }
   char *linha = NULL, *campo = NULL;
   size_t tam = 0;
   int dado;
-  while ((getline(&linha, &tam, arquivo) != -1) && qtd > 0) {
-    campo = strtok(linha, ",");
+  while ((getline(&linha, &tam, arquivo) != -1) && qtd > 0) { // Lê todas as linhas do arquivo até o final ou até preencher a quantidade de números necessária
+    campo = strtok(linha, ","); // Divide a linha em strings usando ','
     while (campo != NULL && qtd > 0) { // Insere todos os nºs da linha na lista
-      dado = atoi(campo); 
-      Ptd = (rand() % 2 == 0) ? listaInsereInicio(Ptd, dado) : listaInsereFim(Ptd, dado);
-      campo = strtok(NULL, ",");
+      dado = atoi(campo); // Transforma a string em um inteiro
+      Ptd = (rand() % 2 == 0) ? listaInsereInicio(Ptd, dado) : listaInsereFim(Ptd, dado); // Insere no início ou no fim de forma aleatória
+      campo = strtok(NULL, ","); // Pega a próxima string
       qtd--;
     }
   }
   free(linha);
   fclose(arquivo); 
-  return (qtd > 0) ? arquivoCarrega(Ptd, nome_arqv, qtd) : Ptd;
+  return (qtd > 0) ? arquivoCarrega(Ptd, nome_arqv, qtd) : Ptd; // Faz uma chamada recursiva se ainda houver nºs p/ serem inseridos
 } 
 
 /* Gera nºs aleatórios e armazena em um arquivo */
 int arquivoAleatoriza(const char *nome_arqv, const int min, const int max, const int qtd) { 
   int cont_a = 1;
   if (access(nome_arqv, F_OK) == 0) { // F_OK verifica se o arquivo existe
-    printf("\n%s[Arquivo '%s' localizado!]%s\n", C_VERD, nome_arqv, C_RSET);
+    printf(C_FMT_ERRO("\n[Arquivo '%s' localizado!]%s\n"), nome_arqv);
     return 0;
   }
   FILE *arquivo = fopen(nome_arqv, "w"); // Abre o arquivo p/ escrita
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
-    printf("\n%s[Erro ao criar o arquivo!]: %s%s\n", C_VERM, strerror(errno), C_RSET);
+    printf(C_FMT_ERRO("\n[Erro ao criar o arquivo!]: %s\n"), strerror(errno));
     return -1;
   }
-  printf("\n%sAleatorizando%s nºs...\n", C_AZUL, C_RSET);
+  printf("\n%sAleatorizando%s nºs...\n", C_AZUL, C_RESET);
   for (int i = 0; i < qtd; i++) { // Gera nºs aleatórios entre min e max
     fprintf(arquivo, "%d", (rand() % (max - min + 1) + min));
     fprintf(arquivo, (i + 1) % 10 == 0 ? "\n" : ","); // Quebra de linha a cada 10 nºs
   }
-  fclose(arquivo); // Fecha o arquivo
-  printf("\n%s[Arquivo '%s' criado com sucesso!]%s\n", C_VERD, nome_arqv, C_RSET);
+  fclose(arquivo);
+  printf(C_FMT_SUCESSO("\n[Arquivo '%s' criado com sucesso!]\n"), nome_arqv);
   return 1;
 }
 
@@ -288,7 +295,7 @@ int arquivoSalva(Lista *Ptd, const char *nome_arqv) {
   }
   FILE *arquivo = fopen(nome_final, "w");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
-    printf("\n%s[Erro ao abrir o arquivo!]: %s%s\n", C_VERM, strerror(errno), C_RSET);
+    printf(C_FMT_ERRO("\n[Erro ao abrir o arquivo!]: %s\n"), strerror(errno));
     return -1;
   }
   No *atual = Ptd->inicio;
@@ -298,19 +305,16 @@ int arquivoSalva(Lista *Ptd, const char *nome_arqv) {
     fprintf(arquivo, (++cont_n % 10 == 0) ? "\n" : ","); // Quebra de linha a cada 10 nºs
     atual = atual->prox;
   }
-  if (fclose(arquivo) != 0) { // Fecha o arquivo e verifica se houve erro
-    printf("\n%s[Erro ao fechar o arquivo!]: %s%s\n", C_VERM, strerror(errno), C_RSET);
-    return -1;
-  } 
-  printf("\n%s[Arquivo '%s' salvo com sucesso!]%s\n", C_VERD, nome_final, C_RSET);
+  fclose(arquivo);
+  printf(C_FMT_SUCESSO("\n[Arquivo '%s' salvo com sucesso!]\n"), nome_final);
   return 1;
 }
 
 
 /* Exclui todas as ocorrências de um arquivo */
 int arquivoExclui(const char *nome_arqv) {
-  char nome_final[strlen(nome_arqv) + 5], msg[strlen(nome_arqv) + 10];
-  char base[strlen(nome_arqv) + 1], extensao[5];
+  char nome_final[strlen(nome_arqv) + 10], msg[strlen(nome_arqv) + 20];
+  char base[strlen(nome_arqv) + 1], extensao[6];
   char *ext = strrchr(nome_arqv, '.');
   int cont_a = 0;
   if (ext != NULL) { // Verifica se há uma extensão e separa o nome base e a extensão
@@ -322,33 +326,19 @@ int arquivoExclui(const char *nome_arqv) {
   while (access(nome_final, F_OK) == 0) { // Verifica a existência do arquivo original
     sprintf(msg, "excluir '%s'", nome_final);
     if (simOuNao(msg)) { // Chama a função simOuNao p/ confirmar a exclusão
-      if (remove(nome_final) == 0) printf("\n%s[Arquivo '%s' excluído com sucesso!]%s\n", C_VERM, nome_final, C_RSET);
-      else printf("\n%s[Erro ao excluir o arquivo '%s'!]: %s%s\n", C_VERM, nome_final, strerror(errno), C_RSET);
+      if (remove(nome_final) == 0) printf(C_FMT_SUCESSO("\n[Arquivo '%s' excluído com sucesso!]\n"), nome_final);
+      else printf(C_FMT_ERRO("\n[Erro ao excluir o arquivo '%s'!]: %s\n"), nome_final, strerror(errno));
     }
     sprintf(nome_final, "%s(%d)%s", base, ++cont_a, extensao); 
   }
   return cont_a;
 }
 
-/* Pede um nº dentro de um intervalo ao usuário */
-int intervalo(const char *msg, int min, int max) {
-  while (1) { // Confirma se o nº está no intervalo
-    int complex = -1;
-    printf("\nDigite %s%s%s\n", C_MAGE, msg, C_RSET);
-    printf("%s[%d%s-%s%d]%s: ", C_VERD, min, C_MAGE, C_AZUL, max, C_RSET);
-    scanf("%d", &complex);
-    limpaBuffer();
-    if (complex >= min && complex <= max) return complex;
-    cls();
-    printf("\n%s[Nº inválido! Tente novamente!]%s\n", C_VERM, C_RSET);
-  }
-} 
-
 /* Pede o nome de um arquivo ao usuário */
 char *arquivoNome(const char *msg) {
   char *nome_arqv = NULL;
   size_t tam = 0;
-  printf("\nDigite o nome do arquivo %s'%s'%s:\n", C_MAGE, msg, C_RSET);
+  printf("\nDigite o nome do arquivo %s'%s'%s:\n", C_MAGENTA, msg, C_RESET);
   getline(&nome_arqv, &tam, stdin);
   nome_arqv[strcspn(nome_arqv, "\n")] = '\0';
   return nome_arqv;
@@ -358,7 +348,7 @@ char *arquivoNome(const char *msg) {
 int printArquivo(const char *nome, const char *cor) {
   FILE *arquivo = fopen(nome, "r");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
-    printf("\n%s[Arquivo '%s' não encontrado!]: %s%s\n", C_VERM, nome, strerror(errno), C_RSET);
+    printf(C_FMT_ERRO("\n[Arquivo '%s' não encontrado!]: %s%s\n"), nome, strerror(errno), C_RESET);
     return 0;
   }
   char *linha = NULL;
@@ -367,7 +357,7 @@ int printArquivo(const char *nome, const char *cor) {
   while (getline(&linha, &tam, arquivo) != -1) { // Lê todas as linhas do arquivo
     printf("%s", linha);
   }
-  printf("%s", C_RSET);
+  printf("%s", C_RESET);
   free(linha);
   fclose(arquivo);
   return 1;

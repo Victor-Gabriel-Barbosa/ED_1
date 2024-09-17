@@ -3,45 +3,32 @@
 
 // Função para ordenar a lista usando o Cocktail Sort
 void ordenarCocktailSort(int vetor[], int tamanho) {
-    bool trocou;
-    int inicio = 0;
-    int fim = tamanho - 1;
-
-    // Loop principal do algoritmo
-    do {
-        trocou = false;
-
-        // Percorrer da esquerda para a direita
-        for (int i = inicio; i < fim; i++) {
-            if (vetor[i] > vetor[i + 1]) {
-                // Trocar elementos se estiverem na ordem errada
-                int aux = vetor[i];
-                vetor[i] = vetor[i + 1];
-                vetor[i + 1] = aux;
-                trocou = true;
-            }
-        }
-
-        // Se nenhuma troca foi feita, a lista já está ordenada
-        if (!trocou)
-            break;
-
-        trocou = false;
-        fim--;
-
-        // Percorrer da direita para a esquerda
-        for (int i = fim - 1; i >= inicio; i--) {
-            if (vetor[i] > vetor[i + 1]) {
-                // Trocar elementos se estiverem na ordem errada
-                int aux = vetor[i];
-                vetor[i] = vetor[i + 1];
-                vetor[i + 1] = aux;
-                trocou = true;
-            }
-        }
-
-        inicio++;
-    } while (trocou);
+  bool trocou;
+  int inicio = 0;
+  int fim = tamanho - 1;
+  do { // Loop principal do algoritmo
+    trocou = false;
+    for (int i = inicio; i < fim; i++) { // Percorrer da esquerda para a direita
+      if (vetor[i] > vetor[i + 1]) { // Trocar elementos se estiverem na ordem errada
+        int aux = vetor[i];
+        vetor[i] = vetor[i + 1];
+        vetor[i + 1] = aux;
+        trocou = true;
+      }
+    }
+    if (!trocou) break; // Se nenhuma troca foi feita, a lista já está ordenada
+    trocou = false;
+    fim--;
+    for (int i = fim - 1; i >= inicio; i--) { // Percorrer da direita para a esquerda
+      if (vetor[i] > vetor[i + 1]) { // Trocar elementos se estiverem na ordem errada
+        int aux = vetor[i];
+        vetor[i] = vetor[i + 1];
+        vetor[i + 1] = aux;
+        trocou = true;
+      }
+    }
+    inicio++;
+  } while (trocou);
 }
 
 // Função principal
