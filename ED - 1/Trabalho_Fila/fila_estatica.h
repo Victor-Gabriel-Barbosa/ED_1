@@ -5,30 +5,30 @@
 
 #define MAX 999999
 
-typedef struct queue_s Fila_S;
+typedef struct queue_s FilaEst;
 
 /* Cria e inicializa a fila estática */
-Fila_S *filaCria_S();
+FilaEst *filaCriaEst();
 
 /* Libera a memória alocada p/ fila estática */
-Fila_S *filaLibera_S(Fila_S *Ptf);
+FilaEst *filaLiberaEst(FilaEst *Ptf);
 
 /* Verifica se a fila estática está vazia */
-int filaVazia_S(Fila_S *Ptf);
+int filaVaziaEst(FilaEst *Ptf);
 
 /* Insere um elemento na fila estática */
-Fila_S *filaInsere_S(Fila_S *Ptf, Planeta plan);
+FilaEst *filaInsereEst(FilaEst *Ptf, Planeta plan);
  
 /* Remove um elemento da fila estática */
-Fila_S *filaRemove_S(Fila_S *Ptf, Planeta *plan);
+FilaEst *filaRemoveEst(FilaEst *Ptf, Planeta *plan);
 
 /* Consulta um elemento da fila estática */
-int filaConsulta_S(Fila_S *Ptf, Planeta *plan);
+int filaConsultaEst(FilaEst *Ptf, Planeta *plan);
 
-/* Exibe a fila estática */
-int filaExibe_S(Fila_S *Ptf);
+/* Exibe a fila estática */ 
+int filaExibeEst(FilaEst *Ptf);
 
 /* Encontra o tamanho da fila estática */
-int filaTamanho_S(Fila_S *Ptf);
+int filaTamanhoEst(FilaEst *Ptf);
 
 #endif 

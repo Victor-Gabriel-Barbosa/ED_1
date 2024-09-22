@@ -12,6 +12,9 @@ typedef struct planetas {
 Planeta planetaAleatoriza(const int posi);
 
 /* Mostra um planeta */
-void planetaExibe(const Planeta planeta);
+void planetaExibe(const Planeta plan);
+
+/* Faz a colisão entre dois planetas */
+Planeta planetaBigBang(const Planeta plan1, const Planeta plan2);
 
 #endif

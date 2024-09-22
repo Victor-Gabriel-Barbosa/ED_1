@@ -3,30 +3,30 @@
 
 #include "planetas.h"
 
-typedef struct queue_e Fila_E;
+typedef struct queue_e FilaEnc;
 
 /* Cria e inicializa a fila encadeada */
-Fila_E *filaCria_E();
+FilaEnc *filaCriaEnc();
 
 /* Libera a memória alocada para uma fila */
-Fila_E *filaLibera_E(Fila_E *Ptf);
+FilaEnc *filaLiberaEnc(FilaEnc *Ptf);
 
 /* Verifica se a fila encadeada está vazia */
-int filaVazia_E(Fila_E *Ptf);
+int filaVaziaEnc(FilaEnc *Ptf);
 
 /* Insere um elemento na fila encadeada */
-Fila_E *filaInsere_E(Fila_E *Ptf, Planeta plan);
+FilaEnc *filaInsereEnc(FilaEnc *Ptf, Planeta plan);
 
 /* Remove um elemento da fila encadeada */
-Fila_E *filaRemove_E(Fila_E *Ptf, Planeta *plan);
+FilaEnc *filaRemoveEnc(FilaEnc *Ptf, Planeta *plan);
 
 /* Consulta um elemento da fila encadeada */
-int filaConsulta_E(Fila_E *Ptf, Planeta *plan);
+int filaConsultaEnc(FilaEnc *Ptf, Planeta *plan); 
 
 /* Exibe a fila encadeada */
-int filaExibe_E(Fila_E *Ptf);
+int filaExibeEnc(FilaEnc *Ptf);
 
 /* Encontra o tamanho da fila encadeada */
-int filaTamanho_E(Fila_E *Ptf);
+int filaTamanhoEnc(FilaEnc *Ptf);
 
 #endif 
