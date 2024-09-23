@@ -5,7 +5,7 @@
 
 #define MAX 999999
 
-typedef struct queue_s FilaEst;
+typedef struct queueEst FilaEst;
 
 /* Cria e inicializa a fila estática */
 FilaEst *filaCriaEst();

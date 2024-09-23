@@ -4,22 +4,22 @@
 #include <ctype.h>
 #include <unistd.h>
 #include "cores.h"
-#include "utils.h"
+#include "utils.h" 
 #include "fila_encadeada.h"
 #include "fila_estatica.h"
 
-typedef struct node { // Estrutura do nó da fila encadeada
+typedef struct no { // Estrutura do nó da fila encadeada
   Planeta plan;
-  struct node *prox;
+  struct no *prox;
 } No;
 
-typedef struct queue_e { // Estrutura da fila encadeada
+typedef struct queueEnc { // Estrutura da fila encadeada
   No *inicio;
   No *fim;
   int N;
 } FilaEnc;
  
-/* Cria e inicializa a fila */
+/* Cria e inicializa a fila encadeada */
 FilaEnc *filaCriaEnc() {
   FilaEnc *Ptf = (FilaEnc*) malloc(sizeof(FilaEnc));
   if (Ptf != NULL) {
@@ -30,7 +30,7 @@ FilaEnc *filaCriaEnc() {
   return Ptf;
 }
 
-/* Libera a memória alocada para uma fila */
+/* Libera a memória alocada para uma fila encadeada */
 FilaEnc *filaLiberaEnc(FilaEnc *Ptf) {
   if (Ptf == NULL) return Ptf;
   No *temp = Ptf->inicio;
@@ -43,12 +43,12 @@ FilaEnc *filaLiberaEnc(FilaEnc *Ptf) {
   return NULL; 
 }
 
-/* Verifica se a fila está vazia */
+/* Verifica se a fila encadeada está vazia */
 int filaVaziaEnc(FilaEnc *Ptf) {
   return (Ptf->N == 0);
 }
 
-/* Insere um planeta na fila */
+/* Insere um planeta na fila encadeada */
 FilaEnc *filaInsereEnc(FilaEnc *Ptf, Planeta plan) {
   if (Ptf == NULL) return Ptf;
   No *novo = (No*) malloc(sizeof(No));
@@ -60,9 +60,9 @@ FilaEnc *filaInsereEnc(FilaEnc *Ptf, Planeta plan) {
   Ptf->fim = novo;
   Ptf->N++;
   return Ptf;
-}
+} 
 
-/* Remove um planeta da fila */
+/* Remove um planeta da fila encadeada */
 FilaEnc *filaRemoveEnc(FilaEnc *Ptf, Planeta *plan) {
   if (Ptf == NULL || filaVaziaEnc(Ptf)) return Ptf;
   No *temp = Ptf->inicio;
@@ -74,14 +74,14 @@ FilaEnc *filaRemoveEnc(FilaEnc *Ptf, Planeta *plan) {
   return Ptf;
 }
 
-/* Consulta o primeiro elemento da fila */
+/* Consulta o primeiro elemento da fila encadeada */
 int filaConsultaEnc(FilaEnc *Ptf, Planeta *plan) {
   if (Ptf == NULL || filaVaziaEnc(Ptf)) return 0;
   *plan = Ptf->inicio->plan;
   return 1;
 }
 
-/* Exibe a fila */
+/* Exibe a fila encadeada */
 int filaExibeEnc(FilaEnc *Ptf) {
   if (filaVaziaEnc(Ptf)) return 0;
   No *temp = Ptf->inicio;
@@ -98,7 +98,7 @@ int filaTamanhoEnc(FilaEnc *Ptf) {
   return Ptf->N;
 }
 
-typedef struct queue_s { // Estrutura p/ armazenar a fila estática
+typedef struct queueEst { // Estrutura p/ armazenar a fila estática
   Planeta fila[MAX];
   int IF;
   int FF;
@@ -267,7 +267,8 @@ Planeta planetaBigBang(Planeta plan1, Planeta plan2) {
   if (bigBang.distancia_sol < 0) bigBang.distancia_sol = 0;
   return bigBang;
 }
-
+ 
+/* Exibe o conteúdo de um arquivo */
 int printArquivo(const char *nome_arqv, const char *cor) {
   FILE *arquivo = fopen(nome_arqv, "r");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
@@ -287,7 +288,7 @@ int printArquivo(const char *nome_arqv, const char *cor) {
 }
 
 /* Salva o tempo de execução em um arquivo */
-int arquivoSalva(const char *nome_arqv, const int num_bat, const int qtd, const clock_t *temp) {
+int arquivoSalva(const char *nome_arqv, const int qtd_t, const int qtd, const clock_t *temp) {
   FILE *arquivo = fopen(nome_arqv, "a");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
     printf(C_FMT_ERRO("\n[Erro ao abrir o arquivo!]: %s\n"), strerror(errno)); 
@@ -297,7 +298,7 @@ int arquivoSalva(const char *nome_arqv, const int num_bat, const int qtd, const 
   if (ftell(arquivo) == 0) { // Se o arquivo estiver vazio, adiciona o cabeçalho
     fprintf(arquivo, "NºBateria,Quantidade,Inserção,Listagem,Remoção\n");
   }
-  fprintf(arquivo, "%d,%d,%ld,%ld,%ld\n", num_bat, qtd, temp[0], temp[1], temp[2]);
+  fprintf(arquivo, "%d,%d,%ld,%ld,%ld\n", qtd_t, qtd, temp[0], temp[1], temp[2]);
   fclose(arquivo);
   return 1;
 }

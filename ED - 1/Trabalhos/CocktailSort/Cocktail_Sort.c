@@ -1,30 +1,29 @@
 #include <stdio.h>
-#include <stdbool.h>
 
-// Função para ordenar a lista usando o Cocktail Sort
+/* Função para ordenar a lista usando o Cocktail Sort */
 void ordenarCocktailSort(int vetor[], int tamanho) {
-  bool trocou;
+  int trocou, temp;
   int inicio = 0;
   int fim = tamanho - 1;
   do { // Loop principal do algoritmo
-    trocou = false;
+    trocou = 0;
     for (int i = inicio; i < fim; i++) { // Percorrer da esquerda para a direita
       if (vetor[i] > vetor[i + 1]) { // Trocar elementos se estiverem na ordem errada
-        int aux = vetor[i];
+        temp = vetor[i];
         vetor[i] = vetor[i + 1];
-        vetor[i + 1] = aux;
-        trocou = true;
+        vetor[i + 1] = temp;
+        trocou = 1;
       }
     }
     if (!trocou) break; // Se nenhuma troca foi feita, a lista já está ordenada
-    trocou = false;
+    trocou = 0;
     fim--;
     for (int i = fim - 1; i >= inicio; i--) { // Percorrer da direita para a esquerda
       if (vetor[i] > vetor[i + 1]) { // Trocar elementos se estiverem na ordem errada
-        int aux = vetor[i];
+        temp = vetor[i];
         vetor[i] = vetor[i + 1];
-        vetor[i + 1] = aux;
-        trocou = true;
+        vetor[i + 1] = temp;
+        trocou = 1;
       }
     }
     inicio++;

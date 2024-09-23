@@ -3,10 +3,10 @@
 
 #include "planetas.h"
 
-typedef struct queue_e FilaEnc;
+typedef struct queueEnc FilaEnc;
 
 /* Cria e inicializa a fila encadeada */
-FilaEnc *filaCriaEnc();
+FilaEnc *filaCriaEnc();  
 
 /* Libera a memória alocada para uma fila */
 FilaEnc *filaLiberaEnc(FilaEnc *Ptf);
