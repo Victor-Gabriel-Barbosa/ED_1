@@ -1,6 +1,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <time.h>
+
+#define NUM_ELEMS(x) (sizeof(x) / sizeof((x)[0]))
+
 /* Limpa o buffer do teclado */
 void limpaBuffer(); 
 
@@ -14,21 +18,15 @@ void limpaTela(const char *msg);
 int escolheInt(const char *msg, const int min, const int max);
 
 /* Confirma uma ação */
-int simOuNao(const char *msg); 
-
-/* Garante que o nome do arquivo é único e válido */
-char *arqvNome(const char *nome_a);
+int simOuNao(const char *msg);
 
 /* Exibe o conteúdo de um arquivo */
-int arqvPrint(const char *nome, const char *cor);
+int printArquivo(const char *nome, const char *cor);
 
 /* Salva o tempo de execução em um arquivo */
-int arqvSalvaTempo(const char *nome_a, const int qtd_t, const int qtd, const long int *temp);
+int arquivoSalva(const char *nome_arqv, const int qtd_t, const int qtd, const clock_t *temp);
 
-/* Analisa se a alocação foi bem-sucedida */
-void *verAlloc(void *pt);
-
-/* Recria o print */
-void print(const char *texto, ...);
+/* Exclui todas as ocorrências de um arquivo */
+int arquivoExclui(const char *nome_arqv);
 
 #endif

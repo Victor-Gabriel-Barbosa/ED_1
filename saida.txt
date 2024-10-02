@@ -1,9 +1,0 @@
-1;Ana
-2;Mirella
-1;Ana
-2;B
-1;A
-5;E
-3;C
-3;Vitor
-1;Mirela

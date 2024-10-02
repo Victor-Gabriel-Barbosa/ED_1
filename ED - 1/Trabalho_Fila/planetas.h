@@ -7,9 +7,9 @@ typedef struct planetas {
   float gravidade;
   float distancia_sol;
 } Planeta;
-
+ 
 /* Aleatoriza as informações de um planeta */
-Planeta planetaAleatoriza(const int posi);
+Planeta planetaAleatoriza(int *posi);
 
 /* Mostra um planeta */
 void planetaExibe(const Planeta plan); 

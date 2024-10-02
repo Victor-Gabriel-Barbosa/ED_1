@@ -1,104 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "utils.h"
 #include "cores.h"
 #include "fila_encadeada.h"
 #include "fila_estatica.h"
 
-int main() { 
+int main() {
+  limpaTela("Aperte " C_FMT(C_NEGRITO C_AZUL, "[ENTER]") " p/ iniciar...");
+  int i, j, t, qtd_f, qtd_p, qtd_t;
+  long int tempoEnc[3], tempoEst[3];
+  char *nomes_a[2];
+  FilaEst **filasEst;
+  FilaEnc **filasEnc;
+  Planeta temp, estrela; 
   srand(time(NULL));
-  cls();
-  // printArquivo("arte.txt", C_NEGRITO C_MAGENTA);
+  arqvPrint("arte.txt", C_NEGRITO C_MAGENTA);
   do { 
-    limpaTela("Aperte " C_FMT(C_NEGRITO C_AZUL, "[ENTER]") " p/ iniciar...");
+    nomes_a[0] = arqvNome("filaEnc_tempo.csv");
+    nomes_a[1] = arqvNome("filaEst_tempo.csv");
+    for (i = 0; i < 3; i++) { // Zera os contadores de tempo
+      tempoEnc[i] = 0;
+      tempoEst[i] = 0;
+    }
+    limpaTela("Aperte " C_FMT(C_NEGRITO C_AZUL, "[ENTER]") " p/ continuar...");
     printf(C_FMT(C_NEGRITO C_SUBLINHADO C_AZUL, "\n[INÍCIO]\n"));
-    clock_t inicio, fim, tempoEnc[3], tempoEst[3];
-    int i, j;
-    Planeta temp, estrela;
-    int qtd_f = escolheInt("Digite a " C_FMT(C_NEGRITO C_LARANJA, "quantidade de sistemas solares (2x)"), 1, 9);
-    int qtd_p = escolheInt("Digite a " C_FMT(C_NEGRITO C_LARANJA, "quantidade de planetas"), 1, 999999);
-    int qtd_t = escolheInt("Digite a " C_FMT(C_NEGRITO C_LARANJA, "quantidade de testes"), 1, 9);
-    for (int b = 0; b < qtd_t; b++) { // Faz os testes
-      FilaEnc *filasEnc[qtd_f];
-      FilaEst *filasEst[qtd_f];
-      for (i = 0; i < qtd_f; i++) { // Cria as filas encadeadas e estáticas
-        filasEnc[i] = filaCriaEnc();
+    qtd_f = escolheInt("Digite a " C_FMT(C_NEGRITO C_LARANJA, "quantidade de sistemas solares (2x)"), 1, 9);
+    qtd_p = escolheInt("Digite a " C_FMT(C_NEGRITO C_LARANJA, "quantidade de planetas"), 1, 999999);
+    qtd_t = escolheInt("Digite a " C_FMT(C_NEGRITO C_LARANJA, "quantidade de testes"), 1, 9);
+    for (t = 0; t < qtd_t; t++) { // Faz os testes
+      filasEst = verAlloc((FilaEst **) malloc(qtd_f * sizeof(FilaEst *)));
+      filasEnc = verAlloc((FilaEnc **) malloc(qtd_f * sizeof(FilaEnc *)));
+      for (i = 0; i < qtd_f; i++) { // Cria as filas estáticas e encadeadas
         filasEst[i] = filaCriaEst();
+        filasEnc[i] = filaCriaEnc();
       }
-      // limpaTela("Aperte " C_FMT(C_NEGRITO C_AZUL, "[ENTER]") " p/ continuar...");
-      printf(C_FMT(C_NEGRITO C_SUBLINHADO C_AZUL, "\n[FILAS - INSERIR]\n")); 
-      inicio = clock();
-      for (i = 0; i < qtd_f; i++) { // Percorre as filas encadeadas e estáticas
-        for (j = 0; j < qtd_p; j++) { // Insere todos os planetas
-          filasEnc[i] = filaInsereEnc(filasEnc[i], planetaAleatoriza(j + 1));
-        }
+      for (i = 0; i < qtd_f; i++) { // Insere planetas nas filas estáticas e encadeadas
+        tempoEst[0] += tempoInsereFilaEst(filasEst[i], qtd_p);
+        tempoEnc[0] += tempoInsereFilaEnc(filasEnc[i], qtd_p); 
       }
-      fim = clock(); 
-      tempoEnc[0] = (fim - inicio);
-      printf("\nTempo de execução " C_FMT(C_NEGRITO C_VERDE, "inserção (fila encadeada): %ld clocks\n"), tempoEnc[0]);
-      inicio = clock();
-      for (i = 0; i < qtd_f; i++) { // Percorre as filas encadeadas e estáticas
-        for (j = 0; j < qtd_p; j++) { // Insere todos os planetas
-          filasEst[i] = filaInsereEst(filasEst[i], planetaAleatoriza(j + 1));
-        }
+      for (i = 0; i < qtd_f; i++) { // Exibe os planetas das filas estáticas e encadeadas
+        tempoEst[1] += tempoExibeFilaEst(filasEst[i], qtd_p);
+        tempoEnc[1] += tempoExibeFilaEnc(filasEnc[i], qtd_p); 
       }
-      fim = clock();
-      tempoEst[0] = (fim - inicio);
+      for (i = 0; i < qtd_f; i++) { // Remove os planetas das filas estáticas e encadeadas
+        tempoEst[2] += tempoRemoveFilaEst(filasEst[i], qtd_p);
+        tempoEnc[2] += tempoRemoveFilaEnc(filasEnc[i], qtd_p); 
+      } 
       printf("\nTempo de execução " C_FMT(C_NEGRITO C_AZUL, "inserção (fila estática): %ld clocks\n"), tempoEst[0]);
-      // limpaTela("Aperte " C_FMT(C_NEGRITO C_AZUL, "[ENTER]") " p/ continuar...");
-      printf(C_FMT(C_NEGRITO C_SUBLINHADO C_AZUL, "\n[FILAS - EXIBIR]\n")); 
-      inicio = clock();
-      for (i = 0; i < qtd_f; i++) { // Exibe os planetas das filas encadeadas 
-        printf("\nFila %sencadeada %s(%d)%s[%d]%s: ", C_NEGRITO C_VERDE, C_MAGENTA, i + 1, C_LARANJA, filaTamanhoEnc(filasEnc[i]), C_RESET);
-        filaExibeEnc(filasEnc[i]);
-      } 
-      fim = clock();
-      tempoEnc[1] = (fim - inicio);
-      printf("\nTempo de execução " C_FMT(C_NEGRITO C_VERDE, "exibição (fila encadeada): %ld clocks\n"), tempoEnc[1]);
-      // limpaTela("Aperte " C_FMT(C_NEGRITO C_AZUL, "[ENTER]") " p/ continuar...");
-      printf(C_FMT(C_NEGRITO C_SUBLINHADO C_AZUL, "\n[FILAS - EXIBIR]\n")); 
-      inicio = clock();
-      for (i = 0; i < qtd_f; i++) { // Exibe os planetas das filas estáticas
-        printf("\nFila %sestática %s(%d)%s[%d]%s: ", C_NEGRITO C_AZUL, C_MAGENTA, i + 1, C_LARANJA, filaTamanhoEst(filasEst[i]), C_RESET);
-        filaExibeEst(filasEst[i]);
-      }
-      fim = clock();
-      tempoEst[1] = (fim - inicio);
-      printf("\nTempo de execução " C_FMT(C_NEGRITO C_AZUL, "exibição (fila estática): %ld clocks\n"), tempoEst[1]);
-      // limpaTela("Aperte " C_FMT(C_NEGRITO C_AZUL, "[ENTER]") " p/ continuar...");
-      printf(C_FMT(C_NEGRITO C_SUBLINHADO C_AZUL, "\n[BIG BANG!]\n")); 
-      inicio = clock();
-      for (i = 0; i < qtd_f; i++) { // Percorre o vetor de filas
-        filaConsultaEnc(filasEnc[i], &estrela);
-        for (j = 0; j < qtd_p; j++) { // Remove cada um dos elementos
-          filasEnc[i] = filaRemoveEnc(filasEnc[i], &temp);
-          estrela = planetaBigBang(temp, estrela);
-        }
-        printf(C_FMT(C_NEGRITO C_SUBLINHADO C_ROXO, "\n✯ Ganhador ✯\n"));
-        planetaExibe(estrela);
-      } 
-      fim = clock();
-      tempoEnc[2] = (fim - inicio);
-      printf("\nTempo de execução " C_FMT(C_NEGRITO C_VERDE, "remoção (fila encadeada): %ld clocks\n"), tempoEnc[2]);
-      inicio = clock();
-      for (i = 0; i < qtd_f; i++) { // Percorre as filas encadeadas e estáticas
-        filaConsultaEst(filasEst[i], &estrela);
-        for (j = 0; j < qtd_p; j++) { // Remove e colide cada um dos planetas
-          filasEst[i] = filaRemoveEst(filasEst[i], &temp);
-          estrela = planetaBigBang(temp, estrela);
-        }
-        printf(C_FMT(C_NEGRITO C_SUBLINHADO C_ROXO, "\n✯ Ganhador ✯\n"));
-        planetaExibe(estrela);
-      }
-      fim = clock();
-      tempoEst[2] = (fim - inicio);
+      printf("\nTempo de execução " C_FMT(C_NEGRITO C_VERDE, "inserção (fila encadeada): %ld clocks\n"), tempoEnc[0]); 
+      printf("\nTempo de execução " C_FMT(C_NEGRITO C_AZUL, "listagem (fila estática): %ld clocks\n"), tempoEst[1]);
+      printf("\nTempo de execução " C_FMT(C_NEGRITO C_VERDE, "listagem (fila encadeada): %ld clocks\n"), tempoEnc[1]); 
       printf("\nTempo de execução " C_FMT(C_NEGRITO C_AZUL, "remoção (fila estática): %ld clocks\n"), tempoEst[2]);
-      for (i = 0; i < qtd_f; i++) { // Percorre as filas encadeadas e estáticas
-        filaLiberaEnc(filasEnc[i]);
+      printf("\nTempo de execução " C_FMT(C_NEGRITO C_VERDE, "remoção (fila encadeada): %ld clocks\n"), tempoEnc[2]); 
+      if (simOuNao("salvar o tempo das listas encadeadas")) arqvSalvaTempo(nomes_a[0], t + 1, qtd_p, tempoEnc);
+      if (simOuNao("salvar o tempo das listas estáticas")) arqvSalvaTempo(nomes_a[1], t + 1, qtd_p, tempoEst);
+      for (i = 0; i < qtd_f; i++) { // Libera a memória alocada p/ as filas estáticas e encadeadas
         filaLiberaEst(filasEst[i]);
+        filaLiberaEnc(filasEnc[i]);
       }
-      arquivoSalva("filaEnc_t.csv", b + 1, qtd_p, tempoEnc);
-      arquivoSalva("filaEst_t.csv", b + 1, qtd_p, tempoEst);
+      free(filasEst);
+      free(filasEnc);
     }
   } while (simOuNao("testar novamente"));
   limpaTela("Aperte " C_FMT(C_NEGRITO C_VERMELHO, "[ENTER]") " p/ terminar...");

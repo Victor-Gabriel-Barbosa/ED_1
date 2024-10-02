@@ -28,12 +28,10 @@ int main() {
     F1 = filaInsere(F1, (rand() % 100));
     F2 = filaInsere(F2, (rand() % 100));
   }
-
   printf(C_FMT(C_MAGENTA, "FILA 1: "));
   filaExibe(F1);
   printf(C_FMT(C_VERDE, "FILA 2: "));
   filaExibe(F2);
-  
   F = filaInsereMaior(F1, F2);
   printf(C_FMT(C_CIANO, "FILA RESULTANTE: "));
   filaExibe(F);

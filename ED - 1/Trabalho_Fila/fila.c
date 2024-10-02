@@ -1,102 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <stdarg.h>
 #include "cores.h"
 #include "utils.h" 
 #include "fila_encadeada.h"
 #include "fila_estatica.h"
-
-typedef struct no { // Estrutura do nó da fila encadeada
-  Planeta plan;
-  struct no *prox;
-} No;
-
-typedef struct queueEnc { // Estrutura da fila encadeada
-  No *inicio;
-  No *fim;
-  int N;
-} FilaEnc;
- 
-/* Cria e inicializa a fila encadeada */
-FilaEnc *filaCriaEnc() {
-  FilaEnc *Ptf = (FilaEnc*) malloc(sizeof(FilaEnc));
-  if (Ptf != NULL) {
-    Ptf->inicio = NULL;
-    Ptf->fim = NULL;
-    Ptf->N = 0;
-  }
-  return Ptf;
-}
-
-/* Libera a memória alocada para uma fila encadeada */
-FilaEnc *filaLiberaEnc(FilaEnc *Ptf) {
-  if (Ptf == NULL) return Ptf;
-  No *temp = Ptf->inicio;
-  while (temp != NULL) {
-    No *proximo = temp->prox;
-    free(temp);
-    temp = proximo;
-  }
-  free(Ptf);
-  return NULL; 
-}
-
-/* Verifica se a fila encadeada está vazia */
-int filaVaziaEnc(FilaEnc *Ptf) {
-  return (Ptf->N == 0);
-}
-
-/* Insere um planeta na fila encadeada */
-FilaEnc *filaInsereEnc(FilaEnc *Ptf, Planeta plan) {
-  if (Ptf == NULL) return Ptf;
-  No *novo = (No*) malloc(sizeof(No));
-  if (novo == NULL) return Ptf; 
-  novo->plan = plan;
-  novo->prox = NULL;
-  if (filaVaziaEnc(Ptf)) Ptf->inicio = novo; 
-  else Ptf->fim->prox = novo; 
-  Ptf->fim = novo;
-  Ptf->N++;
-  return Ptf;
-} 
-
-/* Remove um planeta da fila encadeada */
-FilaEnc *filaRemoveEnc(FilaEnc *Ptf, Planeta *plan) {
-  if (Ptf == NULL || filaVaziaEnc(Ptf)) return Ptf;
-  No *temp = Ptf->inicio;
-  *plan = temp->plan;
-  Ptf->inicio = temp->prox;
-  if (Ptf->inicio == NULL) Ptf->fim = NULL;
-  free(temp);
-  Ptf->N--;
-  return Ptf;
-}
-
-/* Consulta o primeiro elemento da fila encadeada */
-int filaConsultaEnc(FilaEnc *Ptf, Planeta *plan) {
-  if (Ptf == NULL || filaVaziaEnc(Ptf)) return 0;
-  *plan = Ptf->inicio->plan;
-  return 1;
-}
-
-/* Exibe a fila encadeada */
-int filaExibeEnc(FilaEnc *Ptf) {
-  if (filaVaziaEnc(Ptf)) return 0;
-  No *temp = Ptf->inicio;
-  while (temp != NULL) {
-    planetaExibe(temp->plan);
-    temp = temp->prox;
-  }
-  printf("\n");
-  return 1;
-}
-
-/* Encontra o tamanho da fila encadeada */
-int filaTamanhoEnc(FilaEnc *Ptf) {
-  return Ptf->N;
-}
 
 typedef struct queueEst { // Estrutura p/ armazenar a fila estática
   Planeta fila[MAX];
@@ -173,6 +85,164 @@ int filaTamanhoEst(FilaEst *Ptf) {
   return Ptf->N;
 } 
 
+/* Marca o tempo p/ inserir planetas na fila estática */
+long int tempoInsereFilaEst(FilaEst *Ptf, const int qtd_p) {
+  int posi = 1;
+  long int inicio = clock();
+  for (int i = 0; i < qtd_p; i++) { // Insere todos os planetas
+    Ptf = filaInsereEst(Ptf, planetaAleatoriza(&posi));
+  }
+  long int fim = clock();
+  return (fim - inicio);
+}
+
+/* Marca o tempo p/ listar planetas da fila encadeada */
+long int tempoExibeFilaEst(FilaEst *Ptf, const int qtd_p) {
+  long int inicio = clock();
+  filaExibeEst(Ptf);
+  long int fim = clock();
+  return (fim - inicio);
+}
+
+/* Marca o tempo p/ remover planetas da fila encadeada */
+long int tempoRemoveFilaEst(FilaEst *Ptf, const int qtd_p) {
+  Planeta star, aux;
+  filaRemoveEst(Ptf, &star);
+  long int inicio = clock();
+  for (int i = 0; i < qtd_p; i++) { // Remove todos os planetas
+    Ptf = filaRemoveEst(Ptf, &aux);
+    star = planetaBigBang(star, aux);
+  }
+  long int fim = clock();
+  printf(C_AZUL "\n✶ Nova Super-Estrela! ✶\n" C_RESET);
+  planetaExibe(star);
+  return (fim - inicio);
+}
+
+typedef struct no { // Estrutura do nó da fila encadeada
+  Planeta plan;
+  struct no *prox;
+} No;
+
+typedef struct queueEnc { // Estrutura da fila encadeada
+  No *inicio;
+  No *fim;
+  int N;
+} FilaEnc;
+ 
+/* Cria e inicializa a fila encadeada */
+FilaEnc *filaCriaEnc() {
+  FilaEnc *Ptf = (FilaEnc*) malloc(sizeof(FilaEnc));
+  if (Ptf != NULL) {
+    Ptf->inicio = NULL;
+    Ptf->fim = NULL;
+    Ptf->N = 0;
+  }
+  return Ptf;
+}
+
+/* Libera a memória alocada p/ uma fila encadeada */
+FilaEnc *filaLiberaEnc(FilaEnc *Ptf) {
+  if (Ptf == NULL) return Ptf;
+  No *temp = Ptf->inicio;
+  while (temp != NULL) {
+    No *proximo = temp->prox;
+    free(temp);
+    temp = proximo;
+  }
+  free(Ptf);
+  return NULL; 
+}
+
+/* Verifica se a fila encadeada está vazia */
+int filaVaziaEnc(FilaEnc *Ptf) {
+  return (Ptf->N == 0);
+}
+
+/* Insere um planeta na fila encadeada */
+FilaEnc *filaInsereEnc(FilaEnc *Ptf, Planeta plan) {
+  if (Ptf == NULL) return Ptf;
+  No *novo = (No*) malloc(sizeof(No));
+  if (novo == NULL) return Ptf; 
+  novo->plan = plan;
+  novo->prox = NULL;
+  if (filaVaziaEnc(Ptf)) Ptf->inicio = novo; 
+  else Ptf->fim->prox = novo; 
+  Ptf->fim = novo;
+  Ptf->N++;
+  return Ptf;
+} 
+
+/* Remove um planeta da fila encadeada */
+FilaEnc *filaRemoveEnc(FilaEnc *Ptf, Planeta *plan) {
+  if (Ptf == NULL || filaVaziaEnc(Ptf)) return Ptf;
+  No *temp = Ptf->inicio;
+  *plan = temp->plan;
+  Ptf->inicio = temp->prox;
+  if (Ptf->inicio == NULL) Ptf->fim = NULL;
+  free(temp);
+  Ptf->N--;
+  return Ptf;
+}
+
+/* Consulta o primeiro elemento da fila encadeada */
+int filaConsultaEnc(FilaEnc *Ptf, Planeta *plan) {
+  if (Ptf == NULL || filaVaziaEnc(Ptf)) return 0;
+  *plan = Ptf->inicio->plan;
+  return 1;
+}
+
+/* Exibe a fila encadeada */
+int filaExibeEnc(FilaEnc *Ptf) {
+  if (filaVaziaEnc(Ptf)) return 0;
+  No *temp = Ptf->inicio;
+  while (temp != NULL) {
+    planetaExibe(temp->plan);
+    temp = temp->prox;
+  }
+  printf("\n");
+  return 1;
+}
+
+/* Encontra o tamanho da fila encadeada */
+int filaTamanhoEnc(FilaEnc *Ptf) {
+  return Ptf->N;
+}
+
+/* Marca o tempo p/ inserir planetas na fila encadeada */
+long int tempoInsereFilaEnc(FilaEnc *Ptf, const int qtd_p) {
+  int posi = 1;
+  long int inicio = clock();
+  for (int i = 0; i < qtd_p; i++) { // Insere todos os planetas
+    Ptf = filaInsereEnc(Ptf, planetaAleatoriza(&posi));
+  }
+  long int fim = clock();
+  return (fim - inicio);
+}
+
+/* Marca o tempo p/ listar planetas na fila encadeada */
+long int tempoExibeFilaEnc(FilaEnc *Ptf, const int qtd_p) {
+  long int inicio = clock();
+  filaExibeEnc(Ptf);
+  long int fim = clock();
+  return (fim - inicio);
+}
+
+/* Marca o tempo p/ remover planetas na fila encadeada */
+long int tempoRemoveFilaEnc(FilaEnc *Ptf, const int qtd_p) {
+  Planeta star, aux;
+  long int inicio = clock();
+  filaRemoveEnc(Ptf, &star);
+  for (int i = 0; i < qtd_p - 1; i++) { // Remove todos os planetas
+    Ptf = filaRemoveEnc(Ptf, &aux);
+    star = planetaBigBang(star, aux);
+  }
+  long int fim = clock();
+  printf(C_AZUL "\n✶ Nova Super-Estrela! ✶\n" C_RESET);
+  planetaExibe(star);
+  return (fim - inicio);
+}
+
 /* Limpa o buffer do teclado */
 void limpaBuffer() {
   char c;
@@ -221,6 +291,23 @@ int simOuNao(const char *msg) {
   } 
 }
 
+/* Analisa se a alocação foi bem-sucedida */
+void *verAlloc(void *pt) {
+  if (pt == NULL) {
+    printf(C_FMT_ERRO("\nErro ao alocar memória!\n"));
+    exit(1);
+  }
+  return pt;
+}
+
+/* Recria o print */
+void print(const char *texto, ...) {
+  va_list args;
+  va_start(args, texto);
+  vprintf(texto, args);  // Formatação com os argumentos variáveis
+  va_end(args);
+}
+
 /* Mostra um planeta */
 void planetaExibe(const Planeta plan) {
   printf(C_FMT(C_NEGRITO C_CIANO, "\n☽-------------------------☀----------------------☾\n"));
@@ -233,7 +320,7 @@ void planetaExibe(const Planeta plan) {
 }
 
 /* Aleatoriza as informações de um planeta */
-Planeta planetaAleatoriza(const int posi) {
+Planeta planetaAleatoriza(int *posi) {
   Planeta plan;
   int tam = rand() % (sizeof(plan.nome) / 2) + sizeof(plan.nome) / 4;
   for (int i = 0; i < tam; i++) { // Gera caracteres aleatórios entre 'a' e 'z'
@@ -242,8 +329,9 @@ Planeta planetaAleatoriza(const int posi) {
   plan.nome[tam] = '\0';
   plan.gravidade = rand() % 16 + 5;
   plan.massa = rand() % 16 + 5; 
-  plan.distancia_sol = posi;
-  return plan;
+  *posi += rand() % 16 + 1;
+  plan.distancia_sol = *posi;
+  return plan; 
 }
 
 /* Faz a colisão entre dois planetas */
@@ -267,12 +355,28 @@ Planeta planetaBigBang(Planeta plan1, Planeta plan2) {
   if (bigBang.distancia_sol < 0) bigBang.distancia_sol = 0;
   return bigBang;
 }
+
+/* Garante que o nome do arquivo é único e válido */
+char *arqvNome(const char *nome_a) {
+  char nome_b[256], EXT[10] = ".txt", *ext = strrchr(nome_a, '.');
+  int cont_a = 0;
+  if (ext != NULL) { // Verifica se o arquivo possui extensão
+    strncpy(nome_b, nome_a, ext - nome_a);
+    nome_b[ext - nome_a] = '\0';
+    snprintf(EXT, sizeof(EXT), "%s", ext);
+  } else strcpy(nome_b, nome_a);
+  char *nome_f = malloc(strlen(nome_b) + strlen(EXT) + 10);
+  do {
+    snprintf(nome_f, strlen(nome_b) + strlen(EXT) + 10, cont_a == 0 ? "%s%s" : "%s(%d)%s", nome_b, cont_a++, EXT);
+  } while (access(nome_f, F_OK) == 0);
+  return nome_f;
+}
  
 /* Exibe o conteúdo de um arquivo */
-int printArquivo(const char *nome_arqv, const char *cor) {
-  FILE *arquivo = fopen(nome_arqv, "r");
+int arqvPrint(const char *nome_a, const char *cor) {
+  FILE *arquivo = fopen(nome_a, "r");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
-    printf(C_FMT_ERRO("\n[Arquivo '%s' não encontrado!]: %s%s\n"), nome_arqv, strerror(errno), C_RESET);
+    printf(C_FMT_ERRO("\n[Arquivo '%s' não encontrado!]: %s%s\n"), nome_a, strerror(errno), C_RESET);
     return 0;
   }
   char *linha = NULL;
@@ -284,19 +388,19 @@ int printArquivo(const char *nome_arqv, const char *cor) {
   printf("%s", C_RESET);
   free(linha);
   fclose(arquivo);
-  return 1;
-}
+  return 1; 
+} 
 
 /* Salva o tempo de execução em um arquivo */
-int arquivoSalva(const char *nome_arqv, const int qtd_t, const int qtd, const clock_t *temp) {
-  FILE *arquivo = fopen(nome_arqv, "a");
+int arqvSalvaTempo(const char *nome_a, const int qtd_t, const int qtd, const long int *temp) {
+  FILE *arquivo = fopen(nome_a, "a");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
     printf(C_FMT_ERRO("\n[Erro ao abrir o arquivo!]: %s\n"), strerror(errno)); 
     return -1;
   }
   fseek(arquivo, 0, SEEK_END);
   if (ftell(arquivo) == 0) { // Se o arquivo estiver vazio, adiciona o cabeçalho
-    fprintf(arquivo, "NºBateria,Quantidade,Inserção,Listagem,Remoção\n");
+    fprintf(arquivo, "NºTeste,Quantidade,Inserção,Listagem,Remoção\n");
   }
   fprintf(arquivo, "%d,%d,%ld,%ld,%ld\n", qtd_t, qtd, temp[0], temp[1], temp[2]);
   fclose(arquivo);

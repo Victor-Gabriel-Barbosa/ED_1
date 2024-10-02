@@ -160,7 +160,6 @@ int pilhaTamanhoEst(PilhaEst *Ptf) {
   return Ptf->topo + 1; // Retorna o número de elementos
 }
 
-
 /* Limpa o buffer do teclado */
 void limpaBuffer() {
   char c;
@@ -231,17 +230,17 @@ void rpgExibe(const RPG rp) {
 }
 
 /* Aleatoriza as informações de um Jogador */
-Jogador playerAleatoriza() {
+Jogador jogadorAleatoriza() {
   Jogador pl;
-  pl.xp = rand() % 10000 + 1;
   int tam = rand() % (sizeof(pl.nome) / 2) + sizeof(pl.nome) / 4;
   for (int i = 0; i < tam; i++) { // Gera caracteres aleatórios entre 'a' e 'z'
     pl.nome[i] = (rand() % 26) + 'a'; 
   }
+  pl.nome[tam] = '\0';
   pl.lvl = rand() % 10 + 1;
   pl.def = rand() % 10 + 1;
   pl.hp = rand() % 100 + 1;
-  pl.tipAtq = rand() % 2;
+  pl.tipAtq = (rand() % 2 == 0) ? ATAQUE_FISICO : ATAQUE_MAGICO;
   if (pl.tipAtq == ATAQUE_FISICO) {
     pl.atq = rand() % 10 + 1; 
     pl.mp = 0;
@@ -256,8 +255,8 @@ Jogador playerAleatoriza() {
 RPG rpgAleatoriza(const int turno) {
   RPG rp;
   rp.turno = turno;
-  rp.p1 = playerAleatoriza();
-  rp.p2 = playerAleatoriza();
+  rp.p1 = jogadorAleatoriza();
+  rp.p2 = jogadorAleatoriza();
   return rp;
 }
 

@@ -25,10 +25,21 @@ FilaEst *filaRemoveEst(FilaEst *Ptf, Planeta *plan);
 /* Consulta um elemento da fila estática */
 int filaConsultaEst(FilaEst *Ptf, Planeta *plan);
 
-/* Exibe a fila estática */ 
+/* Exibe a fila estática */  
 int filaExibeEst(FilaEst *Ptf);
 
 /* Encontra o tamanho da fila estática */
 int filaTamanhoEst(FilaEst *Ptf);
+
+/* Marca o tempo para inserir planetas na fila estática */
+long int tempoInsereFilaEst(FilaEst *Ptf, const int qtd_p);
+
+/* Marca o tempo para remover planetas da fila encadeada */
+long int tempoRemoveFilaEst(FilaEst *Ptf, const int qtd_p);
+
+
+/* Marca o tempo para listar planetas da fila encadeada */
+long int tempoExibeFilaEst(FilaEst *Ptf, const int qtd_p);
+
 
 #endif 

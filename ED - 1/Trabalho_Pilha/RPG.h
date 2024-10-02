@@ -18,7 +18,7 @@ typedef struct jogosRPG {
 } RPG;
 
 /* Aleatoriza as informações de um jogador */
-Jogador playerAleatoriza();
+Jogador jogadorAleatoriza();
 
 /* Aleatoriza as informações de uma partida de RPG */
 RPG rpgAleatoriza(const int turno);
