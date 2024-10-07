@@ -3,7 +3,9 @@
 
 #include <stddef.h>
 
-// Estrutura para representar uma lista
+/**
+ * @brief Estrutura para representar uma lista
+ */
 typedef struct list *List;
  
 /** 
@@ -14,7 +16,7 @@ typedef struct list *List;
 List newList();
 
 /** 
- * Libera a memória alocada para a lista.
+ * @brief Libera a memória alocada para a lista.
  * 
  * @param Ptd Ponteiro para a lista a ser liberada.
  * @return Um ponteiro nulo após a liberação da lista.
@@ -22,14 +24,14 @@ List newList();
 List destroyList(List Ptd);
 
 /** 
- * Verifica se a lista está vazia.
+ * @brief Verifica se a lista está vazia.
  * 
  * @param Ptd Ponteiro para a lista.
  */
 int isEmptyList(List Ptd);
 
 /** 
- * Obtém o tamanho da lista.
+ * @brief Obtém o tamanho da lista.
  * 
  * @param Ptd Ponteiro para a lista.
  * @return O tamanho da lista.
@@ -37,7 +39,7 @@ int isEmptyList(List Ptd);
 size_t sizeList(List Ptd);
 
 /** 
- * Insere um novo elemento no início da lista.
+ * @brief Insere um novo elemento no início da lista.
  * 
  * @param Ptd Ponteiro para a lista.
  * @param info Os dados a serem inseridos na lista.
@@ -46,7 +48,7 @@ size_t sizeList(List Ptd);
 List insertAtBegin(List Ptd, const int info);
 
 /** 
- * Insere um novo elemento no fim da lista.
+ * @brief Insere um novo elemento no fim da lista.
  * 
  * @param Ptd Ponteiro para a lista.
  * @param info Os dados a serem inseridos na lista.
@@ -55,7 +57,7 @@ List insertAtBegin(List Ptd, const int info);
 List insertAtEnd(List Ptd, const int info);
 
 /** 
- * Remove um elemento da lista.
+ * @brief Remove um elemento da lista.
  * 
  * @param Ptd Ponteiro para a lista.
  * @param posi A posição do elemento a ser removido.
@@ -64,7 +66,7 @@ List insertAtEnd(List Ptd, const int info);
 List removeAt(List Ptd, const int pos);
 
 /** 
- * Busca por um elemento da lista.
+ * @brief Busca por um elemento da lista.
  * 
  * @param Ptd Ponteiro para a lista.
  * @param posi A posição do elemento a ser buscado.
@@ -74,11 +76,11 @@ List removeAt(List Ptd, const int pos);
 int searchAt(List Ptd, const int pos, int *info); 
 
 /** 
- * Imprime a lista.
+ * @brief Imprime a lista.
  * 
  * @param Ptd Ponteiro para a lista.
  * @return 1 se a impressão for bem-sucedida, 0 caso contrário.
  */
-int showList(List Ptd); 
+int printList(List Ptd); 
                                              
 #endif

@@ -3,74 +3,76 @@
 
 #include <stddef.h>
 
-// Estrutura para representar uma fila
+/**
+ * @brief Estrutura para representar uma fila
+ */
 typedef struct queue *Queue;
  
 /** 
- * Cria uma nova fila vazia. 
+ * @brief Cria uma nova fila vazia. 
  * 
  * @return Um ponteiro para uma nova fila.
  */
 Queue newQueue();
 
 /** 
- * Libera a memória alocada para a fila.
+ * @brief  Libera a memória alocada para a fila.
  * 
- * @param Queue Ponteiro para a fila a ser liberada.
+ * @param qeu Ponteiro para a fila a ser liberada.
  * @return Um ponteiro nulo após a liberação da fila.
  */
-Queue destroyQueue(Queue Queue);
+Queue destroyQueue(Queue qeu);
 
 /** 
- * Verifica se a fila está vazia.
+ * @brief Verifica se a fila está vazia.
  * 
- * @param Ptq Ponteiro para a fila.
+ * @param qeu Ponteiro para a fila.
  * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
-int isEmptyQueue(Queue Ptq);
+int isEmptyQueue(Queue qeu);
 
 /** 
- * Obtém o tamanho da fila.
+ * @brief Obtém o tamanho da fila.
  * 
- * @param Ptq Ponteiro para a fila.
+ * @param qeu Ponteiro para a fila.
  * @return O tamanho da fila.
  */
-size_t sizeQueue(Queue Ptq);
+size_t sizeQueue(Queue qeu);
 
 /** 
- * Insere um novo elemento no início da fila.
+ * @brief Insere um novo elemento no início da fila.
  * 
- * @param Ptq Ponteiro para a fila.
+ * @param qeu Ponteiro para a fila.
  * @param info Os dados a serem inseridos na fila.
  * @return Um ponteiro para a fila atualizada.
  */
-Queue enqueue(Queue Ptq, const int info);
+Queue enqueue(Queue qeu, const int info);
 
 /** 
- * Remove um elemento da fila.
+ * @brief Remove um elemento da fila.
  * 
- * @param Ptq Ponteiro para a fila.
+ * @param qeu Ponteiro para a fila.
  * @param info Ponteiro para um elemento da fila.
  * @return Um ponteiro para a fila atualizada.
  */
-Queue dequeue(Queue Ptq, int *info);
+Queue dequeue(Queue qeu, int *info);
 
 /** 
- * Busca por um elemento da fila.
+ * @brief Busca por um elemento da fila.
  * 
- * @param Ptq Ponteiro para a fila.
+ * @param qeu Ponteiro para a fila.
  * @param posi A posição do elemento a ser buscado.
  * @param info Ponteiro para armazenar os dados encontrados.
  * @return 1 se o elemento for encontrado, 0 caso contrário.
  */
-int peek(Queue Ptq, int *info); 
+int front(Queue qeu, int *info); 
 
 /** 
- * Imprime a fila.
+ * @brief Imprime a fila.
  * 
- * @param Ptq Ponteiro para a fila.
+ * @param qeu Ponteiro para a fila.
  * @return 1 se a impressão for bem-sucedida, 0 caso contrário.
  */
-int showQueue(Queue Ptq); 
+int printQueue(Queue qeu); 
                                              
 #endif
