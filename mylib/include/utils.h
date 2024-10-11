@@ -1,6 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#define foreach(item, array) \
+    for (size_t _i = 0, _length = sizeof(array) / sizeof((array)[0]); _i < _length && ((item) = (array)[_i], 1); ++_i)
+
 /** 
  * Simula o printf e aceita novos tipos.
  * 
@@ -50,8 +53,8 @@ int confirm(const char *msg);
  * @param nome_a O nome base do arquivo.
  * @return Um ponteiro para uma string com o nome do arquivo único.
  */
-char *FileName(const char *nome_a);
-
+char *fileName(const char *nome_a);
+ 
 /** 
  * Exibe o conteúdo de um arquivo.
  * 
@@ -59,7 +62,7 @@ char *FileName(const char *nome_a);
  * @param cor A cor a ser utilizada na exibição.
  * @return 1 se a impressão for bem-sucedida, 0 caso contrário.
  */
-int FilePrint(const char *nome, const char *cor);
+int filePrint(const char *nome, const char *cor);
 
 /** 
  * Analisa se a alocação foi bem-sucedida.

@@ -159,22 +159,7 @@ void printsf(const char *format, ...) {
           break;
         case 'S': { // String (tipo personalizado)
           String S = va_arg(args, String);
-          printString(S);
-          break;
-        }
-        case 'L': { // List (tipo personalizado)
-          List L = va_arg(args, List);
-          printList(L);
-          break;
-        }
-        case 'Q': { // Queue (tipo personalizado)
-          Queue Q = va_arg(args, Queue);
-          printQueue(Q);
-          break;
-        }
-        case 'K': { // Stack (tipo personalizado)
-          Stack S = va_arg(args, Stack);
-          printStack(S);
+          stringPrint(S); 
           break;
         }
         default:
@@ -197,7 +182,7 @@ void printsf(const char *format, ...) {
  * @param nome_a Nome do arquivo original.
  * @return Nome único e válido do arquivo.
  */
-char *FileName(const char *nome_a) {
+char *fileName(const char *nome_a) {
   char nome_b[256], EXT[10] = ".txt", *ext = strrchr(nome_a, '.');
   int cont_a = 0;
   if (ext != NULL) { // Verifica se o arquivo possui extensão
@@ -224,7 +209,7 @@ char *FileName(const char *nome_a) {
  * @param cor Cor a ser utilizada na exibição.
  * @return 1 se o arquivo foi exibido com sucesso, 0 caso contrário.
  */
-int FilePrint(const char *nome_a, const char *cor) {
+int filePrint(const char *nome_a, const char *cor) {
   FILE *arquivo = fopen(nome_a, "r");
   if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
     printf(C_FMT_ERROR("\n[Arquivo '%s' não encontrado!]: %s%s\n"), nome_a, strerror(errno), C_RESET);

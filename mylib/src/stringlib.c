@@ -2,20 +2,20 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <String.h>
+#include <stdbool.h>
 #include "stringlib.h"
-
+ 
 /**
- * @brief Estrutura da String (String).
+ * @brief Estrutura para representação de uma String dinâmica.
  * 
- * A String contém um ponteiro para os dados da String.
- * O tamanho atual da String.
- * A capacidade alocada para a String.
- * e um contador de elementos (`N`).
+ * Esta estrutura contém um ponteiro para os dados da string (`data`), 
+ * o tamanho atual da string (`size`), e a capacidade alocada 
+ * para armazenar os dados (`capacity`).
  */
 typedef struct string {
-  char *data; 
-  size_t size;
-  size_t capacity; 
+  char *data;      /**< Ponteiro para os dados da String. */
+  size_t size;     /**< Tamanho atual da String (número de caracteres armazenados). */
+  size_t capacity; /**< Capacidade total alocada para a String (inclui espaço extra). */
 } *String;
 
 /**
@@ -28,21 +28,21 @@ typedef struct string {
  *
  * @return A nova String criada.
  */
-String newString() {
-  String new = (String)malloc(sizeof(struct string));
-  if (new == NULL) {
+String stringNew() {
+  String newStr = (String)malloc(sizeof(struct string));
+  if (newStr == NULL) {
     perror("\nMemória insuficiente!\n");
     exit(1);
   }
-  new->size = 0;
-  new->capacity = 32;  
-  new->data = (char *)malloc((new->capacity + 1) * sizeof(char));
-  if (new->data == NULL) {
+  newStr->size = 0;
+  newStr->capacity = 32;  
+  newStr->data = (char *)malloc((newStr->capacity + 1) * sizeof(char));
+  if (newStr->data == NULL) {
     perror("\nMemória insuficiente!\n");
     exit(1);
   }
-  new->data[0] = '\0'; 
-  return new;
+  newStr->data[0] = '\0'; 
+  return newStr;
 }
 
 /**
@@ -55,21 +55,21 @@ String newString() {
  * @param str Ponteiro para a String existente.
  * @return A nova String inicializada.
  */
-String initString(const char *str) {
-  String new = (String)malloc(sizeof(struct string));
-  if (new == NULL) {
+String stringInit(const char *str) {
+  String newStr = (String)malloc(sizeof(struct string));
+  if (newStr == NULL) {
     perror("\nMemória insuficiente!\n");
     exit(1);
   }
-  new->size = strlen(str);
-  new->capacity = new->size + 1; 
-  new->data = (char *)malloc((new->capacity) * sizeof(char));
-  if (new->data == NULL) {
+  newStr->size = strlen(str);
+  newStr->capacity = newStr->size + 1; 
+  newStr->data = (char *)malloc((newStr->capacity) * sizeof(char));
+  if (newStr->data == NULL) {
     perror("\nMemória insuficiente\n");
     exit(1);
   }
-  strcpy(new->data, str);
-  return new;
+  strcpy(newStr->data, str);
+  return newStr;
 }
 
 /**
@@ -82,7 +82,7 @@ String initString(const char *str) {
  * @param str Ponteiro para a String a ser liberada.
  * @return 1 se a String não é vazia, 0 caso contrário.
  */
-int destroyString(String str) {
+int stringDestroy(String str) {
   if (str == NULL) return 0;
   free(str->data);
   str->data = NULL;
@@ -102,7 +102,7 @@ int destroyString(String str) {
  * @param str Ponteiro para a String.
  * @return O tamanho da String.
  */
-size_t sizeString(const String str) {
+size_t stringSize(const String str) {
   if (str == NULL) return 0;
   return str->size;
 }
@@ -119,15 +119,15 @@ size_t sizeString(const String str) {
  * @param new_capacity Nova capacidade da String.
  * @return 1 se a String não é vazia, 0 caso contrário.
  */
-int resizeString(String str, size_t new_capacity) {
+int stringResize(String str, size_t newCapacity) {
   if (str == NULL) return 0;
-  if (new_capacity > str->capacity) {
-    str->data = (char *)realloc(str->data, (new_capacity + 1) * sizeof(char));
+  if (newCapacity > str->capacity) {
+    str->data = (char *)realloc(str->data, (newCapacity + 1) * sizeof(char));
     if (str->data == NULL) {
       perror("\nMemória insuficiente\n");
       exit(1);
     } 
-    str->capacity = new_capacity;
+    str->capacity = newCapacity;
   }
   return 1;
 }
@@ -143,9 +143,9 @@ int resizeString(String str, size_t new_capacity) {
  * @param c Caractere a ser adicionado.
  * @return 1 se a String não é vazia, 0 caso contrário.
  */
-int addChar(String str, char c) {
+int stringAddChar(String str, char c) {
   if (str == NULL) return 0;
-  if (str->size + 1 >= str->capacity)resizeString(str, str->capacity * 2);
+  if (str->size + 1 >= str->capacity)stringResize(str, str->capacity * 2);
   str->data[str->size] = c;
   str->size++;
   str->data[str->size] = '\0'; 
@@ -163,7 +163,7 @@ int addChar(String str, char c) {
  * @param str2 Constante para a segunda String.
  * @return A String resultante da concatenação.
  */
-String appendStrings(const String str1, const String str2) {
+String stringAppend(const String str1, const String str2) {
   if (str1 == NULL || str2 == NULL) return NULL; 
   String append = (String)malloc(sizeof(struct string));
   if (append == NULL) {
@@ -193,7 +193,7 @@ String appendStrings(const String str1, const String str2) {
  * @param str2 Constante para a segunda String.
  * @return 1 se as strings forem iguais, 0 caso contrário.
  */
-int isStringEqual(const String str1, const String str2) {
+int stringIsEqual(const String str1, const String str2) {
   if (str1 == NULL || str2 == NULL) return 0; 
   return (strcmp(str1->data, str2->data) == 0);
 }
@@ -207,7 +207,7 @@ int isStringEqual(const String str1, const String str2) {
  *
  * @return A String lida.
  */
-String inputString() {
+String stringInput() {
   String input = (String)malloc(sizeof(struct string));
   if (input == NULL) {
     perror("\nMemória insuficiente!\n");
@@ -238,7 +238,7 @@ String inputString() {
  * @param b Caractere que irá substituir.
  * @return O número de substituições realizadas.
  */
-size_t replaceChar(String str, const char a, const char b) {
+size_t stringReplace(String str, const char a, const char b) {
   size_t cont = 0;
   for (size_t i = 0; i < str->size; i++) {
     if (str->data[i] == a) { 
@@ -261,7 +261,7 @@ size_t replaceChar(String str, const char a, const char b) {
  * @param substr Ponteiro para a substring a ser encontrada.
  * @return O índice da substring, ou -1 se não encontrada.
  */
-int indexOfSubstring(const String str, const char *substr) {
+int stringIndex(const String str, const char *substr) {
   if (str == NULL || substr == NULL) return -1;
   char *pos = strstr(str->data, substr);
   return pos ? (int)(pos - str->data) : -1; 
@@ -277,12 +277,10 @@ int indexOfSubstring(const String str, const char *substr) {
  * @param str A String a ser invertida.
  * @return A String invertida.
  */
-String reverseString(const String str) {
+String stringReverse(const String str) {
   if (str == NULL || str->size == 0 || str->data == NULL) return str;
-  String reverse = newString(); 
-  for (size_t i = 0; i < str->size; i++) {
-    addChar(reverse, str->data[str->size - 1 - i]);
-  }
+  String reverse = stringNew(); 
+  for (size_t i = 0; i < str->size; i++) stringAddChar(reverse, str->data[str->size - 1 - i]);
   return reverse; 
 }
 
@@ -297,7 +295,7 @@ String reverseString(const String str) {
  * @param dlm Delimitador utilizado na divisão.
  * @return Um vetor de strings resultantes da divisão.
  */
-String *splitString(const String str, const char *dlm) {
+String *stringSplit(const String str, const char *dlm) {
   if (str == NULL || str->data == NULL || dlm == NULL) return NULL;
   char *temp = strdup(str->data);
   if (temp == NULL) {
@@ -319,13 +317,24 @@ String *splitString(const String str, const char *dlm) {
   rest = temp; 
   size_t i = 0;
   while ((token = strtok(rest, dlm))) {
-    split[i] = initString(token); 
+    split[i] = stringInit(token); 
     i++;
     rest = NULL; 
   }
   split[i] = NULL;
   free(temp); 
   return split; 
+}
+
+/**
+ * @brief Pega o conteúdo de uma String
+ * 
+ * @param str Ponteiro para a String.
+ * @return Conteúdo da String.
+ */
+const char *stringGet(const String str) {
+  if (str == NULL) return NULL;
+  return str->data;
 }
 
 /**
@@ -339,13 +348,13 @@ String *splitString(const String str, const char *dlm) {
  * @param pos Posição do caractere a ser localizado.
  * @return Ponteiro para o caractere localizado, ou NULL se não encontrado.
  */
-char *getCharAt(const String str, size_t pos) {
+char *stringGetChar(const String str, size_t pos) {
   if (str == NULL || pos >= str->size) return NULL;
   return (pos < str->size) ? &str->data[pos] : NULL; 
 }
 
 /**
- * @brief Simula o snprintsf usando o tipo String.
+ * @brief Simula o snprintf usando o tipo String.
  *
  * Essa função formata uma String com base em um modelo especificado e
  * armazena o resultado em uma String de destino. É útil para
@@ -354,7 +363,7 @@ char *getCharAt(const String str, size_t pos) {
  * @param dest Ponteiro para a String de destino.
  * @param format Formato da String.
  */
-int snprintsf(String dest, const char *format, ...) {
+int stringSnprintf(String dest, const char *format, ...) {
   if (dest == NULL) return 0;
   va_list args;
   va_start(args, format);
@@ -376,24 +385,50 @@ int snprintsf(String dest, const char *format, ...) {
   return 1;
 }
 
-/**
- * @brief Pega o conteúdo de uma String
- * 
- * @param str Ponteiro para a String.
- * @return Conteúdo da String.
- */
-const char *getString(const String str) {
-  if (str == NULL) return NULL;
-  return str->data;
-}
-
 /** 
 * @brief Simula o printf usando o tipo String.
+*
 * @param str Ponteiro para a String.
 * @return 1 se a String não é vazia, 0 caso contrário.
 */
-int printString(String str) {
+int stringPrint(String str) {
   if (str == NULL) return 0;
   printf("%s", str->data);
   return 1;
+}
+
+/**
+ * @brief Transforma um dado qualquer em uma String.
+ *  
+ * @param data Ponteiro genérico para o dado que será transformado.
+ * @param sizeTip Tamanho da variável que será transformado.
+ * @return Uma nova instância da estrutura String contendo o conteúdo transformado.
+ */
+String toString(void *data, size_t sizeTip) {
+  String str = stringNew();
+  if (str == NULL) return NULL;
+  size_t initialCapacity = 64;
+  if (!stringResize(str, initialCapacity)) return NULL;
+  const char *format = NULL;
+  if (sizeTip == sizeof(int)) format = "%d";
+  else if (sizeTip == sizeof(float)) format = "%f";
+  else if (sizeTip == sizeof(double)) format = "%lf";
+  else if (sizeTip == sizeof(char)) format = "%c";
+  else if (sizeTip == sizeof(bool)) format = (*(bool *)data) ? "true" : "false";
+  else if (sizeTip == sizeof(String)) format = "%s";
+  if (format != NULL) {
+    if (sizeTip == sizeof(String)) str = *(String *)data;
+    else str->size = snprintf(str->data, str->capacity, format, *(int *)data); 
+  } else {
+    str->size = sizeTip;
+    if (!stringResize(str, sizeTip + 1)) return NULL;
+    memcpy(str->data, data, sizeTip);
+    str->data[sizeTip] = '\0';
+  }
+  if (str->size >= str->capacity) {
+    if (!stringResize(str, str->size + 1)) return NULL;   
+    if (sizeTip == sizeof(String)) str = *(String *)data;
+    else snprintf(str->data, str->capacity, format, *(int *)data);  
+  }
+  return str;
 }

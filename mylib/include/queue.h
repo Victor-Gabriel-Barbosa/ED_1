@@ -13,7 +13,7 @@ typedef struct queue *Queue;
  * 
  * @return Um ponteiro para uma nova fila.
  */
-Queue newQueue();
+Queue queueNew(size_t sizeTip);
 
 /** 
  * @brief  Libera a memória alocada para a fila.
@@ -21,7 +21,7 @@ Queue newQueue();
  * @param qeu Ponteiro para a fila a ser liberada.
  * @return Um ponteiro nulo após a liberação da fila.
  */
-Queue destroyQueue(Queue qeu);
+Queue queueDestroy(Queue qeu);
 
 /** 
  * @brief Verifica se a fila está vazia.
@@ -29,7 +29,7 @@ Queue destroyQueue(Queue qeu);
  * @param qeu Ponteiro para a fila.
  * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
-int isEmptyQueue(Queue qeu);
+int queueIsEmpty(Queue qeu);
 
 /** 
  * @brief Obtém o tamanho da fila.
@@ -37,7 +37,7 @@ int isEmptyQueue(Queue qeu);
  * @param qeu Ponteiro para a fila.
  * @return O tamanho da fila.
  */
-size_t sizeQueue(Queue qeu);
+size_t queueSize(Queue qeu);
 
 /** 
  * @brief Insere um novo elemento no início da fila.
@@ -46,7 +46,7 @@ size_t sizeQueue(Queue qeu);
  * @param info Os dados a serem inseridos na fila.
  * @return Um ponteiro para a fila atualizada.
  */
-Queue enqueue(Queue qeu, const int info);
+Queue queueEnqueue(Queue qeu, const void *info);
 
 /** 
  * @brief Remove um elemento da fila.
@@ -55,7 +55,7 @@ Queue enqueue(Queue qeu, const int info);
  * @param info Ponteiro para um elemento da fila.
  * @return Um ponteiro para a fila atualizada.
  */
-Queue dequeue(Queue qeu, int *info);
+Queue queueDequeue(Queue qeu, void *info);
 
 /** 
  * @brief Busca por um elemento da fila.
@@ -65,14 +65,6 @@ Queue dequeue(Queue qeu, int *info);
  * @param info Ponteiro para armazenar os dados encontrados.
  * @return 1 se o elemento for encontrado, 0 caso contrário.
  */
-int front(Queue qeu, int *info); 
-
-/** 
- * @brief Imprime a fila.
- * 
- * @param qeu Ponteiro para a fila.
- * @return 1 se a impressão for bem-sucedida, 0 caso contrário.
- */
-int printQueue(Queue qeu); 
+int queueFront(Queue qeu, void *info); 
                                              
 #endif
