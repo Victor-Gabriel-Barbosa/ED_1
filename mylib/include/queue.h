@@ -1,19 +1,43 @@
+/**
+ * @file queue.h
+ * @brief Implementação de uma Fila Genérica em C.
+ * 
+ * Este arquivo contém a implementação de uma fila genérica que permite armazenar elementos de qualquer tipo.
+ * A fila segue o modelo FIFO (First In, First Out), onde o primeiro elemento inserido é o primeiro a ser removido.
+ * 
+ * Funções disponíveis:
+ * - `queueNew`: Cria uma nova fila.
+ * - `queueDestroy`: Destrói a fila, liberando a memória alocada.
+ * - `queueIsEmpty`: Verifica se a fila está vazia.
+ * - `queueSize`: Retorna o número de elementos na fila.
+ * - `queueEnqueue`: Adiciona um novo elemento ao final da fila.
+ * - `queueDequeue`: Remove um elemento do início da fila.
+ * - `queueFront`: Consulta o elemento na frente da fila sem removê-lo.
+ * - `queuePrint`: Printa todos os elementos da fila.
+ * 
+ * Esta implementação permite armazenar dados de qualquer tipo, desde que seja informado o tamanho do tipo (via `sizeof(tipo)`)
+ * no momento da criação da fila. As operações de enfileirar, desenfileirar e consultar a fila são suportadas.
+ * 
+ * @note A fila é uma estrutura dinâmica, e todas as operações que envolvem adição ou remoção de elementos ajustam a memória
+ * conforme necessário.
+ * 
+ * @author Victor Gabriel Barbosa
+ * @date 12/10/2024
+ * @version 1.0
+ */
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <stddef.h>
-
-/**
- * @brief Estrutura para representar uma fila
- */
-typedef struct queue *Queue;
+#include <typeslib.h>
  
 /** 
  * @brief Cria uma nova fila vazia. 
  * 
+ * @param type O tipo dos dados serão armazenado na fila. 
+ * @param sizeType O tamanho dos dados serão armazenado na fila. 
  * @return Um ponteiro para uma nova fila.
  */
-Queue queueNew(size_t sizeTip);
+Queue queueNew(DataType type, size_t sizeType);
 
 /** 
  * @brief  Libera a memória alocada para a fila.
@@ -58,7 +82,7 @@ Queue queueEnqueue(Queue qeu, const void *info);
 Queue queueDequeue(Queue qeu, void *info);
 
 /** 
- * @brief Busca por um elemento da fila.
+ * @brief Busca por um elemento da fila.b
  * 
  * @param qeu Ponteiro para a fila.
  * @param posi A posição do elemento a ser buscado.
@@ -66,5 +90,13 @@ Queue queueDequeue(Queue qeu, void *info);
  * @return 1 se o elemento for encontrado, 0 caso contrário.
  */
 int queueFront(Queue qeu, void *info); 
+
+/** 
+* @brief Printa todos os elementos de uma fila.
+*
+* @param qeu Ponteiro para a fila.
+* @return 1 se a fila não é vazia, 0 caso contrário.
+*/
+int queuePrint(Queue qeu);
                                              
 #endif

@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <string.h>
-#include "c_plus.h"
+#include <c_plus.h>
 
 /**
  * @brief Captura exceções e exibe uma mensagem de erro.
@@ -144,9 +144,9 @@ void printsf(const char *format, ...) {
   while (*format) {
     if (*format == '%') {
       format++; 
-      switch (*format) {
+      switch (*format) { 
         case 'd': // Int
-          printf("%d", va_arg(args, int));
+          printf("%d", va_arg(args, int)); 
           break;
         case 'f': // Float
           printf("%f", va_arg(args, double));
@@ -154,22 +154,54 @@ void printsf(const char *format, ...) {
         case 'c': // Char
           putchar(va_arg(args, int)); // Char é promovido a int
           break;
-        case 's': // String (char*)
+        case 's': // string (char*)
           printf("%s", va_arg(args, char*));
           break;
-        case 'S': { // String (tipo personalizado)
-          String S = va_arg(args, String);
+        case 'S': { // string (tipo personalizado)
+          string S = va_arg(args, string);
           stringPrint(S); 
           break;
         }
-        default:
-          putchar('%');
+        case 'L': { // List (tipo personalizado)
+          List L = va_arg(args, List);
+          listPrint(L);
+          break;
+        }
+        case 'Q': { // Queue (tipo personalizado)
+          Queue Q = va_arg(args, Queue);
+          queuePrint(Q);
+          break;
+        }
+        case 'K': { // Stack (tipo personalizado)
+          Stack K = va_arg(args, Stack);
+          stackPrint(K);
+          break;
+        }
+        default: 
+          putchar('%'); 
           putchar(*format);
       }
     } else putchar(*format);
     format++;
   }
   va_end(args);
+}
+
+/**
+ * @brief Exibe uma mensagem formatada e obtém a entrada do usuário.
+ *
+ * A função imprime uma mensagem formatada e retorna a entrada como uma `string`.
+ *
+ * @param format string de formato para a mensagem.
+ * @param ... Argumentos para a formatação da mensagem.
+ * @return string contendo a entrada do usuário.
+ */
+string input(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  vprintf(format, args);
+  va_end(args);
+  return stringInput();
 }
 
 /**

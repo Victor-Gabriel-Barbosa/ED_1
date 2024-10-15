@@ -1,20 +1,50 @@
+/**
+ * @file list.h
+ * @brief Implementação de uma Lista Duplamente Encadeada Genérica em C.
+ * 
+ * Este arquivo contém a implementação de uma lista duplamente encadeada genérica, que permite armazenar elementos de qualquer tipo.
+ * A lista é composta por nós que armazenam um valor `info` (que pode ser de qualquer tipo) e ponteiros para os nós anterior e próximo.
+ * Além disso, a lista contém ponteiros para o primeiro e o último nó, assim como o tamanho atual da lista e o tamanho do tipo dos elementos armazenados.
+ * 
+ * Funções disponíveis:
+ * - `listNew`: Cria uma nova lista.
+ * - `listDestroy`: Destrói uma lista, liberando toda a memória alocada.
+ * - `listIsEmpty`: Verifica se a lista está vazia.
+ * - `listSize`: Retorna o número de elementos na lista.
+ * - `listAddIni`: Insere um novo elemento no início da lista.
+ * - `listAddEnd`: Insere um novo elemento no final da lista.
+ * - `listRemove`: Remove um elemento da lista em uma posição específica.
+ * - `listSearch`: Busca um elemento na lista em uma posição específica.
+ * - `listIndex`: Busca o índice de um elemento na lista.
+ * - `listSort`: Ordena a lista usando o algoritmo Merge Sort.
+ * - `listMerge`: Mescla duas listas ordenadas em uma nova lista.
+ * - `listGet`: Obtém o valor de um elemento em uma posição específica.
+ * - `listPrint`: Printa todos os elementos da lista.
+ * 
+ * Esta implementação é flexível, permitindo que qualquer tipo de dado seja armazenado, desde que seja informado o tamanho do tipo 
+ * (usualmente com `sizeof(tipo)`) no momento da criação da lista. Ela também oferece funções para manipular a lista, 
+ * incluindo inserção, remoção, busca, ordenação e fusão de listas.
+ * 
+ * @note Esta lista é duplamente encadeada, o que significa que cada nó mantém um ponteiro tanto para o próximo quanto para o nó anterior. 
+ * Isso permite uma navegação eficiente em ambas as direções, além de simplificar algumas operações como remoção.
+ * 
+ * @author Victor Gabriel Barbosa
+ * @date 12/10/2024
+ * @version 1.0
+ */
 #ifndef LIST_H
 #define LIST_H
 
-#include <stddef.h>
-
-/**
- * @brief Estrutura para representar uma lista
- */
-typedef struct list *List;
+#include <typeslib.h>
  
 /** 
  * Cria uma nova lista vazia. 
  * 
- * @param sizeTip Tamanho do tipo da variável a ser armazenada.
+ * @param type O tipo do dado que será armazenado na lista. 
+ * @param sizeType Tamanho do tipo da variável a ser armazenada.
  * @return Um ponteiro para uma nova lista.
  */
-List listNew(size_t sizeTip);
+List listNew(DataType type);
 
 /** 
  * @brief Libera a memória alocada para a lista.
@@ -61,7 +91,7 @@ List listAddEnd(List lst, const void *info);
  * @brief Remove um elemento da lista.
  * 
  * @param lst Ponteiro para a lista.
- * @param posi A posição do elemento a ser removido.
+ * @param pos A posição do elemento a ser removido.
  * @return Um ponteiro para a lista atualizada.
  */
 List listRemove(List lst, const int pos);
@@ -98,9 +128,9 @@ int listIndex(List lst, void *info);
  * @brief Ordena uma lista usando o Merge Sort.
  * 
  * @param lst Ponteiro para a lista.
- * @return 1 se a lista foi ordenada com sucesso, 0 se houver erro.
+ * @return A lista ordenada.
  */
-int listSort(List lst);
+List listSort(List lst);
 
 /**
  * @brief Mescla duas listas ordenadas em uma nova lista.

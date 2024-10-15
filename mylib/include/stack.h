@@ -1,26 +1,49 @@
+/**
+ * @file stack.h
+ * @brief Implementação de uma Pilha Genérica em C.
+ * 
+ * Este arquivo contém a implementação de uma pilha genérica que permite armazenar elementos de qualquer tipo.
+ * A pilha é estruturada de forma que os elementos sejam empilhados e desempilhados no modo LIFO (Last In, First Out).
+ * 
+ * Funções disponíveis:
+ * - `stackNew`: Cria uma nova pilha.
+ * - `stackDestroy`: Destrói a pilha, liberando toda a memória alocada.
+ * - `stackIsEmpty`: Verifica se a pilha está vazia.
+ * - `stackSize`: Retorna o número de elementos na pilha.
+ * - `stackPush`: Empilha um novo elemento no topo da pilha.
+ * - `stackPop`: Remove o elemento no topo da pilha.
+ * - `stackTop`: Consulta o elemento no topo da pilha sem removê-lo.
+ * - `stackPrint`: Printa todos os elementos da pilha.
+ * 
+ * Esta implementação permite armazenar dados de qualquer tipo, desde que seja informado o tamanho do tipo (via `sizeof(tipo)`)
+ * no momento da criação da pilha. As operações suportadas incluem empilhar, desempilhar, consultar o topo e verificar o tamanho.
+ * 
+ * @note A pilha é uma estrutura dinâmica, e todas as operações que envolvem adição ou remoção de elementos ajustam a memória
+ * conforme necessário.
+ * 
+ * @author Victor Gabriel Barbosa
+ * @date 12/10/2024
+ * @version 1.0
+ */
 #ifndef STACK_H
 #define STACK_H 
 
-#include <stddef.h>
-
-/**
- * @brief Estrutura para representar uma pilha
- */
-typedef struct stack *Stack;
+#include <typeslib.h>
 
 /**
  * @brief Cria uma nova pilha ou retorna a pilha existente.
  * 
- * @param sizeTip O tamanho do tipo de dado que será armazenado na pilha. 
+ * @param type O tipo de dados que serão armazenados na pilha.
+ * @param sizeType O tamanho do tipo de dados que serão armazenados na pilha. 
  * @return Stack Retorna um ponteiro para a nova pilha.
  */
-Stack stackNew(size_t sizeTip);
+Stack stackNew(DataType type, size_t sizeType);
 
 /**
- * @brief Destroi a pilha, liberando a memória alocada.
+ * @brief Destrói a pilha, liberando a memória alocada.
  * 
  * @param stk Ponteiro para a pilha que será destruída.
- * @param sizeTip O tamanho do tipo de dado que será armazenado na pilha. 
+ * @param sizeType O tamanho do tipo de dado que será armazenado na pilha. 
  * @return Stack Retorna NULL para indicar que a pilha foi destruída.
  */
 Stack stackDestroy(Stack stk);
@@ -67,5 +90,13 @@ Stack stackPop(Stack stk, void *info);
  * @return int Retorna 1 se a operação foi bem-sucedida, ou 0 se a pilha estiver vazia.
  */
 int stackTop(Stack stk, void *info);
+
+/** 
+* @brief Printa todos os elementos de uma pilha.
+*
+* @param qeu Ponteiro para a pilha.
+* @return 1 se a pilha não é vazia, 0 caso contrário.
+*/
+int stackPrint(Stack stk);
  
 #endif

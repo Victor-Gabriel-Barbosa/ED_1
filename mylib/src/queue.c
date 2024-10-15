@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "queue.h"
+#include <queue.h>
+#include <stringlib.h>
 
 /**
  * @brief Estrutura do nó da fila.
@@ -11,6 +12,7 @@
  */
 typedef struct nodeQ { 
   void *info;
+  DataType type;
   struct nodeQ *prox;
 } NodeQ;
  
@@ -24,7 +26,8 @@ typedef struct queue {
   NodeQ *head;
   NodeQ *tail;
   int N;
-  size_t sizeTip; 
+  DataType type;
+  size_t sizeType; 
 } *Queue;
 
 /**
@@ -33,17 +36,18 @@ typedef struct queue {
  * Aloca memória para uma nova fila, inicializando os ponteiros de início e fim como `NULL`
  * e o contador de elementos como zero.
  * 
- * @param sizeTip O tamanho do tipo de dado que será armazenado na fila. 
+ * @param type O tipo dos dados serão armazenado na fila. 
+ * @param sizeType O tamanho dos dados serão armazenado na fila. 
  * @return Queue Um ponteiro para a nova fila criada.
  */
-Queue queueNew(size_t sizeTip) {
+Queue queueNew(DataType type, size_t sizeType) {
   Queue qeu = (Queue)malloc(sizeof(struct queue));
-  if (qeu != NULL) {
-    qeu->head = NULL;
-    qeu->tail = NULL;
-    qeu->N = 0;
-    qeu->sizeTip = sizeTip;
-  }
+  if (qeu == NULL) return qeu;
+  qeu->head = NULL;
+  qeu->tail = NULL;
+  qeu->N = 0;
+  qeu->type = type;
+  qeu->sizeType = sizeType;
   return qeu;
 }
 
@@ -85,8 +89,7 @@ int queueIsEmpty(Queue qeu) {
  * @return size_t O número de elementos na fila.
  */
 size_t queueSize(Queue qeu) {
-  if (qeu == NULL) return 0;
-  return qeu->N;
+  return (qeu == NULL) ? 0 : qeu->N;
 }
 
 /**
@@ -102,12 +105,12 @@ Queue queueEnqueue(Queue qeu, const void *info) {
   if (qeu == NULL) return qeu;
   NodeQ *newNode = (NodeQ*) malloc(sizeof(NodeQ));
   if (newNode == NULL) return qeu; 
-  newNode->info = malloc(qeu->sizeTip);
+  newNode->info = malloc(qeu->sizeType);
   if (newNode->info == NULL) { 
     free(newNode); 
     return qeu;
   }
-  memcpy(newNode->info, info, qeu->sizeTip);
+  memcpy(newNode->info, info, qeu->sizeType);
   newNode->prox = NULL;
   if (queueIsEmpty(qeu)) qeu->head = newNode; 
   else qeu->tail->prox = newNode; 
@@ -126,9 +129,9 @@ Queue queueEnqueue(Queue qeu, const void *info) {
  * @return Queue Retorna a fila após a remoção.
  */
 Queue queueDequeue(Queue qeu, void *info) {
-  if (qeu == NULL || queueIsEmpty(qeu)) return qeu;
+  if (queueIsEmpty(qeu)) return qeu;
   NodeQ *temp = qeu->head;
-  memcpy(info, temp->info, qeu->sizeTip);
+  memcpy(info, temp->info, qeu->sizeType);
   qeu->head = temp->prox;
   if (qeu->head == NULL) qeu->tail = NULL;
   free(temp);
@@ -146,7 +149,24 @@ Queue queueDequeue(Queue qeu, void *info) {
  * @return int Retorna 1 se o valor foi obtido com sucesso, ou 0 se a fila estiver vazia.
  */
 int queueFront(Queue qeu, void *info) {
-  if (qeu == NULL || queueIsEmpty(qeu)) return 0;
-  memcpy(info, qeu->head->info, qeu->sizeTip);
+  if (queueIsEmpty(qeu)) return 0;
+  memcpy(info, qeu->head->info, qeu->sizeType);
   return 1;
-} 
+}
+
+/** 
+* @brief Printa todos os elementos de uma fila.
+*
+* @param qeu Ponteiro para a fila.
+* @return 1 se a fila não é vazia, 0 caso contrário.
+*/
+int queuePrint(Queue qeu) {
+  if (queueIsEmpty(qeu)) return 0;
+  NodeQ *aux = qeu->head;
+  while (aux != NULL) {
+    stringPrint(toString(aux->info, qeu->type, qeu->sizeType));
+    printf(" ");
+    aux = aux->prox;
+  }
+  return 1;
+}  
