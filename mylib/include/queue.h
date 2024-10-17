@@ -1,5 +1,5 @@
 /**
- * @file queue.h
+ * @file Queue.h
  * @brief Implementação de uma Fila Genérica em C.
  * 
  * Este arquivo contém a implementação de uma fila genérica que permite armazenar elementos de qualquer tipo.
@@ -33,11 +33,9 @@
 /** 
  * @brief Cria uma nova fila vazia. 
  * 
- * @param type O tipo dos dados serão armazenado na fila. 
- * @param sizeType O tamanho dos dados serão armazenado na fila. 
  * @return Um ponteiro para uma nova fila.
  */
-Queue queueNew(DataType type, size_t sizeType);
+Queue queueNew();
 
 /** 
  * @brief  Libera a memória alocada para a fila.
@@ -70,7 +68,7 @@ size_t queueSize(Queue qeu);
  * @param info Os dados a serem inseridos na fila.
  * @return Um ponteiro para a fila atualizada.
  */
-Queue queueEnqueue(Queue qeu, const void *info);
+Queue queueEnqueue(Queue qeu, Auto info);
 
 /** 
  * @brief Remove um elemento da fila.
@@ -79,7 +77,7 @@ Queue queueEnqueue(Queue qeu, const void *info);
  * @param info Ponteiro para um elemento da fila.
  * @return Um ponteiro para a fila atualizada.
  */
-Queue queueDequeue(Queue qeu, void *info);
+Queue queueDequeue(Queue qeu, Auto *info);
 
 /** 
  * @brief Busca por um elemento da fila.b
@@ -89,7 +87,7 @@ Queue queueDequeue(Queue qeu, void *info);
  * @param info Ponteiro para armazenar os dados encontrados.
  * @return 1 se o elemento for encontrado, 0 caso contrário.
  */
-int queueFront(Queue qeu, void *info); 
+int queueFront(Queue qeu, Auto *info); 
 
 /** 
 * @brief Printa todos os elementos de uma fila.

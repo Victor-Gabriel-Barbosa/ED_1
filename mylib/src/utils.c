@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <string.h>
-#include <c_plus.h>
+#include <cplus.h>
 
 /**
  * @brief Captura exceções e exibe uma mensagem de erro.
@@ -136,7 +136,7 @@ void *verAlloc(void *pt) {
  * para tipos personalizados. Pode ser usada para gerar saídas formatadas
  * de maneira flexível.
  *
- * @param format Formato da string.
+ * @param format Formato da String.
  */
 void printsf(const char *format, ...) {
   va_list args;
@@ -157,8 +157,8 @@ void printsf(const char *format, ...) {
         case 's': // string (char*)
           printf("%s", va_arg(args, char*));
           break;
-        case 'S': { // string (tipo personalizado)
-          string S = va_arg(args, string);
+        case 'S': { // String (tipo personalizado)
+          String S = va_arg(args, String);
           stringPrint(S); 
           break;
         }
@@ -190,13 +190,13 @@ void printsf(const char *format, ...) {
 /**
  * @brief Exibe uma mensagem formatada e obtém a entrada do usuário.
  *
- * A função imprime uma mensagem formatada e retorna a entrada como uma `string`.
+ * A função imprime uma mensagem formatada e retorna a entrada como uma `String`.
  *
- * @param format string de formato para a mensagem.
+ * @param format String de formato para a mensagem.
  * @param ... Argumentos para a formatação da mensagem.
- * @return string contendo a entrada do usuário.
+ * @return String contendo a entrada do usuário.
  */
-string input(const char *format, ...) {
+String input(const char *format, ...) {
   va_list args;
   va_start(args, format);
   vprintf(format, args);

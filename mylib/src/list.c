@@ -3,16 +3,17 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <typeslib.h>
 #include <list.h>
 #include <stringlib.h>
 
 /**
  * @brief Estrutura do nó da lista.
  * 
- * Cada nó contém um valor `info` e um ponteiro para o próximo nó e o anterior da lista.
+ * Cada nó contém um valor `info` e um ponteiro para o próximo e o anterior nó da lista.
  */
 typedef struct nodeL {
-  void *info;
+  Auto info;
   struct nodeL *prox;
   struct nodeL *ant;
 } NodeL;
@@ -20,16 +21,13 @@ typedef struct nodeL {
 /**
  * @brief Estrutura da lista (List).
  * 
- * A lista contém um ponteiro para o início (`inicio`), o fim (`fim`), 
- * um contador de elementos (`N`), o tipo de elementos ('type') e o
- * tamanho dos elementos ('sizeType')
+ * A lista contém um ponteiro para o início (`head`), o fim (`tail`), 
+ * um contador de elementos (`N`), o tipo de elementos ('type').
  */
 typedef struct list { 
   NodeL *head;
   NodeL *tail;
   size_t N;
-  DataType type;
-  size_t sizeType; 
 } *List;
 
 /**
@@ -39,35 +37,31 @@ typedef struct list {
  * elementos de qualquer tipo. O tipo de dado é definido pelo tamanho do tipo 
  * (retornado por `sizeof`) passado como parâmetro.
  * 
- * @param type O tipo do dado que será armazenado na lista. 
- * @param sizeType O tamanho do tipo de dado que será armazenado na lista (usualmente obtido com `sizeof(tipo)`).
  * @return Retorna um ponteiro para a nova lista encadeada, ou NULL se a alocação falhar.
  *
  */
-List listNew(DataType type) {
+List listNew() {
   List lst = (List)malloc(sizeof(struct list));
   if (lst == NULL) return lst;
   lst->head = NULL;
   lst->tail = NULL;
   lst->N = 0;
-  lst->type = type;  
-  lst->sizeType = typeGetSize(type);
   return lst;
 }
 
 /**
  * @brief Destrói a lista encadeada e libera a memória alocada.
  * 
- * @param list Ponteiro para a lista a ser destruída.
+ * @param List Ponteiro para a lista a ser destruída.
  * @return NULL após a liberação da lista.
  */
 List listDestroy(List lst) {
   if (lst == NULL) return NULL;
   NodeL *aux = lst->head;
-  while (aux!= NULL) {
+  while (aux != NULL) {
     NodeL *temp = aux;
     aux = aux->prox;
-    if (temp->info != NULL) free(temp->info);
+    free(temp->info);
     free(temp);
   }
   free(lst);
@@ -101,16 +95,11 @@ size_t listSize(List lst) {
  * @param info O valor a ser inserido.
  * @return Ponteiro para a lista após a inserção.
  */
-List listAddIni(List lst, const void *info) {
+List listAddIni(List lst, const Auto info) {
   if (lst == NULL) return lst;
   NodeL *newNode = (NodeL *)malloc(sizeof(NodeL));
   if (newNode == NULL) return lst; 
-  newNode->info = malloc(lst->sizeType);
-  if (newNode->info == NULL) { 
-    free(newNode);  
-    return lst;
-  }
-  memcpy(newNode->info, info, lst->sizeType);
+  newNode->info = info;
   newNode->prox = lst->head;
   newNode->ant = NULL;
   if (lst->head != NULL) lst->head->ant = newNode;
@@ -127,16 +116,11 @@ List listAddIni(List lst, const void *info) {
  * @param info O valor a ser inserido.
  * @return Ponteiro para a lista após a inserção.
  */
-List listAddEnd(List lst, const void *info) {
+List listAddEnd(List lst, const Auto info) {
   if (lst == NULL) return lst;
   NodeL *newNode = (NodeL *)malloc(sizeof(NodeL));
   if (newNode == NULL) return lst;
-  newNode->info = malloc(lst->sizeType);
-  if (newNode->info == NULL) { 
-    free(newNode); 
-    return lst;
-  }
-  memcpy(newNode->info, info, lst->sizeType);
+  newNode->info = info;
   newNode->prox = NULL;
   newNode->ant = lst->tail;
   if (lst->tail != NULL) lst->tail->prox = newNode;
@@ -189,11 +173,11 @@ List listRemove(List lst, const int pos) {
  * @param info Ponteiro onde o valor encontrado será armazenado.
  * @return 1 se encontrado, -1 se não encontrado.
  */
-int listSearch(List lst, const int pos, void *info) {
+int listSearch(List lst, const int pos, Auto *info) {
   if (listIsEmpty(lst) || pos < 0 || pos >= lst->N) return -1;
   NodeL *aux = lst->head;
   for (int i = 0; i < pos; i++) aux = aux->prox;
-  memcpy(info, aux->info, lst->sizeType);
+  *info = aux->info;
   return 1;
 } 
 
@@ -204,11 +188,11 @@ int listSearch(List lst, const int pos, void *info) {
  * @param info Elemento que será usado para encontrar o índice.
  * @return Index de posição do elemento.
  */
-int listIndex(List lst, void *info) {
+int listIndex(List lst, Auto info) {
   if (listIsEmpty(lst)) return -1;
   NodeL *aux = lst->head;
   for (int i = 0; i < lst->N; i++) {
-    if (memcmp(info, aux->info, lst->sizeType) == 0) return i;
+    if (autoCmp(aux->info, info) == 0) return i;
     aux = aux->prox;
   }
   return -1;
@@ -220,10 +204,10 @@ int listIndex(List lst, void *info) {
  * @param a Endereço do ponteiro para a primeira informação.
  * @param b Endereço do ponteiro para a segunda informação.
  */
-void swap(void **a, void **b) {
-    void *temp = *a;
-    *a = *b;
-    *b = temp;
+void swap(Auto *a, Auto *b) {
+  Auto temp = *a;
+  *a = *b;
+  *b = temp;
 }
 
 /**
@@ -232,17 +216,16 @@ void swap(void **a, void **b) {
  * @param arr Array de nós da lista.
  * @param n Número de elementos no array.
  * @param i Índice do nó atual a ser verificado.
- * @param sizeType Tamanho do tipo de dados armazenado.
  */
-void heapify(NodeL *arr[], int n, int i, size_t sizeType) {
+void heapify(NodeL *arr[], int n, int i) {
   int largest = i;
   int left = 2 * i + 1;
   int right = 2 * i + 2;
-  if (left < n && memcmp(arr[left]->info, arr[largest]->info, sizeType) > 0) largest = left;
-  if (right < n && memcmp(arr[right]->info, arr[largest]->info, sizeType) > 0) largest = right;
+  if (left < n && autoCmp(arr[left]->info, arr[largest]->info) > 0) largest = left;
+  if (right < n && autoCmp(arr[right]->info, arr[largest]->info) > 0) largest = right;
   if (largest != i) {
-    swap((void**)&arr[i]->info, (void**)&arr[largest]->info);
-    heapify(arr, n, largest, sizeType);
+    swap(&arr[i]->info, &arr[largest]->info);
+    heapify(arr, n, largest);
   }
 }
 
@@ -251,9 +234,8 @@ void heapify(NodeL *arr[], int n, int i, size_t sizeType) {
  * 
  * @param low Ponteiro para o início da sublista.
  * @param high Ponteiro para o final da sublista.
- * @param sizeType Tamanho do tipo de dados armazenado.
  */
-void heapSort(NodeL *low, NodeL *high, size_t sizeType) {
+void heapSort(NodeL *low, NodeL *high) {
   int n = 0;
   NodeL *temp = low;
   while (temp != high->prox) {
@@ -266,10 +248,10 @@ void heapSort(NodeL *low, NodeL *high, size_t sizeType) {
     arr[i] = temp;
     temp = temp->prox;
   }
-  for (int i = n / 2 - 1; i >= 0; i--) heapify(arr, n, i, sizeType);
+  for (int i = n / 2 - 1; i >= 0; i--) heapify(arr, n, i);
   for (int i = n - 1; i >= 0; i--) {
-    swap((void**)&arr[0]->info, (void**)&arr[i]->info);
-    heapify(arr, i, 0, sizeType);
+    swap(&arr[0]->info, &arr[i]->info);
+    heapify(arr, i, 0);
   }
 }
 
@@ -278,20 +260,19 @@ void heapSort(NodeL *low, NodeL *high, size_t sizeType) {
  * 
  * @param low Ponteiro para o início da sublista.
  * @param high Ponteiro para o final da sublista.
- * @param sizeType Tamanho do tipo de dados armazenado.
  * @return Ponteiro para o novo pivô.
  */
-NodeL *partition(NodeL *low, NodeL *high, size_t sizeType) {
-  void *pivot = high->info;
+NodeL *partition(NodeL *low, NodeL *high) {
+  Auto pivot = high->info;
   NodeL *i = low->ant;
   for (NodeL *j = low; j != high; j = j->prox) {
-    if (memcmp(j->info, pivot, sizeType) <= 0) {
+    if (autoCmp(j->info, pivot) <= 0) {
       i = (i == NULL) ? low : i->prox;
-      swap((void**)&i->info, (void**)&j->info);
+      swap(&i->info, &j->info);
     }
   } 
   i = (i == NULL) ? low : i->prox;
-  swap((void**)&i->info, (void**)&high->info);
+  swap(&i->info, &high->info);
   return i;
 }
 
@@ -300,18 +281,17 @@ NodeL *partition(NodeL *low, NodeL *high, size_t sizeType) {
  * 
  * @param low Ponteiro para o início da sublista.
  * @param high Ponteiro para o final da sublista.
- * @param sizeType Tamanho do tipo de dados armazenado.
  * @param depthLimit Limite de profundidade para alternar para o HeapSort.
  */
-void introSort(NodeL *low, NodeL *high, size_t sizeType, int depthLimit) {
+void introSort(NodeL *low, NodeL *high, int depthLimit) {
   if (high && low != high && low != high->prox) {
     if (depthLimit == 0) {
-      heapSort(low, high, sizeType);  
+      heapSort(low, high);  
       return;
     }
-    NodeL *p = partition(low, high, sizeType);
-    introSort(low, p->ant, sizeType, depthLimit - 1);
-    introSort(p->prox, high, sizeType, depthLimit - 1);
+    NodeL *p = partition(low, high);
+    introSort(low, p->ant, depthLimit - 1);
+    introSort(p->prox, high, depthLimit - 1);
   }
 }
 
@@ -320,9 +300,8 @@ void introSort(NodeL *low, NodeL *high, size_t sizeType, int depthLimit) {
  * 
  * @param low Ponteiro para o início da sublista.
  * @param high Ponteiro para o final da sublista.
- * @param sizeType Tamanho do tipo de dados armazenado.
  */
-void quickSort(NodeL *low, NodeL *high, size_t sizeType) {
+void quickSort(NodeL *low, NodeL *high) {
   int n = 0;
   NodeL *temp = low;
   while (temp != high->prox) {
@@ -330,7 +309,7 @@ void quickSort(NodeL *low, NodeL *high, size_t sizeType) {
     temp = temp->prox;
   }
   int depthLimit = 2 * (int)log2(n);  // Limite de profundidade é 2 * log2(n)
-  introSort(low, high, sizeType, depthLimit);
+  introSort(low, high, depthLimit);
 }
 
 /**
@@ -342,10 +321,9 @@ void quickSort(NodeL *low, NodeL *high, size_t sizeType) {
 List listSort(List lst) {
   if (lst->head == NULL || lst->N <= 1) return lst;
   NodeL *high = lst->tail;
-  quickSort(lst->head, high, lst->sizeType);
+  quickSort(lst->head, high);
   return lst;
-}
-
+} 
 
 /**
  * @brief Mescla duas listas ordenadas em uma nova lista.
@@ -355,14 +333,14 @@ List listSort(List lst) {
  * @return Ponteiro para a nova lista mesclada.
  */
 List listMerge(List lst1, List lst2) {
-  if (!lst1 || lst1->head == NULL) return lst2;
-  if (!lst2 || lst2->head == NULL) return lst1;
-  List mergedList = listNew(lst1->type); 
+  if (lst1 == NULL || lst1->head == NULL) return lst2;
+  if (lst2 == NULL || lst2->head == NULL) return lst1;
+  List mergedList = listNew(); 
   if (!mergedList) return NULL; 
   NodeL *aux1 = lst1->head;
   NodeL *aux2 = lst2->head;
   while (aux1 != NULL && aux2 != NULL) {
-    if (memcmp(aux1->info, aux2->info, lst1->sizeType) <= 0) {
+    if (autoCmp(aux1->info, aux2->info) <= 0) {
       listAddEnd(mergedList, aux1->info);
       aux1 = aux1->prox;
     } else {
@@ -405,7 +383,7 @@ int listPrint(List lst) {
   if (listIsEmpty(lst)) return 0;
   NodeL *aux = lst->head;
   while (aux != NULL) {
-    stringPrint(toString(aux->info, lst->type, lst->sizeType));
+    stringPrint(toString(aux->info));
     printf(" ");
     aux = aux->prox;
   }

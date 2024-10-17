@@ -11,36 +11,33 @@
  * Cada nó contém um valor `info` e um ponteiro para o próximo nó da pilha.
  */
 typedef struct nodeS {
-  void *info;
+  Auto info;
   struct nodeS *prox; 
 } NodeS;
 
 /**
  * @brief Estrutura da pilha (Stack).
  * 
- * A pilha contém um ponteiro para o topo ('top') e o tamanho ('size')
+ * A pilha contém um ponteiro para o topo ('top'), um contador 
+ * de elementos (`N`), o tipo de elementos ('type') e o
+ * tamanho dos elementos ('sizeType')
  */
 typedef struct stack {
   NodeS *top;
   size_t N;
-  DataType type;
-  size_t sizeType;
 } *Stack;
 
 /**
  * @brief Cria uma nova pilha ou retorna a pilha existente.
  * 
- * @param type O tipo de dados que serão armazenados na pilha.
- * @param sizeType O tamanho do tipo de dados que serão armazenados na pilha. 
+ * @param type O tipo de dados que serão armazenados na pilha. 
  * @return Ponteiro para a nova pilha ou para a pilha já existente.
  */
-Stack stackNew(DataType type, size_t sizeType) { 
+Stack stackNew() { 
   Stack stk = (Stack)malloc(sizeof(struct stack));
   if (stk == NULL) return stk; 
   stk->top = NULL;
   stk->N = 0;
-  stk->type = type;
-  stk->sizeType = sizeType;  
   return stk;
 } 
 
@@ -55,7 +52,7 @@ Stack stackDestroy(Stack stk) {
   NodeS *aux = stk->top;
   while (aux != NULL) {
     NodeS *temp = aux->prox;
-    if (aux->info != NULL) free(aux->info);
+    free(aux->info);
     free(aux);
     aux = temp;
   }
@@ -90,16 +87,11 @@ size_t stackSize(Stack stk) {
  * @param info Valor a ser empilhado.
  * @return Retorna um ponteiro para a pilha atualizada, ou NULL em caso de falha.
  */
-Stack stackPush(Stack stk, void *info) {
+Stack stackPush(Stack stk, Auto info) {
   if (stk == NULL) return stk;
   NodeS *newNode = (NodeS *)malloc(sizeof(NodeS));
   if (newNode == NULL) return stk;
-  newNode->info = malloc(stk->sizeType);
-  if (newNode->info == NULL) {
-    free(newNode);
-    return stk;
-  }
-  memcpy(newNode->info, info, stk->sizeType);
+  newNode->info = info;
   newNode->prox = stk->top;
   stk->top = newNode;
   stk->N++;
@@ -113,10 +105,10 @@ Stack stackPush(Stack stk, void *info) {
  * @param info Ponteiro onde será armazenado o valor removido do topo.
  * @return Retorna o ponteiro da pilha, ou NULL se a pilha estiver vazia.
  */
-Stack stackPop(Stack stk, void *info) {
+Stack stackPop(Stack stk, Auto *info) {
   if (stackIsEmpty(stk)) return stk;
   NodeS *temp = stk->top;
-  memcpy(info, temp->info, stk->sizeType);
+  *info = temp->info;
   stk->top = temp->prox;
   free(temp); 
   stk->N--;
@@ -130,9 +122,9 @@ Stack stackPop(Stack stk, void *info) {
  * @param info Ponteiro onde será armazenado o valor do topo da pilha.
  * @return int Retorna 1 se a operação foi bem-sucedida, ou 0 se a pilha estiver vazia.
  */
-int top(Stack stk, void *info) {
+int top(Stack stk, Auto *info) {
   if (stackIsEmpty(stk)) return 0;
-  memcpy(info, stk->top->info, stk->sizeType);
+  *info = stk->top->info;
   return 1;
 }
 
@@ -146,7 +138,7 @@ int stackPrint(Stack stk) {
   if (stackIsEmpty(stk)) return 0;
   NodeS *aux = stk->top;
   while (aux != NULL) {
-    stringPrint(toString(aux->info, stk->type, stk->sizeType));
+    stringPrint(toString(aux->info));
     printf(" ");
     aux = aux->prox;
   }

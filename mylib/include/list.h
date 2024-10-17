@@ -1,5 +1,5 @@
 /**
- * @file list.h
+ * @file List.h
  * @brief Implementação de uma Lista Duplamente Encadeada Genérica em C.
  * 
  * Este arquivo contém a implementação de uma lista duplamente encadeada genérica, que permite armazenar elementos de qualquer tipo.
@@ -40,11 +40,9 @@
 /** 
  * Cria uma nova lista vazia. 
  * 
- * @param type O tipo do dado que será armazenado na lista. 
- * @param sizeType Tamanho do tipo da variável a ser armazenada.
  * @return Um ponteiro para uma nova lista.
  */
-List listNew(DataType type);
+List listNew();
 
 /** 
  * @brief Libera a memória alocada para a lista.
@@ -76,7 +74,7 @@ size_t listSize(List lst);
  * @param info Os dados a serem inseridos na lista.
  * @return Um ponteiro para a lista atualizada.
  */
-List listAddIni(List lst, const void *info);
+List listAddIni(List lst, Auto info);
 
 /** 
  * @brief Insere um novo elemento no fim da lista.
@@ -85,7 +83,7 @@ List listAddIni(List lst, const void *info);
  * @param info Os dados a serem inseridos na lista.
  * @return Um ponteiro para a lista atualizada.
  */
-List listAddEnd(List lst, const void *info);
+List listAddEnd(List lst, Auto info);
 
 /** 
  * @brief Remove um elemento da lista.
@@ -104,7 +102,7 @@ List listRemove(List lst, const int pos);
  * @param info Ponteiro para armazenar os dados encontrados.
  * @return 1 se o elemento for encontrado, 0 caso contrário.
  */
-int listSearch(List lst, const int pos, void *info); 
+int listSearch(List lst, const int pos, Auto *info); 
 
 /**
  * @brief Busca e retorna um elemento na lista na posição especificada.
@@ -122,7 +120,7 @@ void *listGet(List lst, const int pos);
  * @param info Elemento que será usado para encontrar o índice.
  * @return Index de posição do elemento.
  */
-int listIndex(List lst, void *info);
+int listIndex(List lst, Auto info);
 
 /**
  * @brief Ordena uma lista usando o Merge Sort.

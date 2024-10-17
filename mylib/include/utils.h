@@ -67,7 +67,7 @@ void printsf(const char *format, ...);
  * @param ... Argumentos para a formatação da mensagem.
  * @return string contendo a entrada do usuário.
  */
-string input(const char *format, ...);
+String input(const char *format, ...);
 
 /** 
  * @brief Limpa o buffer do teclado.

@@ -1,5 +1,5 @@
 /**
- * @file stack.h
+ * @file Stack.h
  * @brief Implementação de uma Pilha Genérica em C.
  * 
  * Este arquivo contém a implementação de uma pilha genérica que permite armazenar elementos de qualquer tipo.
@@ -33,17 +33,14 @@
 /**
  * @brief Cria uma nova pilha ou retorna a pilha existente.
  * 
- * @param type O tipo de dados que serão armazenados na pilha.
- * @param sizeType O tamanho do tipo de dados que serão armazenados na pilha. 
  * @return Stack Retorna um ponteiro para a nova pilha.
  */
-Stack stackNew(DataType type, size_t sizeType);
+Stack stackNew();
 
 /**
  * @brief Destrói a pilha, liberando a memória alocada.
  * 
  * @param stk Ponteiro para a pilha que será destruída.
- * @param sizeType O tamanho do tipo de dado que será armazenado na pilha. 
  * @return Stack Retorna NULL para indicar que a pilha foi destruída.
  */
 Stack stackDestroy(Stack stk);
@@ -71,7 +68,7 @@ size_t stackSize(Stack stk);
  * @param info Valor a ser empilhado.
  * @return Stack Retorna um ponteiro para a pilha atualizada, ou NULL em caso de falha.
  */
-Stack stackPush(Stack stk, void *info);
+Stack stackPush(Stack stk, Auto info);
 
 /**
  * @brief Remove o elemento do topo da pilha.
@@ -80,7 +77,7 @@ Stack stackPush(Stack stk, void *info);
  * @param info Ponteiro onde será armazenado o valor removido do topo.
  * @return Stack Retorna o ponteiro da pilha, ou NULL se a pilha estiver vazia.
  */
-Stack stackPop(Stack stk, void *info);
+Stack stackPop(Stack stk, Auto *info);
 
 /**
  * @brief Consulta o elemento no topo da pilha sem removê-lo.
@@ -89,7 +86,7 @@ Stack stackPop(Stack stk, void *info);
  * @param info Ponteiro onde será armazenado o valor do topo da pilha.
  * @return int Retorna 1 se a operação foi bem-sucedida, ou 0 se a pilha estiver vazia.
  */
-int stackTop(Stack stk, void *info);
+int stackTop(Stack stk, Auto *info);
 
 /** 
 * @brief Printa todos os elementos de uma pilha.

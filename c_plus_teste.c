@@ -1,94 +1,55 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
-#include <c_plus.h>
+#include <cplus.h>
+#include <tree.h>
 
-typedef struct Pessoas {
+typedef struct sorvetes {
+  int preco;
   char nome[50];
-  int idade, cpf;
-} Pessoa;
+} Sorvete;
 
 int main() {
-  srand(time(NULL)); 
-  sizeof(int);
-  sizeof(float);
+  srand(time(NULL));
   clock_t inicio, fim;
-  List listaLetras = listNew(Char);
-  List listaNomes = listNew(String);
-  List listaPessoas = listNew(autoSize(sizeof(Pessoa)));
-  Pessoa pessoas[] = {
-    {.idade = 22, .nome = "Pedro",.cpf = 12345678},
-    {.idade = 25, .nome = "Isabella",.cpf = 87654321},
-    {.idade = 18, .nome = "João",.cpf = 98765432},
-    {.idade = 28, .nome = "Carlos",.cpf = 43219876},
-    {.idade = 17, .nome = "Victor",.cpf = 76543219},
-    {.idade = 20, .nome = "Ana",.cpf = 32198765}
-  }; 
-  string Nomes[] = {
-    stringInit("Ana"), stringInit("Victor"),
-    stringInit("Carlos"), stringInit("Maria"),
-    stringInit("João"), stringInit("Lucas"),
-    stringInit("Pedro"), stringInit("Isabella")
+  int vet[] = {11, 1, 2, 22, 4, 5, 6, 7, 8};
+  String nomes[] = {
+    stringInit("Ana"), stringInit("Mara"),
+    stringInit("Matheus"), stringInit("Marta")};
+  char *pessoas[] = {
+    "Ana", "Mara", "Matheus", "Marta"
   };
-
-  foreach(pessoa, pessoas) listAddEnd(listaPessoas, pessoa);
-
-  printf("\nPessoas (Desordenado)\n");
-  listPrint(listaPessoas);
-
-  listSort(listaPessoas);
-
-  printf("\nPessoas (Ordenado)\n");
-  listPrint(listaPessoas);
-
-  int qtd = 0;
-  printf("\nDigite a quantidade de letras: ");
-  scanf("%d", &qtd);
-  cleanBuffer(); 
-  for (int i = 0; i < qtd; i++) {
-    char letra = rand() % 26 + 'a';
-    listAddEnd(listaLetras, &letra);
-  }
-  
-  //printf("\nLetras:\n");
-  //listPrint(listaLetras);
-
-  inicio = clock();
-  listSort(listaLetras);
-  fim = clock();
-
-  printf("\nTempo gasto: %g segundos\n", (double)(fim - inicio) / CLOCKS_PER_SEC);
-  waitCleanScreen("Aperte ENTER para continuar...");
-
-  if (confirm("ver a lista ordenada")) {
-    printf("\nLetras Ordenadas:\n");
-    listPrint(listaLetras);
-  }
-
-
-  foreach(Nome, Nomes) listAddEnd(listaNomes, Nome);
-  listAddEnd(listaNomes, &(string){input("\nDigite um nome: ")});
-  printf("\nNomes:\n");
-  listPrint(listaNomes);
-
-  listSort(listaNomes);
-
-  printf("\nNomes em ordem alfabética:\n");
-  listPrint(listaNomes);
-
-  listaLetras = listDestroy(listaLetras);
-  listaNomes = listDestroy(listaNomes);
-
-  listaLetras = listNew(Char);
-  for (int i = 0; i < qtd; i++) {
-    char letra = rand() % 26 + 'A';
-    listAddEnd(listaLetras, &letra);
-  }
-  
-  if (confirm("mostrar letras maiúsculas")) {
-    printf("\nLetras (maiúsculas):\n");
-    listPrint(listaLetras);
-  }
-  listaLetras = listDestroy(listaLetras);
-  return 0;
+  Sorvete sorvets[] = {
+    {.nome = "Morango", .preco = 5}, {.nome = "Chocolate", .preco = 6},
+    {.nome ="Laranja", .preco = 7}, {.nome = "Maracuja", .preco =8}
+  };
+  Tree map = treeNew();
+  List vector = listNew();
+  List char_p = listNew();
+  List strings = listNew();
+  List sorvetes = listNew();
+  List listas = listNew();
+  foreach(num, vet) treeInsert(map, AUTO(*num));
+  foreach (num, vet) listAddEnd(vector, AUTO(*num));
+  foreach (nome_c, pessoas) listAddEnd(char_p, AUTO(*nome_c));
+  foreach (nome, nomes) listAddEnd(strings, AUTO(*nome));
+  foreach (sorvete, sorvets) listAddEnd(sorvetes, AUTO(sorvete));
+  listAddEnd(listas, AUTO(vector));
+  listAddEnd(listas, AUTO(char_p));
+  listAddEnd(listas, AUTO(strings));
+  listAddEnd(listas, AUTO(sorvetes));
+  printf("\nÁrvore:\n");
+  treePrint(map);
+  printf("\n");
+  listSort(vector);
+  listSort(char_p);
+  listPrint(vector);
+  listPrint(char_p);
+  listPrint(strings);
+  listPrint(sorvetes);
+  listPrint(listas);
+  vector = listDestroy(vector);
+  char_p = listDestroy(char_p);
+  strings = listDestroy(strings);
+  sorvetes = listDestroy(sorvetes);
 }
