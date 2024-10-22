@@ -42,3 +42,29 @@ Arvore arvoreInsere(Arvore arvore, const int dado) {
   }
   return arvore;
 }
+
+Arvore arvoreRemove(Arvore arvore, const int dado) {
+  if (arvore == NULL) return NULL;
+  if (dado < arvore->dado) arvore->esquerda = arvoreRemove(arvore->esquerda, dado);
+  else if (dado > arvore->dado) arvore->direita = arvoreRemove(arvore->direita, dado);
+  else {
+    if (arvore->esquerda == NULL && arvore->direita == NULL) {
+      free(arvore);
+      return NULL;
+    } else if (arvore->esquerda == NULL) {
+      Arvore temp = arvore;
+      arvore = arvore->direita;
+      free(temp);
+    } else if (arvore->direita == NULL) {
+      Arvore temp = arvore;
+      arvore = arvore->esquerda;
+      free(temp);
+    } else {
+      Arvore temp = arvore->direita;
+      while (temp->esquerda != NULL) temp = temp->esquerda;
+      arvore->dado = temp->dado;
+      arvore->direita = arvoreRemove(arvore->direita, temp->dado);
+    }
+  }
+  return arvore;
+}

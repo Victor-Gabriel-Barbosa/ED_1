@@ -2,54 +2,43 @@
 #include <time.h>
 #include <stdlib.h>
 #include <cplus.h>
-#include <tree.h>
 
-typedef struct sorvetes {
-  int preco;
+typedef struct Medicos {
   char nome[50];
-} Sorvete;
+  int crm;
+} Medico;
 
 int main() {
   srand(time(NULL));
-  clock_t inicio, fim;
-  int vet[] = {11, 1, 2, 22, 4, 5, 6, 7, 8};
-  String nomes[] = {
-    stringInit("Ana"), stringInit("Mara"),
-    stringInit("Matheus"), stringInit("Marta")};
-  char *pessoas[] = {
-    "Ana", "Mara", "Matheus", "Marta"
+  print(toObj(&((Medico){"Mara", 124})));
+  string nomes[] = {
+    stringInit("Ana"), stringInit("Mara"), stringInit("Sara"),
+    stringInit("Pedro"), stringInit("João"), stringInit("José"),
+    stringInit("Luisa"), stringInit("Maria"), stringInit("Carlos")
   };
-  Sorvete sorvets[] = {
-    {.nome = "Morango", .preco = 5}, {.nome = "Chocolate", .preco = 6},
-    {.nome ="Laranja", .preco = 7}, {.nome = "Maracuja", .preco =8}
-  };
-  Tree map = treeNew();
-  List vector = listNew();
-  List char_p = listNew();
-  List strings = listNew();
-  List sorvetes = listNew();
-  List listas = listNew();
-  foreach(num, vet) treeInsert(map, AUTO(*num));
-  foreach (num, vet) listAddEnd(vector, AUTO(*num));
-  foreach (nome_c, pessoas) listAddEnd(char_p, AUTO(*nome_c));
-  foreach (nome, nomes) listAddEnd(strings, AUTO(*nome));
-  foreach (sorvete, sorvets) listAddEnd(sorvetes, AUTO(sorvete));
-  listAddEnd(listas, AUTO(vector));
-  listAddEnd(listas, AUTO(char_p));
-  listAddEnd(listas, AUTO(strings));
-  listAddEnd(listas, AUTO(sorvetes));
-  printf("\nÁrvore:\n");
-  treePrint(map);
-  printf("\n");
-  listSort(vector);
-  listSort(char_p);
-  listPrint(vector);
-  listPrint(char_p);
-  listPrint(strings);
-  listPrint(sorvetes);
-  listPrint(listas);
-  vector = listDestroy(vector);
-  char_p = listDestroy(char_p);
-  strings = listDestroy(strings);
-  sorvetes = listDestroy(sorvetes);
+  obj temp;
+  list lista = listNew();
+  queue fila = queueNew();
+  stack pilha = stackNew();
+  foreach(nome, nomes) listAddEnd(lista, toObj(*nome));
+  foreach(nome, nomes) queueEnqueue(fila, toObj(*nome));
+  for (size_t i = 0; i < ARRAY_SIZE(nomes) / 2; i++) {
+    stackPush(pilha, toObj(RAND(nomes)));
+  }
+  stackTop(pilha, &temp);
+  temp = toObj(RAND(nomes));
+  print(toObj("\nPessoa Consultada: "), temp);
+  queueEnqueue(fila, toObj(pilha));
+  listAddEnd(lista, toObj(fila));
+  printf("\nNomes (Não Ordenados):\n");
+  print(toObj(lista));
+  listSort(lista);
+  printf("\nNomes (Ordenados):\n");
+  print(toObj(lista), toObj("\nOutra Vez:\n"), toObj(lista));
+  lista = listDestroy(lista);
+  fila = queueDestroy(fila);
+  pilha = stackDestroy(pilha);
+  foreach(nome, nomes) stringDestroy(*nome);
+  printf("\nFIM\n");
+  return 0;
 }

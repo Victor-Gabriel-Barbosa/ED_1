@@ -1,9 +1,9 @@
 /**
  * @file binary_tree.h
- * @brief Biblioteca para manipulação de Árvores Binárias utilizando Auto.
+ * @brief Biblioteca para manipulação de Árvores Binárias utilizando obj.
  * 
  * Esta biblioteca permite criar, manipular e destruir uma árvore binária genérica,
- * que utiliza a estrutura Auto para armazenar dados de diversos tipos de forma flexível.
+ * que utiliza a estrutura obj para armazenar dados de diversos tipos de forma flexível.
  * 
  * @author Victor Gabriel Barbosa
  * @date 16/10/2024
@@ -19,34 +19,34 @@
  * 
  * @return Ponteiro para a árvore criada.
  */
-Tree treeNew();
+tree treeNew();
 
 /**
  * @brief Insere um novo dado na árvore binária.
  * 
  * @param tree Ponteiro para a árvore binária.
- * @param info Dado a ser inserido, do tipo Auto.
+ * @param info Dado a ser inserido, do tipo obj.
  * @return Ponteiro para a árvore.
  */
-Tree treeInsert(Tree tree, Auto info);
+tree treeInsert(tree tree, obj info);
 
 /**
  * @brief Verifica se um dado está presente na árvore binária.
  * 
  * @param tree Ponteiro para a árvore binária.
- * @param info Dado a ser pesquisado, do tipo Auto.
+ * @param info Dado a ser pesquisado, do tipo obj.
  * @return 1 se o dado for encontrado, 0 caso contrário.
  */
-int treeSearch(Tree tree, Auto info);
+int treeSearch(tree tree, obj info);
 
 /**
  * @brief Remove um dado da árvore binária.
  * 
  * @param tree Ponteiro para a árvore binária.
- * @param info Dado a ser removido, do tipo Auto.
+ * @param info Dado a ser removido, do tipo obj.
  * @return Ponteiro para a árvore.
  */
-Tree treeRemove(Tree tree, Auto info);
+tree treeRemove(tree tree, obj info);
 
 /**
  * @brief Destrói a árvore binária, liberando toda a memória alocada.
@@ -54,7 +54,7 @@ Tree treeRemove(Tree tree, Auto info);
  * @param tree Ponteiro para a árvore binária a ser destruída.
  * @return Ponteiro para a árvore.
  */
-Tree treeDestroy(Tree tree);
+tree treeDestroy(tree tree);
 
 /**
  * @brief Imprime os dados da árvore binária (em ordem).
@@ -62,6 +62,6 @@ Tree treeDestroy(Tree tree);
  * @param tree Ponteiro para a árvore binária.
  * @return 1 se o dado for encontrado, 0 caso contrário.
  */
-int treePrint(Tree tree);
+int treePrint(tree tree);
 
 #endif

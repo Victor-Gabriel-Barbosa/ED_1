@@ -136,9 +136,9 @@ void *verAlloc(void *pt) {
  * para tipos personalizados. Pode ser usada para gerar saídas formatadas
  * de maneira flexível.
  *
- * @param format Formato da String.
+ * @param format Formato da string.
  */
-void printsf(const char *format, ...) {
+void printfs(const char *format, ...) {
   va_list args;
   va_start(args, format);
   while (*format) {
@@ -157,23 +157,23 @@ void printsf(const char *format, ...) {
         case 's': // string (char*)
           printf("%s", va_arg(args, char*));
           break;
-        case 'S': { // String (tipo personalizado)
-          String S = va_arg(args, String);
+        case 'S': { // string (tipo personalizado)
+          string S = va_arg(args, string);
           stringPrint(S); 
           break;
         }
-        case 'L': { // List (tipo personalizado)
-          List L = va_arg(args, List);
+        case 'L': { // list (tipo personalizado)
+          list L = va_arg(args, list);
           listPrint(L);
           break;
         }
-        case 'Q': { // Queue (tipo personalizado)
-          Queue Q = va_arg(args, Queue);
+        case 'Q': { // queue (tipo personalizado)
+          queue Q = va_arg(args, queue);
           queuePrint(Q);
           break;
         }
-        case 'K': { // Stack (tipo personalizado)
-          Stack K = va_arg(args, Stack);
+        case 'K': { // stack (tipo personalizado)
+          stack K = va_arg(args, stack);
           stackPrint(K);
           break;
         }
@@ -188,15 +188,47 @@ void printsf(const char *format, ...) {
 }
 
 /**
+ * @brief Exibe o texto correspondente a múltiplos objetos 'obj'.
+ *
+ * A função converte cada objeto 'obj' para uma 'string' e exibe seus textos.
+ * Aceita múltiplos argumentos.
+ *
+ * @param count Número de objetos obj.
+ * @param ... Lista de objetos obj.
+ * @return int 1 se todos os textos foram exibidos corretamente, 0 caso algum falhar.
+ */
+int printMultiple(int count, ...) {
+  va_list args;
+  int allPrinted = 1;
+  va_start(args, count); // Inicializa a lista de argumentos variáveis
+  for (int i = 0; i < count; i++) { // Converte cada objeto para string e exibe na tela
+    obj a = va_arg(args, obj);
+    if (a == NULL) { // Se o objeto for NULL, marca falha e continua
+      allPrinted = 0;
+      continue;
+    }
+    string str = toString(a); // Converte o objeto para string
+    objDestroy(a); // Destrói o objeto original
+    if (str == NULL) allPrinted = 0; // Verifica se a conversão foi bem-sucedida
+    else { // Exibe a string e destrói após o uso
+      stringPrint(str);
+      stringDestroy(str);
+    }
+  }
+  va_end(args); // Finaliza a lista de argumentos variáveis
+  return allPrinted;
+}
+
+/**
  * @brief Exibe uma mensagem formatada e obtém a entrada do usuário.
  *
- * A função imprime uma mensagem formatada e retorna a entrada como uma `String`.
+ * A função imprime uma mensagem formatada e retorna a entrada como uma 'string'.
  *
- * @param format String de formato para a mensagem.
+ * @param format string de formato para a mensagem.
  * @param ... Argumentos para a formatação da mensagem.
- * @return String contendo a entrada do usuário.
+ * @return string contendo a entrada do usuário.
  */
-String input(const char *format, ...) {
+string input(const char *format, ...) {
   va_list args;
   va_start(args, format);
   vprintf(format, args);

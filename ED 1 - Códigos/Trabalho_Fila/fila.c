@@ -96,7 +96,7 @@ long int tempoInsereFilaEst(FilaEst *Ptf, const int qtd_p) {
   return (fim - inicio);
 }
 
-/* Marca o tempo p/ listar planetas da fila encadeada */
+/* Marca o tempo p/ listar planetas da fila estática */
 long int tempoExibeFilaEst(FilaEst *Ptf, const int qtd_p) {
   long int inicio = clock();
   filaExibeEst(Ptf);

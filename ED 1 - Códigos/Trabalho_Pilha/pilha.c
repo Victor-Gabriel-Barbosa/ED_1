@@ -93,7 +93,7 @@ int pilhaTamanhoEnc(PilhaEnc *Ptf) {
   return Ptf->N;
 }
 
-typedef struct stackEst { // Estrutura p/ armazenar a pilha estática
+typedef struct stackEst { // Estrutura da pilha estática
   RPG pilha[MAX];
   int topo; 
 } PilhaEst;
@@ -213,7 +213,6 @@ void rpgExibe(const RPG rp) {
   printf(C_FMT(C_NEGRITO C_CIANO, "\n=========================\n"));
   printf(C_FMT(C_NEGRITO C_MAGENTA, "         Turno: %d\n"), rp.turno);
   printf(C_FMT(C_NEGRITO C_CIANO, "=========================\n"));
-
   for (int i = 0; i < 2; i++) {
     Jogador p = (i == 0) ? rp.p1 : rp.p2;
     printf(C_FMT(C_NEGRITO C_AZUL, "   Jogador[%d]\n"), i + 1);

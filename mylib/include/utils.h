@@ -37,6 +37,27 @@
 #include <stringlib.h>
 
 /**
+ * @brief Calcula o número de elementos em um array.
+ * 
+ * @param arr O array do qual calcular o tamanho.
+ * @return O número de elementos no array.
+ */
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+/**
+ * @brief Seleciona aleatoriamente um elemento do array dado.
+ * 
+ * @param arr O array do qual selecionar um elemento.
+ * @return Um elemento selecionado aleatoriamente do array.
+ */
+#define RAND(arr) (arr[rand() % ARRAY_SIZE(arr)])
+
+/**
+ * @brief Macro para contar automaticamente o número de argumentos e chamar a função printMultiple.
+ */
+#define print(...) printMultiple(sizeof((obj[]){__VA_ARGS__}) / sizeof(obj), __VA_ARGS__)
+
+/**
  * @def foreach(item, array)
  * @brief Itera sobre cada elemento de um array estático.
  *
@@ -56,7 +77,19 @@
  * @param format A string de formato.
  * @param ... Os argumentos a serem formatados.
  */
-void printsf(const char *format, ...); 
+void printfs(const char *format, ...); 
+
+/**
+ * @brief Exibe o texto correspondente a múltiplos objetos `obj`.
+ *
+ * A função converte cada objeto `obj` para uma `string` e exibe seus textos.
+ * Aceita múltiplos argumentos.
+ *
+ * @param count Número de objetos obj.
+ * @param ... Lista de objetos obj.
+ * @return int 1 se todos os textos foram exibidos corretamente, 0 caso algum falhar.
+ */
+int printMultiple(int count, ...);
 
 /**
  * @brief Exibe uma mensagem formatada e obtém a entrada do usuário.
@@ -67,7 +100,7 @@ void printsf(const char *format, ...);
  * @param ... Argumentos para a formatação da mensagem.
  * @return string contendo a entrada do usuário.
  */
-String input(const char *format, ...);
+string input(const char *format, ...);
 
 /** 
  * @brief Limpa o buffer do teclado.

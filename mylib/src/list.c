@@ -9,60 +9,59 @@
 
 /**
  * @brief Estrutura do nó da lista.
- * 
- * Cada nó contém um valor `info` e um ponteiro para o próximo e o anterior nó da lista.
  */
 typedef struct nodeL {
-  Auto info;
-  struct nodeL *prox;
-  struct nodeL *ant;
+  obj info;           /**< Informação armazenada na lista */
+  struct nodeL* prox; /**< Ponteiro para o próximo nó da lista */
+  struct nodeL* ant;  /**< Ponteiro para o nó anterior da lista */
 } NodeL;
 
 /**
- * @brief Estrutura da lista (List).
- * 
- * A lista contém um ponteiro para o início (`head`), o fim (`tail`), 
- * um contador de elementos (`N`), o tipo de elementos ('type').
+ * @brief Estrutura da lista (list).
  */
-typedef struct list { 
-  NodeL *head;
-  NodeL *tail;
-  size_t N;
-} *List;
+typedef struct list_t { 
+  NodeL* head; /**< Cabeça da lista */
+  NodeL* tail; /**< Cauda da lista */
+  size_t N;    /**< Contador de elementos */
+} *list;
 
 /**
- * @brief Cria uma nova lista encadeada.
+ * @brief Cria uma nova lista duplamente encadeada e inicializa seus campos.
  * 
- * Esta função aloca e inicializa uma nova lista encadeada genérica, que pode armazenar
- * elementos de qualquer tipo. O tipo de dado é definido pelo tamanho do tipo 
- * (retornado por `sizeof`) passado como parâmetro.
+ * @return Retorna um ponteiro para a nova lista. Se a alocação falhar, retorna NULL.
  * 
- * @return Retorna um ponteiro para a nova lista encadeada, ou NULL se a alocação falhar.
- *
+ * A lista criada tem os ponteiros 'head' e 'tail' (início e fim) inicialmente nulos
+ * e o tamanho (N) é definido como 0.
  */
-List listNew() {
-  List lst = (List)malloc(sizeof(struct list));
-  if (lst == NULL) return lst;
+list listNew() {
+  list lst = (list)malloc(sizeof(struct list_t));
+  if (lst == NULL) return NULL; 
   lst->head = NULL;
-  lst->tail = NULL;
+  lst->tail = NULL; 
   lst->N = 0;
   return lst;
 }
 
 /**
- * @brief Destrói a lista encadeada e libera a memória alocada.
+ * @brief Libera toda a memória alocada para a lista e seus elementos.
  * 
- * @param List Ponteiro para a lista a ser destruída.
- * @return NULL após a liberação da lista.
+ * @param lst Ponteiro para a lista a ser destruída.
+ * 
+ * @return Retorna NULL após a destruição da lista.
+ * 
+ * A função percorre a lista do início ao fim, liberando cada nó e sua
+ * informação (caso o campo 'info' esteja alocado). No final, também
+ * libera a estrutura da lista em si.
  */
-List listDestroy(List lst) {
-  if (lst == NULL) return NULL;
-  NodeL *aux = lst->head;
-  while (aux != NULL) {
-    NodeL *temp = aux;
+list listDestroy(list lst) {
+  if (lst == NULL) return NULL; // Verifica se a lista existe
+  NodeL* aux = lst->head; 
+  while (aux != NULL) { 
+    NodeL* temp = aux; 
     aux = aux->prox;
-    free(temp->info);
-    free(temp);
+    if (temp->info != NULL) temp->info = objDestroy(temp->info); 
+    free(temp); 
+    temp = NULL;
   }
   free(lst);
   return NULL;
@@ -71,38 +70,38 @@ List listDestroy(List lst) {
 /**
  * @brief Verifica se a lista está vazia.
  * 
- * @param lst Ponteiro para a lista a ser verificada.
+ * @param lst Lista a ser verificada.
  * @return 1 se a lista estiver vazia, caso contrário, 0.
  */
-int listIsEmpty(List lst) {
-  return (lst == NULL || lst->head == NULL);
+int listIsEmpty(list lst) {
+  return (lst == NULL || lst->head == NULL); 
 }
 
 /**
  * @brief Retorna o tamanho da lista.
  * 
- * @param lst Ponteiro para a lista.
+ * @param lst Lista.
  * @return O número de elementos na lista.
  */
-size_t listSize(List lst) { 
+size_t listSize(list lst) { 
   return (lst == NULL) ? 0 : lst->N;
 }
 
 /**
  * @brief Insere um novo elemento no início da lista.
  * 
- * @param lst Ponteiro para a lista.
- * @param info O valor a ser inserido.
- * @return Ponteiro para a lista após a inserção.
+ * @param lst Lista.
+ * @param info O valor a ser inserido (obj).
+ * @return Lista após a inserção.
  */
-List listAddIni(List lst, const Auto info) {
-  if (lst == NULL) return lst;
-  NodeL *newNode = (NodeL *)malloc(sizeof(NodeL));
+list listAddIni(list lst, const obj info) {
+  if (lst == NULL) return NULL; 
+  NodeL* newNode = (NodeL*)malloc(sizeof(NodeL));
   if (newNode == NULL) return lst; 
-  newNode->info = info;
-  newNode->prox = lst->head;
-  newNode->ant = NULL;
-  if (lst->head != NULL) lst->head->ant = newNode;
+  newNode->info = info; 
+  newNode->prox = lst->head; 
+  newNode->ant = NULL; 
+  if (lst->head != NULL) lst->head->ant = newNode; 
   lst->head = newNode;
   if (lst->tail == NULL) lst->tail = newNode;
   lst->N++; 
@@ -112,17 +111,17 @@ List listAddIni(List lst, const Auto info) {
 /**
  * @brief Insere um novo elemento no final da lista.
  * 
- * @param lst Ponteiro para a lista.
- * @param info O valor a ser inserido.
- * @return Ponteiro para a lista após a inserção.
+ * @param lst Lista.
+ * @param info O valor a ser inserido (obj).
+ * @return Lista após a inserção.
  */
-List listAddEnd(List lst, const Auto info) {
-  if (lst == NULL) return lst;
-  NodeL *newNode = (NodeL *)malloc(sizeof(NodeL));
-  if (newNode == NULL) return lst;
+list listAddEnd(list lst, const obj info) {
+  if (lst == NULL) return NULL;
+  NodeL* newNode = (NodeL*)malloc(sizeof(NodeL));
+  if (newNode == NULL) return lst;  
   newNode->info = info;
   newNode->prox = NULL;
-  newNode->ant = lst->tail;
+  newNode->ant = lst->tail;  
   if (lst->tail != NULL) lst->tail->prox = newNode;
   lst->tail = newNode;
   if (lst->head == NULL) lst->head = newNode;
@@ -133,27 +132,26 @@ List listAddEnd(List lst, const Auto info) {
 /**
  * @brief Remove um elemento da lista na posição especificada.
  * 
- * @param lst Ponteiro para a lista.
+ * @param lst Lista.
  * @param pos Posição do elemento a ser removido.
- * @return Ponteiro para a lista após a remoção.
+ * @return Lista após a remoção.
  */
-List listRemove(List lst, const int pos) {
-  if (listIsEmpty(lst) || pos < 0 || pos >= lst->N) return lst;
-  NodeL *aux;
+list listRemove(list lst, const int pos) {
+  if (listIsEmpty(lst) || pos < 0 || pos >= lst->N) return lst;  
+  NodeL* aux;
   if (pos == 0) {
     aux = lst->head;
     lst->head = aux->prox;
-    if (lst->head != NULL) lst->head->ant = NULL;
-    else lst->tail = NULL;
+    (lst->head != NULL) ? (lst->head->ant = NULL) : (lst->tail = NULL);
   } else if (pos == lst->N - 1) {
     aux = lst->tail;
     lst->tail = aux->ant;
-    lst->tail->prox = NULL;
-  } else {
-    if (pos <= lst->N / 2) {
+    (lst->tail != NULL) ? (lst->tail->prox = NULL) : (lst->head = NULL);
+  } else {  
+    if (pos <= lst->N / 2) { 
       aux = lst->head;
       for (int i = 0; i < pos; i++) aux = aux->prox;
-    } else {
+    } else {  
       aux = lst->tail;
       for (int i = lst->N - 1; i > pos; i--) aux = aux->ant;
     }
@@ -161,53 +159,103 @@ List listRemove(List lst, const int pos) {
     aux->prox->ant = aux->ant;
   }
   free(aux);
-  lst->N--;  
+  lst->N--;
   return lst;
 }
 
 /**
  * @brief Busca um elemento na lista na posição especificada.
  * 
- * @param lst Ponteiro para a lista.
+ * @param lst Lista.
  * @param pos Posição do elemento a ser buscado.
- * @param info Ponteiro onde o valor encontrado será armazenado.
+ * @param info Objeto para armazenar o dado encontrado (obj).
  * @return 1 se encontrado, -1 se não encontrado.
  */
-int listSearch(List lst, const int pos, Auto *info) {
-  if (listIsEmpty(lst) || pos < 0 || pos >= lst->N) return -1;
-  NodeL *aux = lst->head;
-  for (int i = 0; i < pos; i++) aux = aux->prox;
+int listSearch(list lst, const int pos, obj* info) {
+  if (listIsEmpty(lst) || pos < 0 || pos >= lst->N || info == NULL) return -1;
+  NodeL* aux;
+  if (pos <= lst->N / 2) {
+    aux = lst->head;
+    for (int i = 0; i < pos; i++) aux = aux->prox;
+  } else {
+    aux = lst->tail;
+    for (int i = lst->N - 1; i > pos; i--) aux = aux->ant;
+  }
   *info = aux->info;
-  return 1;
-} 
+  return 1; 
+}
+
+/**
+ * @brief Busca e retorna um elemento na lista na posição especificada.
+ * 
+ * @param lst Lista.
+ * @param pos Posição do elemento a ser buscado.
+ * @return O elemento buscado (obj).
+ */
+obj listGet(list lst, const int pos) {
+  if (listIsEmpty(lst) || pos < 0 || pos >= lst->N) return NULL;
+  NodeL* aux = lst->head;
+  for (int i = 0; i < pos; i++) aux = aux->prox;
+  return aux->info;
+}
 
 /**
  * @brief Busca o índice de um elemento na lista
  * 
- * @param lst Ponteiro para a lista.
- * @param info Elemento que será usado para encontrar o índice.
+ * @param lst Lista.
+ * @param info Elemento que será usado para encontrar o índice (obj).
  * @return Index de posição do elemento.
  */
-int listIndex(List lst, Auto info) {
+int listIndex(list lst, obj info) {
   if (listIsEmpty(lst)) return -1;
-  NodeL *aux = lst->head;
+  NodeL* aux = lst->head;
   for (int i = 0; i < lst->N; i++) {
-    if (autoCmp(aux->info, info) == 0) return i;
+    if (objCmp(aux->info, info) == 0) return i;
     aux = aux->prox;
   }
   return -1;
 }
 
 /**
- * @brief Função auxiliar para trocar dois ponteiros de informações.
+ * Compara duas listas.
  * 
- * @param a Endereço do ponteiro para a primeira informação.
- * @param b Endereço do ponteiro para a segunda informação.
+ * @param lst1 A primeira lista a ser comparada.
+ * @param lst2 A segunda lista a ser comparada.
+ * 
+ * @return 
+ * - 1 se lst1 for maior que lst2,
+ * - -1 se lst2 for maior que lst1,
+ * - 0 se ambas as listas forem iguais (tanto em tamanho quanto em conteúdo).
  */
-void swap(Auto *a, Auto *b) {
-  Auto temp = *a;
+int listCmp(list lst1, list lst2) {
+  if (lst1 == NULL && lst2 == NULL) return 0; 
+  if (lst1 == NULL) return -1; 
+  if (lst2 == NULL) return 1; 
+  if (lst1->N > lst2->N) return 1; 
+  if (lst1->N < lst2->N) return -1; 
+  NodeL* aux1 = lst1->head;
+  NodeL* aux2 = lst2->head;
+  while (aux1 != NULL && aux2 != NULL) {
+    if (objCmp(aux1->info, aux2->info) != 0) return (objCmp(aux1->info, aux2->info) > 0) ? 1 : -1; 
+    aux1 = aux1->prox;
+    aux2 = aux2->prox;
+  }
+  return 0;
+}
+
+/**
+ * @brief Função auxiliar para trocar dois ponteiros de informações (obj).
+ * 
+ * @param a Endereço do obj para a primeira informação.
+ * @param b Endereço do obj para a segunda informação.
+ * @return 1 se a troca foi feita com sucesso, 0 caso contrário
+ */
+int swap(obj* a, obj* b) {
+  if (a == NULL || b == NULL) return 0; 
+  obj temp = *a;
   *a = *b;
   *b = temp;
+  return 1;
 }
 
 /**
@@ -217,12 +265,12 @@ void swap(Auto *a, Auto *b) {
  * @param n Número de elementos no array.
  * @param i Índice do nó atual a ser verificado.
  */
-void heapify(NodeL *arr[], int n, int i) {
+void heapify(NodeL** arr, int n, int i) {
   int largest = i;
   int left = 2 * i + 1;
   int right = 2 * i + 2;
-  if (left < n && autoCmp(arr[left]->info, arr[largest]->info) > 0) largest = left;
-  if (right < n && autoCmp(arr[right]->info, arr[largest]->info) > 0) largest = right;
+  if (left < n && objCmp(arr[left]->info, arr[largest]->info) > 0) largest = left;
+  if (right < n && objCmp(arr[right]->info, arr[largest]->info) > 0) largest = right;
   if (largest != i) {
     swap(&arr[i]->info, &arr[largest]->info);
     heapify(arr, n, largest);
@@ -234,15 +282,17 @@ void heapify(NodeL *arr[], int n, int i) {
  * 
  * @param low Ponteiro para o início da sublista.
  * @param high Ponteiro para o final da sublista.
+ * @return 0 se bem-sucedido, -1 se falhar.
  */
-void heapSort(NodeL *low, NodeL *high) {
+int heapSort(NodeL* low, NodeL* high) {
   int n = 0;
-  NodeL *temp = low;
+  NodeL* temp = low;
   while (temp != high->prox) {
     n++;
     temp = temp->prox;
   }
-  NodeL *arr[n];
+  NodeL** arr = malloc(n * sizeof(NodeL*));
+  if (arr == NULL) return -1;
   temp = low;
   for (int i = 0; i < n; i++) {
     arr[i] = temp;
@@ -253,6 +303,8 @@ void heapSort(NodeL *low, NodeL *high) {
     swap(&arr[0]->info, &arr[i]->info);
     heapify(arr, i, 0);
   }
+  free(arr);
+  return 0;
 }
 
 /**
@@ -262,11 +314,11 @@ void heapSort(NodeL *low, NodeL *high) {
  * @param high Ponteiro para o final da sublista.
  * @return Ponteiro para o novo pivô.
  */
-NodeL *partition(NodeL *low, NodeL *high) {
-  Auto pivot = high->info;
-  NodeL *i = low->ant;
-  for (NodeL *j = low; j != high; j = j->prox) {
-    if (autoCmp(j->info, pivot) <= 0) {
+NodeL* partition(NodeL* low, NodeL* high) {
+  obj pivot = high->info;
+  NodeL* i = low->ant;
+  for (NodeL* j = low; j != high; j = j->prox) {
+    if (objCmp(j->info, pivot) <= 0) {
       i = (i == NULL) ? low : i->prox;
       swap(&i->info, &j->info);
     }
@@ -282,17 +334,16 @@ NodeL *partition(NodeL *low, NodeL *high) {
  * @param low Ponteiro para o início da sublista.
  * @param high Ponteiro para o final da sublista.
  * @param depthLimit Limite de profundidade para alternar para o HeapSort.
+ * @return 0 se bem-sucedido, -1 se falhar.
  */
-void introSort(NodeL *low, NodeL *high, int depthLimit) {
+int introSort(NodeL* low, NodeL* high, int depthLimit) {
   if (high && low != high && low != high->prox) {
-    if (depthLimit == 0) {
-      heapSort(low, high);  
-      return;
-    }
-    NodeL *p = partition(low, high);
-    introSort(low, p->ant, depthLimit - 1);
-    introSort(p->prox, high, depthLimit - 1);
+    if (depthLimit == 0) return (heapSort(low, high) != 0) ? -1 : 0;
+    NodeL* p = partition(low, high);
+    if (introSort(low, p->ant, depthLimit - 1) != 0) return -1;
+    if (introSort(p->prox, high, depthLimit - 1) != 0) return -1;
   }
+  return 0; 
 }
 
 /**
@@ -300,47 +351,52 @@ void introSort(NodeL *low, NodeL *high, int depthLimit) {
  * 
  * @param low Ponteiro para o início da sublista.
  * @param high Ponteiro para o final da sublista.
+ * @return 0 se bem-sucedido, -1 se falhar.
  */
-void quickSort(NodeL *low, NodeL *high) {
+int quickSort(NodeL* low, NodeL* high) {
   int n = 0;
-  NodeL *temp = low;
+  NodeL* temp = low;
   while (temp != high->prox) {
     n++;
     temp = temp->prox;
   }
   int depthLimit = 2 * (int)log2(n);  // Limite de profundidade é 2 * log2(n)
-  introSort(low, high, depthLimit);
+  if (introSort(low, high, depthLimit) != 0) return -1;
+  return 0;  
 }
 
 /**
  * @brief Função principal para ordenar a lista.
  * 
- * @param lst Ponteiro para a lista.
+ * Ordena usando o mecanismo de ordenação Intro Sort.
+ * Complexidade (Pior Caso): O(NlogN).
+ * 
+ * @param lst Lista.
  * @return A lista ordenada.
  */
-List listSort(List lst) {
-  if (lst->head == NULL || lst->N <= 1) return lst;
-  NodeL *high = lst->tail;
-  quickSort(lst->head, high);
+list listSort(list lst) {
+  if (listIsEmpty(lst) || lst->N <= 1) return lst;
+  NodeL* high = lst->tail;
+  if (quickSort(lst->head, high) != 0) fprintf(stderr, "Error: listSort failed");
   return lst;
 } 
 
 /**
  * @brief Mescla duas listas ordenadas em uma nova lista.
  * 
- * @param lst1 Ponteiro para a primeira lista.
- * @param lst2 Ponteiro para a segunda lista.
- * @return Ponteiro para a nova lista mesclada.
+ * @param lst1 Objeto para a primeira lista.
+ * @param lst2 Objeto para a segunda lista.
+ * @return Objeto para a nova lista mesclada.
  */
-List listMerge(List lst1, List lst2) {
+list listMerge(list lst1, list lst2) {
   if (lst1 == NULL || lst1->head == NULL) return lst2;
   if (lst2 == NULL || lst2->head == NULL) return lst1;
-  List mergedList = listNew(); 
+  list mergedList = listNew(); 
   if (!mergedList) return NULL; 
-  NodeL *aux1 = lst1->head;
-  NodeL *aux2 = lst2->head;
+  NodeL* aux1 = lst1->head;
+  NodeL* aux2 = lst2->head;
   while (aux1 != NULL && aux2 != NULL) {
-    if (autoCmp(aux1->info, aux2->info) <= 0) {
+    if (objCmp(aux1->info, aux2->info) <= 0) {
       listAddEnd(mergedList, aux1->info);
       aux1 = aux1->prox;
     } else {
@@ -358,34 +414,39 @@ List listMerge(List lst1, List lst2) {
   }
   return mergedList;
 }
-
-/**
- * @brief Busca e retorna um elemento na lista na posição especificada.
- * 
- * @param lst Ponteiro para a lista.
- * @param pos Posição do elemento a ser buscado.
- * @return O elemento buscado.
- */
-void *listGet(List lst, const int pos) {
-  if (listIsEmpty(lst) || pos < 0 || pos >= lst->N) return NULL;
-  NodeL *aux = lst->head;
-  for (int i = 0; i < pos; i++) aux = aux->prox;
-  return aux->info;
-}
  
-/** 
-* @brief Printa todos os elementos de uma lista.
-*
-* @param lst Ponteiro para a lista.
-* @return 1 se a lista não é vazia, 0 caso contrário.
-*/
-int listPrint(List lst) {
-  if (listIsEmpty(lst)) return 0;
-  NodeL *aux = lst->head;
+/**
+ * @brief Converte uma lista para uma string.
+ * 
+ * @param lst Lista a ser convertida.
+ * @return string da lista convertida.
+ */
+string listToString(list lst) {
+  if (listIsEmpty(lst)) return NULL;
+  NodeL* aux = lst->head;
+  string str = stringNew();
+  stringAddChar(str, '[');
   while (aux != NULL) {
-    stringPrint(toString(aux->info));
-    printf(" ");
+    string temp = toString(aux->info);
+    str = stringAppend(str, temp);
+    stringDestroy(temp);
+    if (aux->prox != NULL) str = stringCat(str, ", ");
     aux = aux->prox;
   }
+  stringAddChar(str, ']');
+  return str;
+}
+
+/** 
+* @brief Exibe todos os elementos de uma lista.
+*
+* @param lst Lista.
+* @return 1 se a lista não é vazia, 0 caso contrário.
+*/
+int listPrint(list lst) {
+  if (listIsEmpty(lst)) return 0;
+  string str = listToString(lst);
+  stringPrint(str);
+  stringDestroy(str);
   return 1;
 }  
