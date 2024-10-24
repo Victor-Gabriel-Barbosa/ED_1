@@ -37,139 +37,134 @@
 
 #include <typeslib.h>
  
-/**  
- * Cria uma nova lista vazia. 
+/**
+ * @brief Cria uma nova lista duplamente encadeada e inicializa seus campos.
  * 
- * @return Uma nova instância do lista.
+ * @return Ponteiro para a nova lista, ou NULL se a alocação de memória falhar.
  */
 list listNew();
 
-/** 
- * @brief Libera a memória alocada para a lista.
+/**
+ * @brief Libera toda a memória alocada para a lista e seus elementos.
  * 
- * @param lst Lista a ser liberado.
- * @return Um ponteiro nulo após a liberação da lista.
+ * @param lst Ponteiro para a lista a ser destruída.
+ * @return NULL após a destruição da lista.
  */
 list listDestroy(list lst);
 
-/** 
- * @brief Verifica se a lista está vazia.
- * 
- * @param lst Lista.
- * @return 1 se a lista está vazia, 0 caso contrário
+/**
+ * @brief Verifica se uma lista encadeada está vazia.
+ *
+ * @param lst A lista a ser verificada.
+ * @return 1 se a lista estiver vazia, 0 caso contrário.
  */
 int listIsEmpty(list lst);
 
-/** 
- * @brief Obtém o tamanho da lista.
- * 
- * @param lst Lista.
- * @return O tamanho da lista.
+/**
+ * @brief Retorna o número de elementos na lista.
+ *
+ * @param lst A lista da qual se deseja obter o tamanho.
+ * @return O número de nós na lista ou 0 se a lista for nula.
  */
 size_t listSize(list lst);
 
-/** 
- * @brief Insere um novo elemento no início da lista.
- * 
- * @param lst Lista.
- * @param info O valor a ser inserido (objeto obj).
- * @return Um Lista atualizada.
+/**
+ * @brief Adiciona um novo nó no início da lista.
+ *
+ * @param lst A lista onde o novo nó será adicionado.
+ * @param info O objeto a ser armazenado no novo nó.
+ * @return A lista atualizada com o novo nó no início.
  */
 list listAddIni(list lst, obj info);
 
-/** 
- * @brief Insere um novo elemento no fim da lista.
- * 
- * @param lst Lista.
- * @param info O valor a ser inserido (objeto obj).
- * @return Um Lista atualizada.
+/**
+ * @brief Adiciona um novo nó ao final da lista.
+ *
+ * @param lst A lista onde o novo nó será adicionado.
+ * @param info O objeto a ser armazenado no novo nó.
+ * @return A lista atualizada com o novo nó no final.
  */
 list listAddEnd(list lst, obj info);
 
-/** 
- * @brief Remove um elemento da lista.
- * 
- * @param lst Lista.
- * @param pos A posição do elemento a ser removido.
- * @return Lista atualizado.
+/**
+ * @brief Remove um nó da lista em uma posição específica.
+ *
+ * @param lst A lista da qual o nó será removido.
+ * @param pos A posição do nó a ser removido (de 0 a N-1).
+ * @return A lista após a remoção do nó.
  */
 list listRemove(list lst, const int pos);
 
-/** 
- * @brief Busca por um elemento da lista.
- * 
- * @param lst Lista.
- * @param pos A posição do elemento a ser buscado.
- * @param info Objeto para armazenar o dado encontrado (objeto obj).
- * @return 1 se o elemento for encontrado, 0 caso contrário.
+/**
+ * @brief Busca um objeto em uma posição específica da lista.
+ *
+ * @param lst A lista onde será realizada a busca.
+ * @param pos A posição do objeto a ser buscado (de 0 a N-1).
+ * @param info Ponteiro para armazenar o objeto encontrado.
+ * @return 1 se o objeto for encontrado e armazenado com sucesso,
+ * ou -1 se a lista estiver vazia, a posição for inválida, ou o ponteiro 'info' for nulo.
  */
 int listSearch(list lst, const int pos, obj *info); 
 
 /**
- * @brief Busca e retorna um elemento na lista na posição especificada.
- * 
- * @param lst Lista.
- * @param pos Posição do elemento a ser buscado.
- * @return O elemento buscado (objeto obj).
+ * @brief Retorna o objeto armazenado em uma posição específica da lista.
+ *
+ * @param lst A lista da qual se deseja obter o objeto.
+ * @param pos A posição do nó de onde o objeto será obtido (de 0 a N-1).
+ * @return O objeto armazenado no nó na posição especificada ou NULL se a posição for inválida.
  */
 obj listGet(list lst, const int pos);
 
 /**
- * @brief Busca o índice de um elemento na lista
- * 
- * @param lst Lista.
- * @param info Elemento que será usado para encontrar o índice (objeto obj).
- * @return Index de posição do elemento.
+ * @brief Retorna o índice da primeira ocorrência de um objeto na lista.
+ *
+ * @param lst A lista onde o objeto será procurado.
+ * @param info O objeto a ser comparado com os elementos da lista.
+ * @return O índice do primeiro nó contendo o objeto ou -1 se o objeto não for encontrado.
  */
 int listIndex(list lst, obj info);
 
 /**
- * Compara duas listas encadeadas.
- * 
+ * @brief Compara duas listas elemento por elemento.
+ *
  * @param lst1 A primeira lista a ser comparada.
  * @param lst2 A segunda lista a ser comparada.
- * 
- * @return 
- * - 1 se lst1 for maior que lst2,
- * - -1 se lst2 for maior que lst1,
- * - 0 se ambas as listas forem iguais (tanto em tamanho quanto em conteúdo).
+ * @return 0 se as listas forem iguais, 1 se 'lst1' for maior, -1 se 'lst2' for maior.
  */
 int listCmp(list lst1, list lst2);
 
 /**
- * @brief Função principal para ordenar a lista.
- * 
- * Ordena usando o mecanismo de ordenação Intro Sort.
- * Complexidade (Pior Caso): O(NlogN).
- * 
- * @param lst Lista.
- * @return A lista ordenada.
+ * @brief Ordena uma lista encadeada usando o algoritmo Quick Sort.
+ *
+ * @param lst A lista a ser ordenada.
+ * @return A lista ordenada, ou a mesma lista se estiver vazia 
+ * ou contendo um único elemento.
  */
 list listSort(list lst);
 
 /**
- * @brief Mescla duas listas ordenadas em uma nova lista.
- * 
- * @param lst1 Objeto para a primeira lista.
- * @param lst2 Objeto para a segunda lista.
- * @return Objeto para a nova lista mesclada.
+ * @brief Mescla duas listas encadeadas ordenadas em uma única lista ordenada.
+ *
+ * @param lst1 A primeira lista a ser mesclada.
+ * @param lst2 A segunda lista a ser mesclada.
+ * @return A lista mesclada ordenada, ou NULL se a alocação de memória falhar.
  */
 list listMerge(list lst1, list lst2);
 
 /**
- * @brief Converte uma lista para uma string.
- * 
- * @param lst Lista a ser convertida.
- * @return string da lista convertida.
+ * @brief Converte uma lista encadeada em uma representação de string.
+ *
+ * @param lst A lista a ser convertida em string.
+ * @return A representação de string da lista, ou NULL se a lista estiver vazia.
  */
 string listToString(list lst);
 
-/** 
-* @brief Simula o printf usando o tipo list.
-*
-* @param str Objeto para a list.
-* @return 1 se a list não é vazia, 0 caso contrário.
-*/
+/**
+ * @brief Exibe a representação em string de uma lista encadeada.
+ *
+ * @param lst A lista a ser exibida.
+ * @return 1 se a impressão foi bem-sucedida ou 0 se a lista estiver vazia.
+ */
 int listPrint(list lst);
                                                               
 #endif

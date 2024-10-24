@@ -27,4 +27,3 @@ REM Copiar a biblioteca para o MinGW
 copy libc_plus.a C:\MinGW\lib\
 
 echo Biblioteca atualizada com sucesso!
-pause

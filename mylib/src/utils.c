@@ -15,7 +15,7 @@
  * ou de operações de arquivo.
  */
 void catchError() { 
-  fprintf(stderr, C_FMT_ERROR("\n[Erro: %s!]\n"), strerror(errno));
+  fprintf(stderr, C_FMT_ERROR("\nErro: %s\n"), strerror(errno));
   exit(EXIT_FAILURE);
 }
 
@@ -57,7 +57,7 @@ void cleanScreen() {
  *
  * @param msg Mensagem a ser exibida antes de limpar a tela.
  */
-void waitCleanScreen(const char *msg) {
+void waitCleanScreen(const char* msg) {
   printf("\n%s", msg);
   cleanBuffer();
   cleanScreen();
@@ -76,57 +76,47 @@ void waitCleanScreen(const char *msg) {
  * @param max Valor máximo do intervalo.
  * @return O número escolhido pelo usuário.
  */
-int choose(const char *msg, const int min, const int max) {
-  while (1) { // Verifica se o número é válido
-    int num;
-    printf("\n%s\n", msg);
-    printf("%s[%d%s-%s%d]%s: ", C_BOLD C_BLUE, min, C_MAGENTA, C_RED, max, C_RESET);
+int choose(const char* msg, const int min, const int max) {
+  int num = 0;
+  int aux = 1;
+  while (aux) {
+    printf("%s [%d-%d]: ", msg, min, max);
     scanf("%d", &num);
     cleanBuffer();
-    if (num >= min && num <= max) return num;
-    printf(C_FMT_ERROR("\n[Número inválido! Tente novamente...]\n"));
+    if (num >= min && num <= max) aux = 0;
+    else printf("Número inválido...\n");
   }
+  return num;
 }
 
 /**
- * @brief Confirma uma ação com o usuário.
+ * @brief Solicita confirmação do usuário com mensagem formatada.
  *
- * Essa função exibe uma mensagem ao usuário, solicitando uma
- * confirmação. O usuário pode responder com um 'sim' ou 'não', e a
- * função retorna 1 para confirmação e 0 caso contrário.
+ * A função exibe uma mensagem formatada para o usuário e solicita
+ * que ele responda com 'S' (sim) ou 'N' (não). Ela continua perguntando
+ * até que uma resposta válida seja fornecida.
  *
- * @param msg Mensagem a ser exibida.
- * @return 1 se o usuário confirmou, 0 caso contrário.
+ * @param msg Mensagem formatada (como em printf) para exibir ao usuário.
+ * @param ... Argumentos variáveis para formatar a mensagem.
+ *
+ * @return Retorna 1 se o usuário confirmar (responder 'S'), ou 0 se o usuário
+ * negar (responder 'N').
  */
-int confirm(const char *msg) { 
-  while (1) { // Confirma uma ação
-    printf("\nDeseja %s%s%s?\n", C_BOLD C_RED, msg, C_RESET);
-    printf("%s[S%s/%sN]%s: ", C_BOLD C_BLUE, C_MAGENTA, C_RED, C_RESET);
-    char op = tolower(getchar());
-    cleanBuffer();
-    if (op == 's') return 1;
-    if (op == 'n') return 0;
-    printf(C_FMT_ERROR("\n[Opção inválida!]\n"));
-  } 
-}
-
-/**
- * @brief Analisa se a alocação foi bem-sucedida.
- *
- * Essa função verifica se um ponteiro resultante de uma alocação de
- * memória é NULL. Se for, exibe uma mensagem de erro e encerra o
- * programa. Essa função é crucial para garantir que o programa não
- * continue a executar com ponteiros inválidos.
- *
- * @param pt Ponteiro para o bloco de memória alocado.
- * @return O ponteiro original, se bem-sucedido.
- */
-void *verAlloc(void *pt) {
-  if (pt == NULL) {
-    catchError();
-    exit(EXIT_FAILURE);
+int confirm(const char* msg, ...) {
+  char op;
+  int aux = 1;
+  va_list args; 
+  while (aux) {
+    va_start(args, msg);
+    vprintf(msg, args);
+    va_end(args);
+    printf(" [S/N]? ");
+    op = tolower(getchar());
+    cleanBuffer(); 
+    if (op == 's' || op == 'n') aux = 0;
+    else printf("Opção inválida...\n");
   }
-  return pt;
+  return (op == 's');
 }
 
 /**
@@ -138,43 +128,55 @@ void *verAlloc(void *pt) {
  *
  * @param format Formato da string.
  */
-void printfs(const char *format, ...) {
+void printfs(const char* format, ...) {
   va_list args;
   va_start(args, format);
   while (*format) {
     if (*format == '%') {
       format++; 
       switch (*format) { 
-        case 'd': // Int
+        case 'd':
           printf("%d", va_arg(args, int)); 
           break;
-        case 'f': // Float
+        case 'f': 
           printf("%f", va_arg(args, double));
           break;
-        case 'c': // Char
-          putchar(va_arg(args, int)); // Char é promovido a int
+        case 'c':
+          putchar(va_arg(args, int)); 
           break;
-        case 's': // string (char*)
+        case 's': 
           printf("%s", va_arg(args, char*));
           break;
-        case 'S': { // string (tipo personalizado)
+        case 'S': { 
           string S = va_arg(args, string);
           stringPrint(S); 
           break;
         }
-        case 'L': { // list (tipo personalizado)
+        case 'L': { 
           list L = va_arg(args, list);
           listPrint(L);
           break;
         }
-        case 'Q': { // queue (tipo personalizado)
+        case 'Q': { 
           queue Q = va_arg(args, queue);
           queuePrint(Q);
           break;
         }
-        case 'K': { // stack (tipo personalizado)
+        case 'K': { 
           stack K = va_arg(args, stack);
           stackPrint(K);
+          break;
+        }
+        case 'T': {
+          tree T = va_arg(args, tree);
+          treePrint(T);
+          break;
+        }
+        case 'O': {
+          obj O = va_arg(args, obj);
+          string str = toString(O);
+          stringPrint(str);
+          stringDestroy(str);
           break;
         }
         default: 
@@ -195,27 +197,26 @@ void printfs(const char *format, ...) {
  *
  * @param count Número de objetos obj.
  * @param ... Lista de objetos obj.
- * @return int 1 se todos os textos foram exibidos corretamente, 0 caso algum falhar.
+ * @return 1 se todos os textos foram exibidos corretamente, 0 caso algum falhar.
  */
 int printMultiple(int count, ...) {
   va_list args;
   int allPrinted = 1;
-  va_start(args, count); // Inicializa a lista de argumentos variáveis
-  for (int i = 0; i < count; i++) { // Converte cada objeto para string e exibe na tela
+  va_start(args, count); 
+  for (int i = 0; i < count; i++) { 
     obj a = va_arg(args, obj);
-    if (a == NULL) { // Se o objeto for NULL, marca falha e continua
+    if (a == NULL) { 
       allPrinted = 0;
       continue;
     }
-    string str = toString(a); // Converte o objeto para string
-    objDestroy(a); // Destrói o objeto original
-    if (str == NULL) allPrinted = 0; // Verifica se a conversão foi bem-sucedida
-    else { // Exibe a string e destrói após o uso
+    string str = toString(a);
+    if (str == NULL) allPrinted = 0; 
+    else {
       stringPrint(str);
       stringDestroy(str);
     }
   }
-  va_end(args); // Finaliza a lista de argumentos variáveis
+  va_end(args);
   return allPrinted;
 }
 
@@ -228,12 +229,40 @@ int printMultiple(int count, ...) {
  * @param ... Argumentos para a formatação da mensagem.
  * @return string contendo a entrada do usuário.
  */
-string input(const char *format, ...) {
+string input(const char* format, ...) {
   va_list args;
   va_start(args, format);
   vprintf(format, args);
   va_end(args);
   return stringInput();
+}
+
+/**
+ * @brief Verifica se um arquivo existe no sistema.
+ *
+ * @param fileName Nome do arquivo a ser verificado.
+ * @return 1 se o arquivo existe, caso contrário 0.
+ */
+int fileExists(const char* fileName) {
+  return (access(fileName, F_OK) == 0);
+}
+
+/**
+ * @brief Obtém o tamanho do arquivo em bytes.
+ *
+ * @param fileName Nome do arquivo.
+ * @return Retorna o tamanho do arquivo em bytes, ou -1 se houver erro.
+ */
+long fileSize(const char* fileName) {
+  FILE* file = fopen(fileName, "r");
+  if (file == NULL) {
+    printf("Erro ao abrir arquivo: %s\n", fileName);
+    return -1;
+  }
+  fseek(file, 0, SEEK_END);
+  long size = ftell(file);  
+  fclose(file);
+  return size;
 }
 
 /**
@@ -243,50 +272,144 @@ string input(const char *format, ...) {
  * para evitar conflitos em operações de entrada/saída. Isso é útil em
  * situações onde arquivos podem ter nomes duplicados.
  *
- * @param nome_a Nome do arquivo original.
+ * @param fileName Nome do arquivo original.
  * @return Nome único e válido do arquivo.
  */
-char *fileName(const char *nome_a) {
-  char nome_b[256], EXT[10] = ".txt", *ext = strrchr(nome_a, '.');
+char* fileName(const char* fileName) {
   int cont_a = 0;
-  if (ext != NULL) { // Verifica se o arquivo possui extensão
-    strncpy(nome_b, nome_a, ext - nome_a);
-    nome_b[ext - nome_a] = '\0';
-    snprintf(EXT, sizeof(EXT), "%s", ext);
-  } else strcpy(nome_b, nome_a);
-  char *nome_f = verAlloc(malloc(strlen(nome_b) + strlen(EXT) + 10));
+  size_t fileName_len = strlen(fileName);
+  char* nome_f;
+  size_t tamanho = fileName_len + 10;  
+  nome_f = malloc(tamanho);
+  if (nome_f == NULL) return NULL;
   do {
-    snprintf(nome_f, strlen(nome_b) + strlen(EXT) + 10, cont_a == 0 ? "%s%s" : "%s(%d)%s", nome_b, cont_a++, EXT);
-  } while (access(nome_f, F_OK) == 0);
+    if (cont_a == 0) snprintf(nome_f, tamanho, "%s", fileName);  
+    else {
+      char* ext = strrchr(fileName, '.');  
+      if (ext != NULL) snprintf(nome_f, tamanho, "%.*s(%d)%s", (int)(ext - fileName), fileName, cont_a, ext); 
+      else snprintf(nome_f, tamanho, "%s(%d)", fileName, cont_a); 
+    }
+    cont_a++;
+  } while (access(nome_f, F_OK) == 0);  
   return nome_f;
 }
 
 /**
- * @brief Exibe o conteúdo de um arquivo.
+ * @brief Deleta o arquivo especificado pelo nome.
+ *
+ * A função tenta deletar o arquivo cujo nome é passado como argumento.
+ * Se o arquivo for deletado com sucesso, uma mensagem de confirmação
+ * é exibida. Caso contrário, uma mensagem de erro descrevendo o motivo
+ * da falha é exibida.
+ *
+ * @param fileName Nome do arquivo a ser deletado.
+ * @return 1 se o arquivo foi deletado com sucesso, ou 0 se houve erro.
+ */
+int fileDelete(const char* fileName) {
+  if (!confirm("Tem certeza que deseja excluir o arquivo '%s'", fileName)) {
+    printf("Exclusão cancelada\n");
+    return 0; 
+  }
+  if (remove(fileName) == 0) {
+    printf("Arquivo '%s' deletado com sucesso\n", fileName);
+    return 1;  
+  } else {
+    printf("Erro ao deletar o arquivo '%s': %s\n", fileName, strerror(errno));
+    return 0;  
+  }
+}
+
+/**
+ * @brief Exibe o conteúdo de um arquivo. 
  *
  * Essa função abre um arquivo especificado e exibe seu conteúdo na
  * saída padrão. Ela também pode aplicar formatação de cor ao conteúdo
  * exibido, conforme especificado. É uma ferramenta útil para depuração
  * ou visualização de dados.
  *
- * @param nome_a Nome do arquivo a ser exibido.
+ * @param fileName Nome do arquivo a ser exibido.
  * @param cor Cor a ser utilizada na exibição.
  * @return 1 se o arquivo foi exibido com sucesso, 0 caso contrário.
  */
-int filePrint(const char *nome_a, const char *cor) {
-  FILE *arquivo = fopen(nome_a, "r");
-  if (arquivo == NULL) { // Verifica se o arquivo foi aberto com sucesso
-    printf(C_FMT_ERROR("\n[Arquivo '%s' não encontrado!]: %s%s\n"), nome_a, strerror(errno), C_RESET);
+int filePrint(const char* fileName) {
+  FILE* arquivo = fopen(fileName, "r");
+  if (arquivo == NULL) { 
+    printf("Arquivo '%s' não encontrado: %s\n", fileName, strerror(errno));
     return 0;
   }
   char *linha = NULL;
   size_t tam = 0;
-  printf("%s", cor);
-  while (getline(&linha, &tam, arquivo) != -1) { // Lê todas as linhas do arquivo
-    printf("%s", linha);
-  }
-  printf("%s", C_RESET);
+  while (getline(&linha, &tam, arquivo) != -1) printf("%s", linha);
   free(linha);
   fclose(arquivo);
   return 1; 
 } 
+
+/**
+ * @brief Renomeia um arquivo.
+ *
+ * @param oldName Nome atual do arquivo.
+ * @param newName Novo nome para o arquivo.
+ * @return 1 se o arquivo foi renomeado com sucesso, ou 0 se houve erro.
+ */
+int renameFile(const char* oldName, const char* newName) {
+  if (!confirm("Tem certeza que deseja renomear o arquivo '%s' para '%s'", oldName, newName)) {
+    printf("Renomeação cancelada\n");
+    return 0;
+  }
+  if (rename(oldName, newName) == 0) {
+    printf("Arquivo renomeado de '%s' para '%s'.\n", oldName, newName);
+    return 1;
+  } else {
+    printf("Erro ao renomear o arquivo '%s': %s\n", oldName, strerror(errno));
+    return 0;
+  }
+}
+
+/**
+ * @brief Adiciona texto ao final de um arquivo.
+ *
+ * @param fileName Nome do arquivo.
+ * @param text Texto a ser adicionado ao final do arquivo.
+ * @return 1 se o texto foi adicionado com sucesso, ou 0 se houve erro.
+ */
+int appendToFile(const char* fileName, const char* text) {
+  FILE *file = fopen(fileName, "a");
+  if (file == NULL) {
+    printf("Erro ao abrir o arquivo '%s': %s\n", fileName, strerror(errno));
+    return 0;
+  }
+  fprintf(file, "%s\n", text);
+  fclose(file);
+  return 1;
+}
+
+/**
+ * @brief Compara dois arquivos para verificar se são idênticos.
+ *
+ * @param file1 Nome do primeiro arquivo.
+ * @param file2 Nome do segundo arquivo.
+ * @return 1 se os arquivos são idênticos, ou 0 caso contrário.
+ */
+int fileCompare(const char* file1, const char* file2) {
+  FILE *f1 = fopen(file1, "r");
+  FILE *f2 = fopen(file2, "r");
+  if (f1 == NULL || f2 == NULL) {
+    printf("Erro ao abrir arquivos para comparação\n");
+    if (f1) fclose(f1);
+    if (f2) fclose(f2);
+    return 0;
+  }
+  int ch1, ch2;
+  int identical = 1;
+  while (((ch1 = fgetc(f1)) != EOF) && ((ch2 = fgetc(f2)) != EOF)) {
+    if (ch1 != ch2) {
+      identical = 0;
+      break;
+    }
+  }
+  if (fgetc(f1) != EOF || fgetc(f2) != EOF) identical = 0;
+  fclose(f1);
+  fclose(f2);
+  return identical;
+}

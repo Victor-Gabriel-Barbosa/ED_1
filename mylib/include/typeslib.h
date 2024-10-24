@@ -51,46 +51,47 @@
 typedef struct string_t *string;
 
 /**
- * @brief Estrutura abstrata para representar uma Lista.
+ * @brief Estrutura abstrata para representar uma lista.
  */
-typedef struct list_t *list;
+typedef struct list_t* list;
 
 /**
- * @brief Estrutura abstrata para representar uma Fila.
+ * @brief Estrutura abstrata para representar uma fila.
  */
-typedef struct queue_t *queue;
+typedef struct queue_t* queue;
 
 /**
- * @brief Estrutura abstrata para representar uma Pilha.
+ * @brief Estrutura abstrata para representar uma pilha.
  */
-typedef struct stack_t *stack;
+typedef struct stack_t* stack;
 
 /**
- * @brief Estrutura que representa uma Árvore Binária.
+ * @brief Estrutura que representa uma árvore binária.
  */
-typedef struct tree_t *tree;
+typedef struct tree_t* tree;
 
 /**
  * @brief Estrutura abstrata para representar qualquer tipo de dado.
  */
-typedef struct obj_t *obj;
+typedef struct obj_t* obj;
 
 /**
  * @enum ObjType
  * @brief Enumeração que define os tipos de dados suportados pela biblioteca.
  */
 typedef enum {
-  TYPE_INT,       /**< Tipo inteiro (int). */
-  TYPE_FLOAT,     /**< Tipo ponto flutuante (float). */
-  TYPE_DOUBLE,    /**< Tipo ponto flutuante (double). */
-  TYPE_CHAR,      /**< Tipo caractere (char). */
-  TYPE_CHAR_PTR,  /**< Tipo ponteiro para caractere (char*). */
-  TYPE_BOOL,      /**< Tipo booleano (bool). */
-  TYPE_STRING,    /**< Tipo string (string). */
-  TYPE_LIST,      /**< Tipo lista (list). */
-  TYPE_QUEUE,     /**< Tipo fila (queue). */
-  TYPE_STACK,     /**< Tipo pilha (stack). */
-  TYPE_UNKNOWN,   /**< Tipo genérico desconhecido, usado para tipos personalizados (void*). */
+  TYPE_INT,      /**< Tipo inteiro (int). */
+  TYPE_FLOAT,    /**< Tipo ponto flutuante (float). */
+  TYPE_DOUBLE,   /**< Tipo ponto flutuante (double). */
+  TYPE_CHAR,     /**< Tipo caractere (char). */
+  TYPE_CHAR_PTR, /**< Tipo ponteiro para caractere (char*). */
+  TYPE_BOOL,     /**< Tipo booleano (bool). */
+  TYPE_STRING,   /**< Tipo string (string). */
+  TYPE_LIST,     /**< Tipo lista (list). */
+  TYPE_QUEUE,    /**< Tipo fila (queue). */
+  TYPE_STACK,    /**< Tipo pilha (stack). */
+  TYPE_TREE,     /**< Tipo árvore (tree). */
+  TYPE_UNKNOWN   /**< Tipo genérico desconhecido, usado para tipos personalizados (void*). */
 } ObjType;
 
 /**
@@ -99,7 +100,7 @@ typedef enum {
  * @param value Ponteiro para os dados.
  * @param size Tamanho dos dados.
  * @param type Tipo de dado (definido por ObjType).
- * @return Objeto obj contendo os dados.
+ * @return Objeto contendo os dados.
  */
 obj voidToObj(void* value, size_t size, ObjType type);
 
@@ -108,7 +109,7 @@ obj voidToObj(void* value, size_t size, ObjType type);
  * 
  * @param value Valor inteiro.
  * @param size Tamanho do valor (não utilizado nesta função).
- * @return Objeto obj contendo o valor inteiro.
+ * @return Objeto contendo o valor inteiro.
  */
 obj intToObj(int value, size_t size);
 
@@ -117,7 +118,7 @@ obj intToObj(int value, size_t size);
  * 
  * @param value Valor float.
  * @param size Tamanho do valor (não utilizado nesta função).
- * @return Objeto obj contendo o valor float.
+ * @return Objeto contendo o valor float.
  */
 obj floatToObj(float value, size_t size);
 
@@ -126,7 +127,7 @@ obj floatToObj(float value, size_t size);
  * 
  * @param value Valor double.
  * @param size Tamanho do valor (não utilizado nesta função).
- * @return Objeto obj contendo o valor double.
+ * @return Objeto contendo o valor double.
  */
 obj doubleToObj(double value, size_t size);
 
@@ -135,16 +136,16 @@ obj doubleToObj(double value, size_t size);
  * 
  * @param value Valor caractere (char).
  * @param size Tamanho do valor (não utilizado nesta função).
- * @return Objeto obj contendo o valor caractere.
+ * @return Objeto contendo o valor caractere.
  */
 obj charToObj(char value, size_t size);
 
 /**
- * @brief Converte uma string C (ponteiro de char) para obj.
+ * @brief Converte uma string literal (char*) para obj.
  * 
  * @param value Ponteiro para a string.
  * @param size Tamanho da string (não utilizado nesta função).
- * @return Objeto obj contendo a string.
+ * @return Objeto contendo a string.
  */
 obj charPtrToObj(const char* value, size_t size);
 
@@ -153,7 +154,7 @@ obj charPtrToObj(const char* value, size_t size);
  * 
  * @param value Valor booleano (bool).
  * @param size Tamanho do valor (não utilizado nesta função).
- * @return Objeto obj contendo o valor booleano.
+ * @return Objeto contendo o valor booleano.
  */
 obj boolToObj(bool value, size_t size);
 
@@ -162,7 +163,7 @@ obj boolToObj(bool value, size_t size);
  * 
  * @param value Estrutura string.
  * @param size Tamanho da string (não utilizado nesta função).
- * @return Objeto obj contendo a string.
+ * @return Objeto contendo a string.
  */
 obj stringToObj(string value, size_t size);
 
@@ -171,7 +172,7 @@ obj stringToObj(string value, size_t size);
  * 
  * @param value Estrutura list.
  * @param size Tamanho da lista (não utilizado nesta função).
- * @return Objeto obj contendo a lista.
+ * @return Objeto contendo a lista.
  */
 obj listToObj(list value, size_t size);
 
@@ -180,7 +181,7 @@ obj listToObj(list value, size_t size);
  * 
  * @param value Estrutura queue.
  * @param size Tamanho da fila (não utilizado nesta função).
- * @return Objeto obj contendo a fila.
+ * @return Objeto contendo a fila.
  */
 obj queueToObj(queue value, size_t size);
 
@@ -189,23 +190,32 @@ obj queueToObj(queue value, size_t size);
  * 
  * @param value Estrutura stack.
  * @param size Tamanho da pilha (não utilizado nesta função).
- * @return Objeto obj contendo a pilha.
+ * @return Objeto contendo a pilha.
  */
 obj stackToObj(stack value, size_t size);
+
+/**
+ * @brief Converte uma árvore abstrata (tree) para obj.
+ * 
+ * @param value Estrutura tree.
+ * @param size Tamanho da árvore (não utilizado nesta função).
+ * @return Objeto contendo a árvore.
+ */
+obj treeToObj(tree value, size_t size);
 
 /**
  * @brief Converte um valor desconhecido para obj.
  * 
  * @param value Ponteiro para os dados.
  * @param size Tamanho dos dados.
- * @return Objeto obj contendo os dados genéricos.
+ * @return Objeto contendo os dados genéricos.
  */
 obj unknownToObj(void* value, size_t size);
 
 /**
  * @brief Libera a memória de um obj.
  * 
- * @param a Objeto obj a ser destruída.
+ * @param a Objeto a ser destruída.
  * @return NULL após a destruição do obj.
  */
 obj objDestroy(obj a);
@@ -213,7 +223,7 @@ obj objDestroy(obj a);
 /**
  * @brief Obtém o tipo de dado armazenado em obj.
  * 
- * @param a Objeto obj.
+ * @param a Objeto.
  * @return Tipo de dado (ObjType) armazenado.
  */
 ObjType objGetType(obj a);
@@ -221,7 +231,7 @@ ObjType objGetType(obj a);
 /**
  * @brief Obtém os dados armazenados em obj.
  * 
- * @param a Objeto obj.
+ * @param a Objeto.
  * @return Ponteiro para os dados armazenados.
  */
 void* objGetData(obj a);
@@ -229,7 +239,7 @@ void* objGetData(obj a);
 /**
  * @brief Obtém o tamanho dos dados armazenados em obj.
  * 
- * @param a Objeto obj.
+ * @param a Objeto.
  * @return Tamanho dos dados armazenados.
  */
 size_t objGetSize(obj a);
@@ -246,7 +256,7 @@ int objCmp(obj a, obj b);
 /** 
 * @brief Exibe um valor do tipo obj na tela.
 *
-* @param a Objeto obj.
+* @param a Objeto.
 * @return 1 se o objeto é válido, 0 caso contrário.
 */
 int objPrint(obj a);
@@ -255,7 +265,7 @@ int objPrint(obj a);
  * @brief Macro para converter automaticamente tipos suportados para obj.
  * 
  * @param value Valor a ser convertido.
- * @return Objeto obj correspondente ao tipo do valor.
+ * @return Objeto correspondente ao tipo do valor.
  */
 #define toObj(value) _Generic((value), \
   int: intToObj, \
@@ -270,6 +280,7 @@ int objPrint(obj a);
   list: listToObj, \
   queue: queueToObj, \
   stack: stackToObj, \
+  tree: treeToObj, \
   default: unknownToObj \
 )(value, sizeof(value))
 

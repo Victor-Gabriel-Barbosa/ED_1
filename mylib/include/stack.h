@@ -33,88 +33,85 @@
 /**
  * @brief Cria uma nova pilha.
  * 
- * @return Objeto para a nova pilha.
+ * @return Um ponteiro para a nova pilha, ou NULL se a alocação de memória falhar.
  */
 stack stackNew();
 
+
 /**
- * @brief Destrói a pilha, liberando a memória alocada.
+ * @brief Destrói uma pilha e libera a memória associada a ela.
  * 
- * @param stk Objeto para a pilha que será destruída.
- * @return NULL para indicar que a pilha foi destruída.
+ * @param stk Ponteiro para a pilha a ser destruída.
+ * @return 'NULL' após liberar a pilha.
  */
 stack stackDestroy(stack stk);
 
 /**
  * @brief Verifica se a pilha está vazia.
  * 
- * @param stk Objeto para a pilha.
- * @return 1 se a pilha estiver vazia, 0 caso contrário.
+ * @param stk Ponteiro para a pilha a ser verificada.
+ * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
 int stackIsEmpty(stack stk);
 
 /**
- * @brief Retorna o tamanho atual da pilha.
+ * @brief Obtém o tamanho da pilha.
  * 
- * @param stk Objeto para a pilha.
- * @return size_t Tamanho da pilha (número de elementos).
+ * @param stk Ponteiro para a pilha cuja quantidade de elementos deve ser verificada.
+ * @return O número de elementos na pilha. Retorna 0 se a pilha for NULL'.
  */
 size_t stackSize(stack stk);
 
 /**
- * @brief Adiciona um novo elemento no topo da pilha.
- * 
- * @param stk Objeto para a pilha.
- * @param info Valor a ser empilhado.
- * @return Objeto para a pilha atualizada, ou NULL em caso de falha.
+ * @brief Adiciona um elemento à pilha.
+ *
+ * @param stk Ponteiro para a pilha onde o elemento deve ser adicionado.
+ * @param info O elemento a ser adicionado à pilha.
+ * @return Ponteiro para a pilha atualizada, ou a pilha inalterada se estiver vazia.
  */
 stack stackPush(stack stk, obj info);
 
 /**
- * @brief Remove o elemento do topo da pilha.
+ * @brief Obtém o elemento do topo da pilha.
  * 
- * @param stk Objeto para a pilha.
- * @param info Ponteiro onde será armazenado o valor removido do topo (obj).
- * @return Objeto para a pilha, ou NULL se a pilha estiver vazia.
- */
-stack stackPop(stack stk, obj* info);
-
-/**
- * @brief Consulta o elemento no topo da pilha sem removê-lo.
- * 
- * @param stk Objeto para a pilha.
- * @param info Ponteiro onde será armazenado o valor do topo da pilha (obj).
- * @return 1 se a operação foi bem-sucedida, ou 0 se a pilha estiver vazia.
+ * @param stk Ponteiro para a pilha da qual o elemento do topo deve ser recuperado.
+ * @param info Ponteiro para a variável onde o elemento do topo será armazenado.
+ * @return 1 se a operação for bem-sucedida, ou 0 se a pilha estiver vazia.
  */
 int stackTop(stack stk, obj* info);
 
 /**
- * Compara duas pilhas (stack).
+ * @brief Remove e retorna o elemento do topo da pilha.
  * 
- * @param stk1 A primeira pilha a ser comparada.
- * @param stk2 A segunda pilha a ser comparada.
+ * @param stk Ponteiro para a pilha da qual o elemento do topo deve ser removido.
+ * @param info Ponteiro para a variável onde o elemento removido será armazenado.
+ * @return Ponteiro para a pilha atualizada, ou a pilha inalterada se estiver vazia.
+ */
+stack stackPop(stack stk, obj* info);
+
+/**
+ * @brief Compara duas pilhas.
  * 
- * @return 
- * - 1 se stk1 for maior que stk2 (em termos de tamanho ou conteúdo),
- * - -1 se stk2 for maior que stk1,
- * - 0 se ambas as pilha forem iguais.
+ * @param stk1 Ponteiro para a primeira pilha a ser comparada.
+ * @param stk2 Ponteiro para a segunda pilha a ser comparada.
+ * @return 0 se as pilhas forem iguais, -1 se a primeira pilha for menor, 1 se a primeira pilha for maior
  */
 int stackCmp(stack stk1, stack stk2);
 
 /**
- * @brief Converte uma pilha para uma string.
+ * @brief Converte uma pilha em uma representação de string.
  * 
- * @param stk Pilha a ser convertida.
- * @return string da pilha convertida.
+ * @param stk Ponteiro para a pilha a ser convertida em string.
+ * @return Uma string representando a pilha, ou NULL se a pilha estiver vazia.
  */
 string stackToString(stack stk);
 
-/** 
-* @brief Exibe todos os elementos de uma pilha.
-*
-* @param qeu Objeto para a pilha.
-* @return 1 se a pilha não é vazia, 0 caso contrário.
-*/
+/**
+ * @brief Imprime os elementos da pilha.
+ * 
+ * @param stk Ponteiro para a pilha a ser impressa.
+ * @return 1 se a pilha foi impressa com sucesso, ou 0 se a pilha estiver vazia.
+ */
 int stackPrint(stack stk);
  
 #endif

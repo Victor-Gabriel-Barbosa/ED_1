@@ -6,31 +6,29 @@
 #include <stringlib.h>
 
 /**
- * @brief Estrutura do nó da pilha.
- * 
- * Cada nó contém um valor `info` e um ponteiro para o próximo nó da pilha.
+ * @brief Estrutura que representa um nó em uma pilha.
  */
 typedef struct nodeS {
-  obj info;
-  struct nodeS* prox; 
+  obj info;           /**< Informação armazenada na pilha */
+  struct nodeS* prox; /**< Ponteiro para o próximo nó da pilha */
 } NodeS;
 
 /**
- * @brief Estrutura da pilha (stack).
- * 
- * A pilha contém um ponteiro para o topo ('top'), um contador 
- * de elementos (`N`), o tipo de elementos ('type') e o
- * tamanho dos elementos ('sizeType')
+ * @brief Estrutura que representa uma pilha.
  */
 typedef struct stack_t {
-  NodeS* top;
-  size_t N;
+  NodeS* top; /**< Topo da pilha */
+  size_t N;   /**< Contador de elementos */
 } *stack;
 
 /**
- * @brief Cria uma nova pilha ou retorna a pilha existente.
+ * @brief Cria uma nova pilha.
  * 
- * @return Objeto para a nova pilha.
+ * Esta função aloca memória para uma nova estrutura de pilha ('stack_t'), inicializa 
+ * seus membros e retorna um ponteiro para a pilha criada. Se a alocação de memória 
+ * falhar, a função retorna 'NULL'.
+ * 
+ * @return Um ponteiro para a nova pilha, ou NULL se a alocação de memória falhar.
  */
 stack stackNew() { 
   stack stk = (stack)malloc(sizeof(struct stack_t));
@@ -41,10 +39,15 @@ stack stackNew() {
 } 
 
 /**
- * @brief Destrói a pilha, liberando a memória alocada.
+ * @brief Destrói uma pilha e libera a memória associada a ela.
  * 
- * @param stk Objeto para a pilha que será destruída.
- * @return NULL para indicar que a pilha foi destruída.
+ * Esta função percorre todos os elementos da pilha e libera a memória 
+ * ocupada por cada nó e seus dados. Após liberar todos os nós, a função 
+ * também libera a memória alocada para a estrutura da pilha. Se a pilha 
+ * fornecida for 'NULL', a função não faz nada e retorna 'NULL'.
+ * 
+ * @param stk Ponteiro para a pilha a ser destruída.
+ * @return 'NULL' após liberar a pilha.
  */
 stack stackDestroy(stack stk) {
   if (stk == NULL) return NULL;
@@ -62,29 +65,46 @@ stack stackDestroy(stack stk) {
 /**
  * @brief Verifica se a pilha está vazia.
  * 
- * @param stk Objeto para a pilha.
- * @return 1 se a pilha estiver vazia, 0 caso contrário.
+ * Esta função determina se uma pilha está vazia verificando se o ponteiro 
+ * da pilha é 'NULL' ou se o topo da pilha é 'NULL'. A pilha é considerada 
+ * vazia se não existir uma estrutura de pilha alocada ou se não houver 
+ * elementos na pilha.
+ * 
+ * @param stk Ponteiro para a pilha a ser verificada.
+ * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
 int stackIsEmpty(stack stk) {
   return (stk == NULL || stk->top == NULL);
 }  
 
 /**
- * @brief Retorna o tamanho atual da pilha.
+ * @brief Obtém o tamanho da pilha.
  * 
- * @param stk Objeto para a pilha.
- * @return Tamanho da pilha (número de elementos).
+ * Esta função retorna o número de elementos presentes na pilha. Se a pilha 
+ * fornecida for 'NULL', a função retorna 0, indicando que a pilha não possui 
+ * elementos. Caso contrário, retorna o valor armazenado no membro 'N', que 
+ * representa a quantidade de elementos na pilha.
+ * 
+ * @param stk Ponteiro para a pilha cuja quantidade de elementos deve ser verificada.
+ * @return O número de elementos na pilha. Retorna 0 se a pilha for NULL'.
  */
 size_t stackSize(stack stk) {
   return (stk == NULL) ? 0 : stk->N;
 }
 
 /**
- * @brief Adiciona um novo elemento no topo da pilha.
+ * @brief Adiciona um elemento à pilha.
  * 
- * @param stk Objeto para a pilha.
- * @param info Valor a ser empilhado (obj).
- * @return Objeto para a pilha atualizada, ou NULL em caso de falha.
+ * Esta função insere um novo elemento no topo da pilha. Se a pilha fornecida 
+ * for 'NULL', a função não realiza nenhuma operação e retorna 'NULL'. A 
+ * função tenta alocar memória para um novo nó, e se a alocação falhar, ela 
+ * retorna a pilha sem alterações. Caso a alocação seja bem-sucedida, o novo 
+ * elemento é adicionado ao topo da pilha e o contador de elementos é 
+ * incrementado.
+ * 
+ * @param stk Ponteiro para a pilha onde o elemento deve ser adicionado.
+ * @param info O elemento a ser adicionado à pilha.
+ * @return Ponteiro para a pilha atualizada, ou a pilha inalterada se estiver vazia.
  */
 stack stackPush(stack stk, obj info) {
   if (stk == NULL) return NULL;
@@ -98,11 +118,17 @@ stack stackPush(stack stk, obj info) {
 }
 
 /**
- * @brief Consulta o elemento no topo da pilha sem removê-lo.
+ * @brief Obtém o elemento do topo da pilha.
  * 
- * @param stk Objeto para a pilha.
- * @param info Ponteiro onde será armazenado o valor do topo da pilha.
- * @return 1 se a operação foi bem-sucedida, ou 0 se a pilha estiver vazia.
+ * Esta função recupera o elemento no topo da pilha e o armazena no 
+ * endereço de memória apontado pelo parâmetro 'info'. Se a pilha estiver 
+ * vazia, a função retorna 0 e não altera o valor de 'info'. Se a pilha 
+ * não estiver vazia, o elemento do topo é copiado para 'info' e a 
+ * função retorna 1, indicando que a operação foi bem-sucedida.
+ * 
+ * @param stk Ponteiro para a pilha da qual o elemento do topo deve ser recuperado.
+ * @param info Ponteiro para a variável onde o elemento do topo será armazenado.
+ * @return 1 se a operação for bem-sucedida, ou 0 se a pilha estiver vazia.
  */
 int stackTop(stack stk, obj* info) {
   if (stackIsEmpty(stk)) return 0;
@@ -111,11 +137,17 @@ int stackTop(stack stk, obj* info) {
 }
 
 /**
- * @brief Remove o elemento do topo da pilha.
+ * @brief Remove e retorna o elemento do topo da pilha.
  * 
- * @param stk Objeto para a pilha.
- * @param info Ponteiro onde será armazenado o valor removido do topo (obj).
- * @return Objeto da pilha atualizada, ou NULL se a pilha estiver vazia.
+ * Esta função remove o elemento no topo da pilha e o armazena no 
+ * endereço de memória apontado pelo parâmetro 'info'. Se a pilha estiver 
+ * vazia, a função não realiza nenhuma operação e retorna a pilha original. 
+ * Caso contrário, o elemento do topo é copiado para 'info', o nó do topo é 
+ * liberado e o contador de elementos é decrementado.
+ * 
+ * @param stk Ponteiro para a pilha da qual o elemento do topo deve ser removido.
+ * @param info Ponteiro para a variável onde o elemento removido será armazenado.
+ * @return Ponteiro para a pilha atualizada, ou a pilha inalterada se estiver vazia.
  */
 stack stackPop(stack stk, obj* info) {
   if (stackIsEmpty(stk)) return stk;
@@ -128,15 +160,19 @@ stack stackPop(stack stk, obj* info) {
 } 
 
 /**
- * Compara duas pilhas (stack).
+ * @brief Compara duas pilhas.
  * 
- * @param stk1 A primeira pilha a ser comparada.
- * @param stk2 A segunda pilha a ser comparada.
+ * Esta função compara duas pilhas, verificando sua estrutura e o conteúdo 
+ * dos elementos. A comparação é realizada em duas etapas: primeiro, a 
+ * função verifica se ambas as pilhas são 'NULL', se uma delas é 'NULL', 
+ * ou se têm tamanhos diferentes. Se uma pilha é 'NULL' e a outra não, a 
+ * pilha 'NULL' é considerada menor. Se ambas as pilhas têm o mesmo 
+ * tamanho, a função compara seus elementos do topo para baixo, utilizando 
+ * uma função de comparação de objetos ('objCmp').
  * 
- * @return 
- * - 1 se stk1 for maior que stk2 (em termos de tamanho ou conteúdo),
- * - -1 se stk2 for maior que stk1,
- * - 0 se ambas as pilha forem iguais.
+ * @param stk1 Ponteiro para a primeira pilha a ser comparada.
+ * @param stk2 Ponteiro para a segunda pilha a ser comparada.
+ * @return 0 se as pilhas forem iguais, -1 se a primeira pilha for menor, 1 se a primeira pilha for maior
  */
 int stackCmp(stack stk1, stack stk2) {
   if (stk1 == NULL && stk2 == NULL) return 0; 
@@ -155,10 +191,17 @@ int stackCmp(stack stk1, stack stk2) {
 }
 
 /**
- * @brief Converte uma pilha para uma string.
+ * @brief Converte uma pilha em uma representação de string.
  * 
- * @param stk Pilha a ser convertida.
- * @return string da pilha convertida.
+ * Esta função gera uma string que representa todos os elementos da pilha, 
+ * formatando-os entre chaves '{}'. Se a pilha estiver vazia, a função 
+ * retorna 'NULL'. A função percorre os elementos da pilha a partir do topo, 
+ * utilizando a função 'toString' para converter cada elemento em uma 
+ * string. As strings resultantes são concatenadas, separadas por vírgulas. 
+ * Após a construção da string final, ela é retornada.
+ * 
+ * @param stk Ponteiro para a pilha a ser convertida em string.
+ * @return Uma string representando a pilha, ou NULL se a pilha estiver vazia.
  */
 string stackToString(stack stk) {
   if (stackIsEmpty(stk)) return NULL;
@@ -168,6 +211,7 @@ string stackToString(stack stk) {
   while (aux != NULL) {
     string temp = toString(aux->info);
     str = stringAppend(str, temp);
+    stringDestroy(temp);
     if (aux->prox != NULL) str = stringCat(str, ", ");
     aux = aux->prox;
   }
@@ -175,14 +219,23 @@ string stackToString(stack stk) {
   return str;
 }
 
-/** 
-* @brief Exibe todos os elementos de uma pilha.
-*
-* @param qeu Objeto para a pilha.
-* @return 1 se a pilha não é vazia, 0 caso contrário.
-*/
+/**
+ * @brief Imprime os elementos da pilha.
+ * 
+ * Esta função imprime todos os elementos da pilha na saída padrão. Se a 
+ * pilha estiver vazia, a função retorna 0 e não realiza nenhuma operação. 
+ * Caso contrário, a função converte a pilha em uma representação de string 
+ * usando `stackToString`, imprime essa string com `stringPrint`, e em seguida 
+ * libera a memória alocada para a string. A função retorna 1 ao final 
+ * indicando que a impressão foi bem-sucedida.
+ * 
+ * @param stk Ponteiro para a pilha a ser impressa.
+ * @return 1 se a pilha foi impressa com sucesso, ou 0 se a pilha estiver vazia.
+ */
 int stackPrint(stack stk) {
   if (stackIsEmpty(stk)) return 0;
-  stringPrint(stackToString(stk));
+  string str = stackToString(stk);
+  stringPrint(str);
+  stringDestroy(str);
   return 1;
 }  

@@ -30,92 +30,87 @@
 
 #include <typeslib.h>
  
-/** 
- * @brief Cria uma nova fila vazia. 
+/**
+ * @brief Cria uma nova fila vazia.
  * 
- * @return Um ponteiro para uma nova fila.
+ * @return Ponteiro para a nova fila, ou NULL se a alocação de memória falhar.
  */
 queue queueNew();
 
-/** 
- * @brief Libera a memória alocada para a fila.
+/**
+ * @brief Libera a memória utilizada por uma fila.
  * 
- * @param qeu Objeto para a fila a ser liberada.
- * @return Um ponteiro nulo após a liberação da fila.
+ * @param qeu Ponteiro para a fila a ser destruída.
+ * @return NULL, indicando que a fila foi destruída e não deve mais ser utilizada.
  */
 queue queueDestroy(queue qeu);
 
-/** 
+/**
  * @brief Verifica se a fila está vazia.
  * 
- * @param qeu Objeto para a fila.
+ * @param qeu Ponteiro para a fila a ser verificada.
  * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
 int queueIsEmpty(queue qeu);
 
-/** 
- * @brief Obtém o tamanho da fila.
+/**
+ * @brief Retorna o tamanho da fila.
  * 
- * @param qeu Objeto para a fila.
- * @return O tamanho da fila.
+ * @param qeu Ponteiro para a fila cuja dimensão será verificada.
+ * @return O número de elementos na fila. Retorna 0 se a fila for NULL.
  */
 size_t queueSize(queue qeu);
 
-/** 
- * @brief Insere um novo elemento no início da fila.
+/**
+ * @brief Insere um novo elemento na fila.
  * 
- * @param qeu Objeto para a fila.
- * @param info Os dados a serem inseridos na fila.
- * @return Um objeto para a fila atualizada.
+ * @param qeu Ponteiro para a fila onde o elemento será inserido.
+ * @param info O valor a ser inserido na fila.
+ * @return Ponteiro para a fila atualizada, ou NULL se a fila for NULL ou a alocação falhar.
  */
 queue queueEnqueue(queue qeu, obj info);
 
-/** 
- * @brief Remove um elemento da fila.
+/**
+ * @brief Remove e retorna o elemento do início da fila.
  * 
- * @param qeu Objeto para a fila.
- * @param info Ponteiro para um elemento da fila.
- * @return Um objeto para a fila atualizada.
+ * @param qeu Ponteiro para a fila da qual o elemento será removido.
+ * @param info Ponteiro onde o valor do elemento removido será armazenado.
+ * @return Ponteiro para a fila atualizada, ou a fila inalterada se estiver vazia.
  */
 queue queueDequeue(queue qeu, obj* info);
 
-/** 
- * @brief Busca por um elemento da fila.b
+/**
+ * @brief Obtém o elemento do início da fila sem removê-lo.
  * 
- * @param qeu Objeto para a fila.
- * @param pos A posição do elemento a ser buscado.
- * @param info Ponteiro para armazenar os dados encontrados.
- * @return 1 se o elemento for encontrado, 0 caso contrário.
+ * @param qeu Ponteiro para a fila da qual o elemento será obtido.
+ * @param info Ponteiro onde o valor do elemento do início da fila será armazenado.
+ * @return 1 se o elemento foi obtido com sucesso, ou 0 se a fila estiver vazia.
  */
 int queueFront(queue qeu, obj* info); 
 
 /**
- * Compara duas filas (queues).
- * 
- * @param qeu1 A primeira fila a ser comparada.
- * @param qeu2 A segunda fila a ser comparada.
- * 
- * @return 
- * - 1 se qeu1 for maior que qeu2 (em termos de tamanho ou conteúdo),
- * - -1 se qeu2 for maior que qeu1,
- * - 0 se ambas as filas forem iguais.
+ * @brief Compara duas filas.
+ *
+ * @param qeu1 Ponteiro para a primeira fila a ser comparada.
+ * @param qeu2 Ponteiro para a segunda fila a ser comparada.
+ * @return 0 se as filas forem iguais, -1 se a primeira fila for menor, 1 se a primeira fila for maior.
  */
 int queueCmp(queue qeu1, queue qeu2);
 
 /**
- * @brief Converte uma fila para uma string.
+ * @brief Converte a fila em uma representação de string.
  * 
- * @param qeu Fila a ser convertida.
- * @return string da fila convertida.
+ * @param qeu Ponteiro para a fila a ser convertida em string.
+ * @return Uma string representando a fila, ou NULL se a fila estiver vazia.
  */
 string queueToString(queue qeu);
 
-/** 
-* @brief Exibe todos os elementos de uma fila.
-*
-* @param qeu Objeto para a fila.
-* @return 1 se a fila não é vazia, 0 caso contrário.
-*/
+/**
+ * @brief Imprime a representação da fila na saída padrão.
+ * 
+ * @param qeu Ponteiro para a fila a ser impressa.
+ * @return 1 se a fila foi impressa com sucesso, ou 0 se a fila estiver vazia.
+ */
 int queuePrint(queue qeu);
                                              
 #endif

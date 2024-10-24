@@ -5,6 +5,7 @@
 #include <list.h>
 #include <queue.h>
 #include <stack.h>
+#include <tree.h>
 #include <stringlib.h>
  
 /**
@@ -15,9 +16,9 @@
  * para armazenar os dados ('capacity').
  */
 typedef struct string_t {
-  char* data;       /**< Ponteiro para os dados da string. */
-  size_t size;      /**< Tamanho atual da string (número de caracteres armazenados). */
-  size_t capacity;  /**< Capacidade total alocada para a string (inclui espaço extra). */
+  char* data;      /**< Ponteiro para os dados da string. */
+  size_t size;     /**< Tamanho atual da string (número de caracteres armazenados). */
+  size_t capacity; /**< Capacidade total alocada para a string (inclui espaço extra). */
 } *string;
 
 /**
@@ -40,21 +41,14 @@ size_t sizeofString() {
  * @return A nova string criada.
  */
 string stringNew() {
-    // Aloca memória para string
-    string newStr = (string)malloc(sizeof(struct string_t));
-    if (newStr == NULL) return NULL;
-
-    // Define o tamanho inicial e a capacidade
-    newStr->size = 0;
-    newStr->capacity = 32;
-
-    // Aloca memória para os dados da string
-    newStr->data = (char*)malloc((newStr->capacity + 1) * sizeof(char));
-    if (newStr->data == NULL) return newStr;  
-
-    // Inicializa a string vazia
-    newStr->data[0] = '\0'; 
-    return newStr;
+  string newStr = (string)malloc(sizeof(struct string_t));
+  if (newStr == NULL) return NULL;
+  newStr->size = 0;
+  newStr->capacity = 32;
+  newStr->data = (char*)malloc((newStr->capacity + 1) * sizeof(char));
+  if (newStr->data == NULL) return newStr;
+  newStr->data[0] = '\0'; 
+  return newStr;
 }
 
 /**
@@ -70,16 +64,10 @@ string stringInit(const char* str) {
   // Aloca memória para string
   string newStr = (string)malloc(sizeof(struct string_t));
   if (newStr == NULL) return NULL;
-
-  // Define o tamanho da string e capacidade
   newStr->size = strlen(str);
   newStr->capacity = newStr->size + 1;
-
-  // Aloca memória para os dados da string
   newStr->data = (char*)malloc(newStr->capacity * sizeof(char));
   if (newStr->data == NULL) return NULL;
-
-  // Copia a string passada para 'data'
   strcpy(newStr->data, str);
   return newStr;
 }
@@ -96,16 +84,12 @@ string stringInit(const char* str) {
  * @return 1 se a string não é vazia, 0 caso contrário.
  */
 int stringDestroy(string str) {
-  // Verifica se a string existe
   if (str == NULL) return 0;
-  
-  // Desaloca os dados da string e libera a memória alocada
   free(str->data);
   str->data = NULL;
   str->size = 0;
   str->capacity = 0;
   free(str);
-  
   return 1;
 }
 
@@ -320,47 +304,30 @@ string stringReverse(const string str) {
  * @return Um vetor de strings resultantes da divisão.
  */
 string* stringSplit(const string str, const char* dlm) {
-  // Verifica se a string de entrada ou o delimitador são inválidos.
   if (str == NULL || str->data == NULL || dlm == NULL) return NULL;
-
-  // Faz uma cópia temporária da string original para ser manipulada.
   char* temp = strdup(str->data);  
-  if (temp == NULL) return NULL; // Verifica se a cópia foi bem-sucedida.
-
-  char* token;   // Armazena os tokens extraídos.
-  char* rest = temp;  // 'rest' mantém a posição atual na string.
-  size_t count = 0;   // Contador para o número de tokens.
-
-  // Conta quantos tokens a string terá usando o delimitador.
+  if (temp == NULL) return NULL; 
+  char* token;   
+  char* rest = temp; 
+  size_t count = 0;  
   while ((token = strtok(rest, dlm))) { 
     count++;
-    rest = NULL; // Passa NULL nas chamadas subsequentes para continuar o strtok.
+    rest = NULL;
   }
-
-  // Aloca memória para o vetor de strings (incluso espaço para NULL no final).
   string* split = malloc((count + 1) * sizeof(string));  
-  if (split == NULL) {  // Verifica se a alocação foi bem-sucedida.
-    free(temp);  // Libera a memória temporária em caso de falha.
+  if (split == NULL) {  
+    free(temp); 
     return NULL;
   }
-
-  // Reinicializa a variável rest para processar novamente a string.
   rest = temp;  
   size_t i = 0;
-
-  // Divide a string original em tokens e armazena cada um no vetor de strings.
   while ((token = strtok(rest, dlm))) {  
-    split[i] = stringInit(token);  // Cria uma nova string para cada token.
+    split[i] = stringInit(token); 
     i++;
-    rest = NULL;  // Continuar a extração a partir do próximo token.
+    rest = NULL; 
   }
-
-  split[i] = NULL;  // Marca o final do vetor de strings com NULL.
-
-  // Libera a memória temporária usada para manipulação da string original.
+  split[i] = NULL;  
   free(temp);  
-
-  // Retorna o vetor de strings resultante da divisão.
   return split;  
 }
 
@@ -402,41 +369,21 @@ char* stringGetChar(const string str, size_t pos) {
  * @return Retorna 1 em caso de sucesso ou 0 em caso de falha.
  */
 int stringSnprintf(string dest, const char* format, ...) {
-  // Verifica se a string de destino é nula, retornando 0 caso seja.
   if (dest == NULL) return 0;
-
-  // Inicializa a lista de argumentos variáveis com base no format.
   va_list args;
   va_start(args, format);
-
-  // Cria uma cópia da lista de argumentos para calcular o tamanho necessário.
   va_list args_copy;
   va_copy(args_copy, args);
-
-  // Calcula o tamanho necessário da string formatada (vsnprintf retorna o tamanho).
-  size_t size = vsnprintf(NULL, 0, format, args_copy) + 1; // +1 para o terminador nulo.
-  
-  // Encerra a cópia da lista de argumentos.
+  size_t size = vsnprintf(NULL, 0, format, args_copy) + 1;
   va_end(args_copy);
-
-  // Se o tamanho necessário for maior que o tamanho atual da string, realoca memória.
   if (size > dest->size) {
-      // Realoca a memória da string para armazenar a nova string formatada.
-      char* new_data = (char*)realloc(dest->data, size);
-      // Se a realocação falhar, retorna 0.
-      if (new_data == NULL) return 0;
-      // Atualiza o ponteiro e o tamanho da string.
-      dest->data = new_data;
-      dest->size = size;
+    char* new_data = (char*)realloc(dest->data, size);
+    if (new_data == NULL) return 0;
+    dest->data = new_data;
+    dest->size = size;
   }
-
-  // Escreve a string formatada na string de destino.
   vsnprintf(dest->data, dest->size, format, args);
-
-  // Encerra a lista de argumentos variáveis.
   va_end(args);
-
-  // Retorna 1 indicando sucesso.
   return 1;
 }
 
@@ -462,95 +409,59 @@ int stringPrint(string str) {
  * @return Uma nova instância da struct string contendo o conteúdo transformado.
  */
 string toString(obj info) {
-  // Cria uma nova string vazia
   string str = stringNew();
-
-  // Define a capacidade inicial da string para 64 caracteres
   size_t initialCapacity = 64; 
-
-  // Redimensiona a string para a capacidade inicial e verifica se foi bem-sucedido
   if (!stringResize(str, initialCapacity)) return NULL;
-
-  // Obtém o ponteiro para o dado armazenado em 'info'
   void* data = objGetData(info);
-  
-  // Variável para armazenar o tamanho necessário da string
   size_t requiredSize = 0;
-
-  // Verifica o tipo de dado armazenado em 'info' para decidir como convertê-lo
   switch (objGetType(info)) {
-
-    // Caso o dado seja do tipo int
     case TYPE_INT: {
-      // Converte o inteiro em string e armazena na string
       requiredSize = snprintf(str->data, str->capacity, "%d", *(int*)data);
       break;
     }
-
-    // Caso o dado seja do tipo float
     case TYPE_FLOAT: {
-      // Converte o float em string
       requiredSize = snprintf(str->data, str->capacity, "%f", *(float*)data);
       break;
     }
-
-    // Caso o dado seja do tipo double
     case TYPE_DOUBLE: {
-      // Converte o double em string
       requiredSize = snprintf(str->data, str->capacity, "%lf", *(double*)data);
       break;
     }
-
-    // Caso o dado seja do tipo char
     case TYPE_CHAR: {
-      // Converte o caractere em string
       requiredSize = snprintf(str->data, str->capacity, "%c", *(char*)data);
       break;
     }
-
-    // Caso o dado seja uma string literal (char*)
     case TYPE_CHAR_PTR: {
-      // Converte o ponteiro de char para string
       requiredSize = snprintf(str->data, str->capacity, "%s", (char*)data);
       break;
     }
-
-    // Caso o dado seja um booleano
     case TYPE_BOOL: {
-      // Verifica o valor do booleano e converte para "true" ou "false"
       const char* boolStr = (*(bool*)data) ? "true" : "false";
       requiredSize = strlen(boolStr);
-      // Redimensiona a string para acomodar a nova string
       if (!stringResize(str, requiredSize + 1)) return NULL;
-      strcpy(str->data, boolStr);  // Copia o valor "true" ou "false" para a string
+      strcpy(str->data, boolStr); 
       str->size = requiredSize;
       return str;
     }
-
-    // Caso o dado já seja do tipo string
     case TYPE_STRING: {
       string srcStr = *(string *)data;
       if (srcStr == NULL) return NULL;
-      // Redimensiona a string se necessário e copia o conteúdo
       if (srcStr->size + 1 > str->capacity && !stringResize(str, srcStr->size + 1)) return NULL;
       memcpy(str->data, srcStr->data, srcStr->size);
-      str->data[srcStr->size] = '\0';  // Adiciona o caractere de terminação
+      str->data[srcStr->size] = '\0';  
       str->size = srcStr->size;
       return str;
     }
-
-    // Caso o dado seja uma lista
     case TYPE_LIST: {
       list lst = (list)objGetData(info);  
       if (lst != NULL) {
         string strList = listToString(lst);
-        // Converte a lista para string e redimensiona a string principal
         if (!strList || !stringResize(str, strList->size + 1)) return NULL;
         memcpy(str->data, strList->data, strList->size);
         str->data[strList->size] = '\0';
         str->size = strList->size;
-        stringDestroy(strList);  // Libera a string temporária
-      } else { // Caso a lista seja inválida, retorna "Invalid list"
+        stringDestroy(strList); 
+      } else { 
         const char* invalidStr = "Invalid list";
         requiredSize = strlen(invalidStr);
         if (!stringResize(str, requiredSize + 1)) return NULL;
@@ -559,20 +470,16 @@ string toString(obj info) {
       }
       return str;
     }
-
-    // Caso o dado seja uma fila (queue)
     case TYPE_QUEUE: {
       queue qeu = (queue)objGetData(info);
       if (qeu != NULL) {
         string strQueue = queueToString(qeu);
-        // Converte a fila para string e redimensiona a string principal
         if (!strQueue || !stringResize(str, strQueue->size + 1)) return NULL;
         memcpy(str->data, strQueue->data, strQueue->size);
         str->data[strQueue->size] = '\0';
         str->size = strQueue->size;
-        stringDestroy(strQueue);  // Libera a string temporária
+        stringDestroy(strQueue); 
       } else {
-        // Caso a fila seja inválida, retorna "Invalid queue"
         const char* invalidStr = "Invalid queue";
         requiredSize = strlen(invalidStr);
         if (!stringResize(str, requiredSize + 1)) return NULL;
@@ -581,20 +488,16 @@ string toString(obj info) {
       }
       return str;
     }
-
-    // Caso o dado seja uma pilha (stack)
     case TYPE_STACK: {
       stack stk = (stack)objGetData(info);
       if (stk != NULL) {
         string strStack = stackToString(stk);
-        // Converte a pilha para string e redimensiona a string principal
         if (!strStack || !stringResize(str, strStack->size + 1)) return NULL;
         memcpy(str->data, strStack->data, strStack->size);
         str->data[strStack->size] = '\0';
         str->size = strStack->size;
-        stringDestroy(strStack);  // Libera a string temporária
+        stringDestroy(strStack); 
       } else {
-        // Caso a pilha seja inválida, retorna "Invalid stack"
         const char* invalidStr = "Invalid stack";
         requiredSize = strlen(invalidStr);
         if (!stringResize(str, requiredSize + 1)) return NULL;
@@ -603,19 +506,32 @@ string toString(obj info) {
       }
       return str;
     }
-
-    // Caso o tipo de dado seja desconhecido
+    case TYPE_TREE: {
+      tree tre = (tree)objGetData(info);
+      if (tre != NULL) {
+        string strTree = treeToString(tre);
+        if (!strTree || !stringResize(str, strTree->size + 1)) return NULL;
+        memcpy(str->data, strTree->data, strTree->size);
+        str->data[strTree->size] = '\0';
+        str->size = strTree->size;
+        stringDestroy(strTree);
+      } else {
+        const char* invalidStr = "Invalid tree";
+        requiredSize = strlen(invalidStr);
+        if (!stringResize(str, requiredSize + 1)) return NULL;
+        strcpy(str->data, invalidStr);
+        str->size = requiredSize;
+      }
+      return str;
+    }
     case TYPE_UNKNOWN: {
       size_t dataSize = objGetSize(info);
-      // Redimensiona a string e copia os dados brutos
       if (dataSize + 1 > str->capacity && !stringResize(str, dataSize + 1)) return NULL;
       memcpy(str->data, data, dataSize);
       str->data[dataSize] = '\0';
       str->size = dataSize;
       return str;
     }
-
-    // Tipo de dado inválido ou não suportado
     default: {
       const char* invalidStr = "Invalid Type";
       requiredSize = strlen(invalidStr);
@@ -625,15 +541,10 @@ string toString(obj info) {
       return str;
     }
   }
-
-  // Verifica se o tamanho necessário excede a capacidade da string e redimensiona se necessário
   if (requiredSize >= str->capacity) {
     if (!stringResize(str, requiredSize + 1)) return NULL;
-    // Reexecuta a conversão após o redimensionamento
     snprintf(str->data, str->capacity, "%d", *(int*)data);
   }
-
-  // Define o tamanho da string e retorna
   str->size = requiredSize;
   return str;
 }

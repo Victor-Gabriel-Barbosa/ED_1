@@ -20,13 +20,17 @@ int main() {
   list lista = listNew();
   queue fila = queueNew();
   stack pilha = stackNew();
+  tree arvore = treeNew();
+  foreach(nome, nomes) arvore = treeAdd(arvore, toObj(*nome));
   foreach(nome, nomes) listAddEnd(lista, toObj(*nome));
   foreach(nome, nomes) queueEnqueue(fila, toObj(*nome));
-  for (size_t i = 0; i < ARRAY_SIZE(nomes) / 2; i++) {
-    stackPush(pilha, toObj(RAND(nomes)));
-  }
+  printf("Por aqui: ");
+  treePrint(arvore);
+  printf("\nAcima\n");
+  stackPush(pilha, toObj(randInt(nomes)));
   stackTop(pilha, &temp);
-  temp = toObj(RAND(nomes));
+  temp = toObj(randInt(nomes));
+  print(toObj("\nPessoa Consultada: "), temp);
   print(toObj("\nPessoa Consultada: "), temp);
   queueEnqueue(fila, toObj(pilha));
   listAddEnd(lista, toObj(fila));
@@ -35,6 +39,9 @@ int main() {
   listSort(lista);
   printf("\nNomes (Ordenados):\n");
   print(toObj(lista), toObj("\nOutra Vez:\n"), toObj(lista));
+  print(toObj("\nElemento da lista: "), listGet(lista, 3));
+  printfs("\n\nElemento da posição %d: %O\n\n", 9, listGet(lista, 9));
+  objPrint(toObj(lista));
   lista = listDestroy(lista);
   fila = queueDestroy(fila);
   pilha = stackDestroy(pilha);
