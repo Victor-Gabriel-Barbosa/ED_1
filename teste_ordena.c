@@ -1,27 +1,23 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
-#include <cplus.h>
+#include "cplus.h"
 
-int main() {
+int main() { 
   srand(time(NULL));
   clock_t inicio, fim;
   list vector = listNew();
-  tree map = treeNew();
+  map arvore = mapNew();
   int qtd = choose("Digite a quantidade de números", 1, 1000000);
   inicio = clock();
+  arvore = mapAdd(arvore, toObj(11));
   for (int i = 0; i < qtd; i++) {
     int num = rand() % 1000;
     listAddEnd(vector, toObj(num));
+    if (rand() % 2 == 1) listAddEnd(vector, toObj(arvore));
   }
   fim = clock();
   printf("Tempo gasto p/ inserção: %g segundos\n", (double)(fim - inicio) / CLOCKS_PER_SEC);
-  map = treeAdd(map, toObj(35));
-  printfs("%T", map);
-  
-  
- 
-  //vector = listAddEnd(vector, toObj(map));
 
   inicio = clock();
   listSort(vector);
@@ -45,18 +41,19 @@ int main() {
     listAddEnd(String, toObj(letra));
   }
   fim = clock();
-  printf("\nTempo gasto p/ inserção: %g segundos\n", (double)(fim - inicio) / CLOCKS_PER_SEC);
+  printf(f(BLUE, "\nTempo gasto p/ inserção: %g segundos\n"), (double)(fim - inicio) / CLOCKS_PER_SEC);
 
   inicio = clock();
   listSort(String);
   fim = clock();
   printf("\nTempo gasto p/ ordenação: %g segundos\n", (double)(fim - inicio) / CLOCKS_PER_SEC);
   
-  if (confirm("imprimir a lista")) {
+  if (confirm("Imprimir a lista")) {
     inicio = clock();
     print(toObj(String));
     fim = clock();
     printf("\nTempo gasto p/ impressão: %g segundos\n", (double)(fim - inicio) / CLOCKS_PER_SEC);
   }
   String = listDestroy(String);
+  arvore = mapDestroy(arvore);
 }

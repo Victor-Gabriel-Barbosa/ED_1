@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <stringlib.h>
-#include <queue.h>
+#include "stringlib.h"
+#include "queue.h"
 
 /**
  * @brief Estrutura que representa um nó em uma fila.

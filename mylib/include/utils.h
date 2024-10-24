@@ -34,7 +34,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <stringlib.h>
+#include "stringlib.h"
 
 /**
  * @brief Calcula o número de elementos em um array.

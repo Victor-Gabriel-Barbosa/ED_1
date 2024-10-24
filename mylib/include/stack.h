@@ -28,7 +28,7 @@
 #ifndef STACK_H
 #define STACK_H 
 
-#include <typeslib.h>
+#include "typeslib.h"
 
 /**
  * @brief Cria uma nova pilha.

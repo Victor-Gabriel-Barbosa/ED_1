@@ -42,7 +42,7 @@
 #ifndef STRINGLIB_H
 #define STRINGLIB_H
 
-#include <typeslib.h>
+#include "typeslib.h"
 
 /**
  * @brief Obtém o tamanho do objeto string.

@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <string.h>
-#include <cplus.h>
+#include "cplus.h"
 
 /**
  * @brief Captura exceções e exibe uma mensagem de erro.
@@ -15,7 +15,7 @@
  * ou de operações de arquivo.
  */
 void catchError() { 
-  fprintf(stderr, C_FMT_ERROR("\nErro: %s\n"), strerror(errno));
+  fprintf(stderr, fError("\nErro: %s\n"), strerror(errno));
   exit(EXIT_FAILURE);
 }
 
@@ -77,7 +77,7 @@ void waitCleanScreen(const char* msg) {
  * @return O número escolhido pelo usuário.
  */
 int choose(const char* msg, const int min, const int max) {
-  int num = 0;
+  int num = min - 1;
   int aux = 1;
   while (aux) {
     printf("%s [%d-%d]: ", msg, min, max);
@@ -152,27 +152,27 @@ void printfs(const char* format, ...) {
           stringPrint(S); 
           break;
         }
-        case 'L': { 
+        case 'l': { 
           list L = va_arg(args, list);
           listPrint(L);
           break;
         }
-        case 'Q': { 
+        case 'q': { 
           queue Q = va_arg(args, queue);
           queuePrint(Q);
           break;
         }
-        case 'K': { 
+        case 'k': { 
           stack K = va_arg(args, stack);
           stackPrint(K);
           break;
         }
-        case 'T': {
-          tree T = va_arg(args, tree);
-          treePrint(T);
+        case 'm': {
+          map M = va_arg(args, map);
+          mapPrint(M);
           break;
         }
-        case 'O': {
+        case 'o': {
           obj O = va_arg(args, obj);
           string str = toString(O);
           stringPrint(str);

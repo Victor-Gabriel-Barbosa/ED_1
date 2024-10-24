@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <list.h>
-#include <queue.h>
-#include <stack.h>
-#include <tree.h>
-#include <stringlib.h>
+#include "stringlib.h"
+#include "list.h"
+#include "queue.h"
+#include "stack.h"
+#include "map.h"
+
  
 /**
  * @brief Estrutura para representação de uma string.
@@ -506,17 +507,17 @@ string toString(obj info) {
       }
       return str;
     }
-    case TYPE_TREE: {
-      tree tre = (tree)objGetData(info);
+    case TYPE_MAP: {
+      map tre = (map)objGetData(info);
       if (tre != NULL) {
-        string strTree = treeToString(tre);
-        if (!strTree || !stringResize(str, strTree->size + 1)) return NULL;
-        memcpy(str->data, strTree->data, strTree->size);
-        str->data[strTree->size] = '\0';
-        str->size = strTree->size;
-        stringDestroy(strTree);
+        string strMap = mapToString(tre);
+        if (!strMap || !stringResize(str, strMap->size + 1)) return NULL;
+        memcpy(str->data, strMap->data, strMap->size);
+        str->data[strMap->size] = '\0';
+        str->size = strMap->size;
+        stringDestroy(strMap);
       } else {
-        const char* invalidStr = "Invalid tree";
+        const char* invalidStr = "Invalid map";
         requiredSize = strlen(invalidStr);
         if (!stringResize(str, requiredSize + 1)) return NULL;
         strcpy(str->data, invalidStr);

@@ -12,7 +12,7 @@ copy utils.h C:\MinGW\include\
 copy list.h C:\MinGW\include\
 copy queue.h C:\MinGW\include\
 copy stack.h C:\MinGW\include\
-copy tree.h C:\MinGW\include\
+copy map.h C:\MinGW\include\
 
 REM Mover para o diretório de src
 cd "C:\Users\usuario\Desktop\Programas\ED_1\mylib\src"

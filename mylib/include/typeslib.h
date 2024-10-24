@@ -68,7 +68,7 @@ typedef struct stack_t* stack;
 /**
  * @brief Estrutura que representa uma árvore binária.
  */
-typedef struct tree_t* tree;
+typedef struct map_t* map;
 
 /**
  * @brief Estrutura abstrata para representar qualquer tipo de dado.
@@ -90,7 +90,7 @@ typedef enum {
   TYPE_LIST,     /**< Tipo lista (list). */
   TYPE_QUEUE,    /**< Tipo fila (queue). */
   TYPE_STACK,    /**< Tipo pilha (stack). */
-  TYPE_TREE,     /**< Tipo árvore (tree). */
+  TYPE_MAP,     /**< Tipo árvore (map). */
   TYPE_UNKNOWN   /**< Tipo genérico desconhecido, usado para tipos personalizados (void*). */
 } ObjType;
 
@@ -195,13 +195,13 @@ obj queueToObj(queue value, size_t size);
 obj stackToObj(stack value, size_t size);
 
 /**
- * @brief Converte uma árvore abstrata (tree) para obj.
+ * @brief Converte uma árvore abstrata (map) para obj.
  * 
- * @param value Estrutura tree.
+ * @param value Estrutura map.
  * @param size Tamanho da árvore (não utilizado nesta função).
  * @return Objeto contendo a árvore.
  */
-obj treeToObj(tree value, size_t size);
+obj mapToObj(map value, size_t size);
 
 /**
  * @brief Converte um valor desconhecido para obj.
@@ -280,7 +280,7 @@ int objPrint(obj a);
   list: listToObj, \
   queue: queueToObj, \
   stack: stackToObj, \
-  tree: treeToObj, \
+  map: mapToObj, \
   default: unknownToObj \
 )(value, sizeof(value))
 

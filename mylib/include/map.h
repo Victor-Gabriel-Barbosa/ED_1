@@ -1,5 +1,5 @@
 /**
- * @file binary_tree.h
+ * @file binary_map.h
  * @brief Biblioteca para manipulação de Árvores Binárias utilizando obj.
  * 
  * Esta biblioteca permite criar, manipular e destruir uma árvore binária genérica,
@@ -9,25 +9,32 @@
  * @date 16/10/2024
  */
 
-#ifndef TREE_H
-#define TREE_H
+#ifndef MAP_H
+#define MAP_H
 
-#include <typeslib.h>
+#include "typeslib.h"
+
+/**
+ * @brief Retorna o tamanho da estrutura map_t em bytes.
+ *
+ * @return size_t O tamanho da estrutura `struct map_t` em bytes.
+ */
+size_t sizeofMap();
 
 /**
  * @brief Cria uma nova árvore binária.
  * 
  * @return Ponteiro para a árvore criada.
  */
-tree treeNew();
+map mapNew();
 
 /**
  * @brief Destrói a árvore binária, liberando toda a memória alocada.
  * 
- * @param tree Ponteiro para a árvore binária a ser destruída.
+ * @param map Ponteiro para a árvore binária a ser destruída.
  * @return Ponteiro para a árvore.
  */
-tree treeDestroy(tree tree);
+map mapDestroy(map map);
 
 /**
  * @brief Verifica se a árvore é vazia.
@@ -35,7 +42,7 @@ tree treeDestroy(tree tree);
  * @param tre Um ponteiro para a árvore que será verificada.
  * @return int Retorna 1 se a árvore estiver vazia, ou 0 se contiver elementos.
  */
-int treeIsEmpty(tree tre);
+int mapIsEmpty(map tre);
 
 /**
  * @brief Conta a quantidade de galhos na árvore.
@@ -43,7 +50,7 @@ int treeIsEmpty(tree tre);
  * @param tre Um ponteiro para a árvore que será verificada.
  * @return int A quantidade de galhos na árvore.
  */
-int treeCountBranches(tree tre);
+int mapCountBranches(map tre);
 
 /**
  * @brief Conta a quantidade de folhas na árvore.
@@ -51,7 +58,7 @@ int treeCountBranches(tree tre);
  * @param tre Um ponteiro para a árvore que será verificada.
  * @return int A quantidade de folhas na árvore.
  */
-int treeCountLeaves(tree tre);
+int mapCountLeaves(map tre);
 
 /**
  * @brief Conta o número total de nós na árvore.
@@ -59,7 +66,7 @@ int treeCountLeaves(tree tre);
  * @param tre Um ponteiro para a árvore a ser contada.
  * @return int O número total de nós na árvore.
  */
-int treeCountNodes(tree tre);
+int mapCountNodes(map tre);
 
 /**
  * @brief Calcula a altura da árvore.
@@ -67,25 +74,25 @@ int treeCountNodes(tree tre);
  * @param tre Um ponteiro para a árvore cuja altura será calculada.
  * @return int A altura da árvore.
  */
-int treeHeight(tree tre);
+int mapHeight(map tre);
 
 /**
  * @brief Insere um novo dado na árvore binária.
  * 
- * @param tree Ponteiro para a árvore binária.
+ * @param map Ponteiro para a árvore binária.
  * @param info Dado a ser inserido, do tipo obj.
  * @return Ponteiro para a árvore.
  */
-tree treeAdd(tree tree, obj info);
+map mapAdd(map map, obj info);
 
 /**
  * @brief Verifica se um dado está presente na árvore binária.
  * 
- * @param tree Ponteiro para a árvore binária.
+ * @param map Ponteiro para a árvore binária.
  * @param info Dado a ser pesquisado, do tipo obj.
  * @return 1 se o dado for encontrado, 0 caso contrário.
  */
-int treeSearch(tree tree, obj info);
+int mapSearch(map map, obj info);
 
 /**
  * @brief Encontra o nó com o valor máximo na árvore.
@@ -93,7 +100,7 @@ int treeSearch(tree tree, obj info);
  * @param tre Um ponteiro para a árvore onde será feita a busca.
  * @return obj O valor máximo encontrado na árvore.
  */
-obj treeFindMax(tree tre);
+obj mapFindMax(map tre);
 
 /**
  * @brief Encontra o nó com o valor mínimo na árvore.
@@ -101,34 +108,34 @@ obj treeFindMax(tree tre);
  * @param tre Um ponteiro para a árvore onde será feita a busca.
  * @return obj O valor mínimo encontrado na árvore.
  */
-obj treeFindMin(tree tre);
+obj mapFindMin(map tre);
 
 /**
  * @brief Remove um dado da árvore binária.
  * 
- * @param tree Ponteiro para a árvore binária.
+ * @param map Ponteiro para a árvore binária.
  * @param info Dado a ser removido, do tipo obj.
  * @return Ponteiro para a árvore.
  */
-tree treeRemove(tree tree, obj info);
+map mapRemove(map map, obj info);
 
 /**
  * @brief Inverte a árvore binária.
  * 
  * @param tre Um ponteiro para a árvore a ser invertida.
- * @return tree Retorna a árvore invertida.
+ * @return map Retorna a árvore invertida.
  */
-tree treeInvert(tree tre);
+map mapInvert(map tre);
 
 /**
  * @brief Compara duas árvores binárias de forma semelhante ao strcmp.
  * 
- * @param tree1 Ponteiro para a primeira árvore.
- * @param tree2 Ponteiro para a segunda árvore.
- * @return 0 se as árvores forem iguais, um valor negativo se tree1 < tree2,
- * ou um valor positivo se tree1 > tree2.
+ * @param map1 Ponteiro para a primeira árvore.
+ * @param map2 Ponteiro para a segunda árvore.
+ * @return 0 se as árvores forem iguais, um valor negativo se map1 < map2,
+ * ou um valor positivo se map1 > map2.
  */
-int treeCmp(tree tree1, tree tree2);
+int mapCmp(map map1, map map2);
 
 /**
  * @brief Converte uma árvore binária em uma string.
@@ -136,14 +143,14 @@ int treeCmp(tree tree1, tree tree2);
  * @param tre Um ponteiro para a árvore a ser convertida.
  * @return string A string resultante que representa a árvore.
  */
-string treeToString(tree tre);
+string mapToString(map tre);
 
 /**
  * @brief Imprime os dados da árvore binária (em ordem).
  * 
- * @param tree Ponteiro para a árvore binária.
+ * @param map Ponteiro para a árvore binária.
  * @return 1 se o dado for encontrado, 0 caso contrário.
  */
-int treePrint(tree tree);
+int mapPrint(map map);
 
 #endif
