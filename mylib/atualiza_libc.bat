@@ -21,9 +21,9 @@ REM Compilar os arquivos .c
 gcc -c *.c -I../include
 
 REM Criar a biblioteca estática
-ar rcs libc_plus.a *.o
+ar rcs libcplus.a *.o
 
 REM Copiar a biblioteca para o MinGW
-copy libc_plus.a C:\MinGW\lib\
+copy libcplus.a C:\MinGW\lib\
 
 echo Biblioteca atualizada com sucesso!

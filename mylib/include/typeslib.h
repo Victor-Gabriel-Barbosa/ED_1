@@ -284,4 +284,41 @@ int objPrint(obj a);
   default: unknownToObj \
 )(value, sizeof(value))
 
+/**
+ * @brief Retorna o tipo de dado a partir de um valor.
+ *
+ * Este macro usa `_Generic` para identificar o tipo do valor fornecido e
+ * retorna um identificador correspondente.
+ *
+ * @param value O valor a ser analisado.
+ * @return Um identificador de tipo (ex.: TYPE_INT, TYPE_FLOAT, etc.) ou
+ * TYPE_UNKNOWN se o tipo não for reconhecido.
+ */
+#define getTypeFromValue(value) _Generic((value), \
+  int: TYPE_INT, \
+  float: TYPE_FLOAT, \
+  double: TYPE_DOUBLE, \
+  char: TYPE_CHAR, \
+  const char*: TYPE_CHAR_PTR, \
+  char*: TYPE_CHAR_PTR, \
+  bool: TYPE_BOOL, \
+  string: TYPE_STRING, \
+  list: TYPE_LIST, \
+  queue: TYPE_QUEUE, \
+  stack: TYPE_STACK, \
+  map: TYPE_MAP, \
+  default: TYPE_UNKNOWN)
+
+/**
+ * @brief Verifica se um objeto é do tipo especificado.
+ *
+ * Este macro compara o tipo de um objeto com o tipo de um valor fornecido.
+ *
+ * @param obj O objeto cujo tipo será verificado.
+ * @param value O valor cujo tipo será comparado.
+ * @return Um valor booleano (true ou false) indicando se o tipo do objeto
+ * corresponde ao tipo do valor.
+ */
+#define objIsType(obj, value) (objGetType(obj) == getTypeFromValue(value))
+
 #endif

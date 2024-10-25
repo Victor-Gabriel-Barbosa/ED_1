@@ -30,11 +30,16 @@ int main() {
     fim = clock();
     printf("Tempo gasto p/ impressão: %g segundos\n", (double)(fim - inicio) / CLOCKS_PER_SEC);
   }
+  if (objIsType(listGet(vector, 7), 4)) {
+    int num = *(int*)objGetData(listGet(vector, 7));
+    printf(f(GREEN, "\nO número na posição 2 é: %d\n"), num);
+  }
+  
   vector = listDestroy(vector);
 
 
   list String = listNew();
-  qtd = choose("Digite a quantidade de letras", 1, 1000000000);
+  qtd = choose("Digite a quantidade de letras", 1, 10000000);
   inicio = clock();
   for (int i = 0; i < qtd; i++) {
     char letra = rand() % 26 + 'a';
@@ -50,7 +55,7 @@ int main() {
   
   if (confirm("Imprimir a lista")) {
     inicio = clock();
-    print(toObj(String));
+    printfs("%l", String);
     fim = clock();
     printf("\nTempo gasto p/ impressão: %g segundos\n", (double)(fim - inicio) / CLOCKS_PER_SEC);
   }
