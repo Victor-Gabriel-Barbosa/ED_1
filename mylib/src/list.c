@@ -3,9 +3,9 @@
 #include <stdarg.h>
 #include <math.h> 
 #include <string.h>
-#include <stringlib.h>
-#include <typeslib.h>
-#include <list.h>
+#include "typeslib.h"
+#include "stringlib.h"
+#include "list.h"
 
 /**
  * @brief Estrutura que representa um nó em uma lista duplamente encadeada.

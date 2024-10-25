@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stringlib.h>
-#include <list.h>
-#include <queue.h>
-#include <stack.h>
-#include <tree.h>
-#include <typeslib.h>
-
+#include "stringlib.h"
+#include "typeslib.h"
+#include "list.h"
+#include "queue.h"
+#include "stack.h"
+#include "map.h"
 /**
  * @brief Estrutura que representa um valor de tipo genérico, 
  * com um ponteiro para os dados, o tipo de dado e o tamanho em bytes.
@@ -162,14 +161,14 @@ obj stackToObj(stack value, size_t size) {
 }
 
 /**
- * @brief Converte uma árvore abstrata (tree) para obj.
+ * @brief Converte uma árvore abstrata (map) para obj.
  * 
- * @param value Estrutura tree.
+ * @param value Estrutura map.
  * @param size Tamanho da árvore (não utilizado nesta função).
  * @return Objeto contendo a árvore.
  */
-obj treeToObj(tree value, size_t size) {
-  return voidToObj(value, sizeof(tree), TYPE_TREE);
+obj mapToObj(map value, size_t size) {
+  return voidToObj(value, sizeofMap(), TYPE_MAP);
 }
 
 /**
@@ -207,7 +206,7 @@ int objCmp(obj a, obj b) {
   if (a == NULL && b == NULL) return 0;
   if (a == NULL || b == NULL) return (a == NULL) ? -1 : 1;
   if (a->data == NULL || b->data == NULL) return (a->data == NULL) ? -1 : 1;
-  if (a->type != b->type) return 0;
+  if (a->type != b->type) return 1;
   switch (a->type) {
     case TYPE_INT:
       return (*(int*)a->data < *(int*)b->data) ? -1 : (*(int*)a->data > *(int*)b->data);
@@ -229,10 +228,12 @@ int objCmp(obj a, obj b) {
       return queueCmp(*(queue*)a->data, *(queue*)b->data);
     case TYPE_STACK:
       return stackCmp(*(stack*)a->data, *(stack*)b->data);
-    case TYPE_TREE:
-      return treeCmp(*(tree*)a->data, *(tree*)b->data);
+    case TYPE_MAP:
+      return mapCmp(*(map*)a->data, *(map*)b->data);
+    case TYPE_UNKNOWN:
+      return memcmp(a->data, b->data, a->size);
     default:
-      return 0;
+      return -1;
   }
 }
 
@@ -305,8 +306,8 @@ int objPrint(obj a) {
     case TYPE_STACK:
       stackPrint((stack)a->data);
       break; 
-    case TYPE_TREE:
-      treePrint((tree)a->data);
+    case TYPE_MAP:
+      mapPrint((map)a->data);
       break;
     default:
       printf("Unknown Type");

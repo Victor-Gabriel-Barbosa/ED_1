@@ -2,8 +2,8 @@
 #include <stdlib.h> 
 #include <stdarg.h>
 #include <string.h>
-#include <stack.h>
-#include <stringlib.h>
+#include "stringlib.h"
+#include "stack.h"
 
 /**
  * @brief Estrutura que representa um nó em uma pilha.
