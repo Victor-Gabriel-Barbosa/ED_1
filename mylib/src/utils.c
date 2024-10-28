@@ -76,12 +76,12 @@ void waitCleanScreen(const char* msg) {
  * @param max Valor máximo do intervalo.
  * @return O número escolhido pelo usuário.
  */
-int choose(const char* msg, const int min, const int max) {
-  int num = min - 1;
+int64_t chooseInt(const char* msg, const int64_t min, const int64_t max) {
+  int64_t num = min - 1;
   int aux = 1;
   while (aux) {
-    printf("%s [%d-%d]: ", msg, min, max);
-    scanf("%d", &num);
+    printf("%s [%lld-%lld]: ", msg, min, max);
+    scanf("%lld", &num);
     cleanBuffer();
     if (num >= min && num <= max) aux = 0;
     else printf("Número inválido...\n");
@@ -99,7 +99,7 @@ int choose(const char* msg, const int min, const int max) {
  * @param msg Mensagem formatada (como em printf) para exibir ao usuário.
  * @param ... Argumentos variáveis para formatar a mensagem.
  *
- * @return Retorna 1 se o usuário confirmar (responder 'S'), ou 0 se o usuário
+ * @return 1 se o usuário confirmar (responder 'S'), ou 0 se o usuário
  * negar (responder 'N').
  */
 int confirm(const char* msg, ...) {
@@ -120,104 +120,123 @@ int confirm(const char* msg, ...) {
 }
 
 /**
- * @brief Simula o printf e aceita novos tipos.
+ * @brief Imprime um número variável de strings.
  *
- * Essa função permite a formatação e exibição de strings, com suporte
- * para tipos personalizados. Pode ser usada para gerar saídas formatadas
- * de maneira flexível.
+ * Esta função aceita um número variável de argumentos do tipo string e os imprime
+ * um por um. Se algum argumento for nulo, imprime "NULL".
  *
- * @param format Formato da string.
+ * @param count O número de argumentos passados para a função.
+ * @param ... Os argumentos do tipo string que devem ser impressos.
  */
-void printfs(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  while (*format) {
-    if (*format == '%') {
-      format++; 
-      switch (*format) { 
-        case 'd':
-          printf("%d", va_arg(args, int)); 
-          break;
-        case 'f': 
-          printf("%f", va_arg(args, double));
-          break;
-        case 'c':
-          putchar(va_arg(args, int)); 
-          break;
-        case 's': 
-          printf("%s", va_arg(args, char*));
-          break;
-        case 'S': { 
-          string S = va_arg(args, string);
-          stringPrint(S); 
-          break;
-        }
-        case 'l': { 
-          list L = va_arg(args, list);
-          listPrint(L);
-          break;
-        }
-        case 'q': { 
-          queue Q = va_arg(args, queue);
-          queuePrint(Q);
-          break;
-        }
-        case 'k': { 
-          stack K = va_arg(args, stack);
-          stackPrint(K);
-          break;
-        }
-        case 'm': {
-          map M = va_arg(args, map);
-          mapPrint(M);
-          break;
-        }
-        case 'o': {
-          obj O = va_arg(args, obj);
-          string str = toString(O);
-          stringPrint(str);
-          stringDestroy(str);
-          break;
-        }
-        default: 
-          putchar('%'); 
-          putchar(*format);
-      }
-    } else putchar(*format);
-    format++;
-  }
-  va_end(args);
-}
-
-/**
- * @brief Exibe o texto correspondente a múltiplos objetos 'obj'.
- *
- * A função converte cada objeto 'obj' para uma 'string' e exibe seus textos.
- * Aceita múltiplos argumentos.
- *
- * @param count Número de objetos obj.
- * @param ... Lista de objetos obj.
- * @return 1 se todos os textos foram exibidos corretamente, 0 caso algum falhar.
- */
-int printMultiple(int count, ...) {
+int printArgs(int count, ...) {
   va_list args;
   int allPrinted = 1;
   va_start(args, count); 
   for (int i = 0; i < count; i++) { 
-    obj a = va_arg(args, obj);
-    if (a == NULL) { 
+    string str = va_arg(args, string);
+    if (str == NULL) { 
       allPrinted = 0;
       continue;
     }
-    string str = toString(a);
-    if (str == NULL) allPrinted = 0; 
-    else {
-      stringPrint(str);
-      stringDestroy(str);
-    }
+    stringPrint(str);
   }
   va_end(args);
   return allPrinted;
+}
+
+/**
+ * @brief Imprime strings formatadas com suporte a tipos personalizados.
+ *
+ * A função exibe uma string formatada como 'printf', com suporte adicional
+ * para tipos personalizados (string, lista, fila, pilha, árvore e objeto).
+ *
+ * @param format String de formatação.
+ * @param ...    Lista de argumentos de diversos tipos.
+ */
+void printfs(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  while (*format) {
+    if (*format == '%') {
+      format++;
+      int long_flag = 0;
+      if (*format == 'l') {
+        long_flag = 1;
+        format++;
+        if (*format == 'l') {
+          long_flag = 2;
+          format++;
+        }
+      }
+      else if (*format == 'L') {
+        long_flag = 3;
+        format++;
+      }
+      switch (*format) {
+        case 'd':
+          if (long_flag == 1) printf("%ld", va_arg(args, long int));
+          else if (long_flag == 2) printf("%lld", va_arg(args, long long int));
+          else printf("%d", va_arg(args, int));
+          break;
+        case 'u':
+          if (long_flag == 1) printf("%lu", va_arg(args, unsigned long int));
+          else if (long_flag == 2) printf("%llu", va_arg(args, unsigned long long int));
+          else printf("%u", va_arg(args, unsigned int));
+          break;
+        case 'f':
+          if (long_flag == 3) printf("%Lf", va_arg(args, long double));
+          else printf("%f", va_arg(args, double));
+          break;
+        case 'e':
+          if (long_flag == 3) printf("%Le", va_arg(args, long double));
+          else printf("%e", va_arg(args, double));
+          break;
+        case 'g':
+          if (long_flag == 3) printf("%Lg", va_arg(args, long double));
+          else printf("%g", va_arg(args, double));
+          break;
+        case 'o':
+          printf("%o", va_arg(args, unsigned int));
+          break;
+        case 'x':
+          printf("%x", va_arg(args, unsigned int));
+          break;
+        case 'X':
+          printf("%X", va_arg(args, unsigned int));
+          break;
+        case 'c':
+          putchar(va_arg(args, int));
+          break;
+        case 's':
+          printf("%s", va_arg(args, char *));
+          break;
+        case 'S': 
+          stringPrint(va_arg(args, string));
+          break;
+        case 'G': 
+          listPrint(va_arg(args, list));
+          break;
+        case 'F': 
+          queuePrint(va_arg(args, queue));
+          break;
+        case 'P': 
+          stackPrint(va_arg(args, stack));
+          break;
+        case 'A': 
+          treePrint(va_arg(args, tree));
+          break;
+        case 'O': 
+          objPrint(va_arg(args, obj));
+          break;
+        default:
+          putchar('%');
+          putchar(*format);
+      }
+    }
+    else putchar(*format);
+    format++;
+  }
+  va_end(args);
 }
 
 /**
@@ -251,7 +270,7 @@ int fileExists(const char* fileName) {
  * @brief Obtém o tamanho do arquivo em bytes.
  *
  * @param fileName Nome do arquivo.
- * @return Retorna o tamanho do arquivo em bytes, ou -1 se houver erro.
+ * @return O tamanho do arquivo em bytes, ou -1 se houver erro.
  */
 long fileSize(const char* fileName) {
   FILE* file = fopen(fileName, "r");
@@ -352,7 +371,7 @@ int filePrint(const char* fileName) {
  * @param newName Novo nome para o arquivo.
  * @return 1 se o arquivo foi renomeado com sucesso, ou 0 se houve erro.
  */
-int renameFile(const char* oldName, const char* newName) {
+int fileRename(const char* oldName, const char* newName) {
   if (!confirm("Tem certeza que deseja renomear o arquivo '%s' para '%s'", oldName, newName)) {
     printf("Renomeação cancelada\n");
     return 0;
@@ -373,7 +392,7 @@ int renameFile(const char* oldName, const char* newName) {
  * @param text Texto a ser adicionado ao final do arquivo.
  * @return 1 se o texto foi adicionado com sucesso, ou 0 se houve erro.
  */
-int appendToFile(const char* fileName, const char* text) {
+int fileAppend(const char* fileName, const char* text) {
   FILE *file = fopen(fileName, "a");
   if (file == NULL) {
     printf("Erro ao abrir o arquivo '%s': %s\n", fileName, strerror(errno));

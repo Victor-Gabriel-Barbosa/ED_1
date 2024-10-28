@@ -6,7 +6,7 @@
 #include "list.h"
 #include "queue.h"
 #include "stack.h"
-#include "map.h"
+#include "tree.h"
 /**
  * @brief Estrutura que representa um valor de tipo genérico, 
  * com um ponteiro para os dados, o tipo de dado e o tamanho em bytes.
@@ -124,7 +124,7 @@ obj boolToObj(bool value, size_t size) {
  * @return Objeto contendo o objeto string.
  */
 obj stringToObj(string value, size_t size) {
-  return voidToObj(&value, sizeof(string), TYPE_STRING);
+  return voidToObj(value, sizeofString(), TYPE_STRING);
 }
 
 /**
@@ -135,7 +135,7 @@ obj stringToObj(string value, size_t size) {
  * @return Objeto contendo o objeto list.
  */
 obj listToObj(list value, size_t size) {
-  return voidToObj(value, sizeof(list), TYPE_LIST);
+  return voidToObj(value, sizeofList(), TYPE_LIST);
 }
 
 /**
@@ -146,7 +146,7 @@ obj listToObj(list value, size_t size) {
  * @return Objeto contendo o objeto queue.
  */
 obj queueToObj(queue value, size_t size) {
-  return voidToObj(value, sizeof(queue), TYPE_QUEUE);
+  return voidToObj(value, sizeofQueue(), TYPE_QUEUE);
 }
 
 /**
@@ -157,18 +157,18 @@ obj queueToObj(queue value, size_t size) {
  * @return Objeto contendo o objeto stack.
  */
 obj stackToObj(stack value, size_t size) {
-  return voidToObj(value, sizeof(stack), TYPE_STACK);
+  return voidToObj(value, sizeofStack(), TYPE_STACK);
 }
 
 /**
- * @brief Converte uma árvore abstrata (map) para obj.
+ * @brief Converte uma árvore abstrata (tree) para obj.
  * 
- * @param value Estrutura map.
+ * @param value Estrutura tree.
  * @param size Tamanho da árvore (não utilizado nesta função).
  * @return Objeto contendo a árvore.
  */
-obj mapToObj(map value, size_t size) {
-  return voidToObj(value, sizeofMap(), TYPE_MAP);
+obj treeToObj(tree value, size_t size) {
+  return voidToObj(value, sizeofTree(), TYPE_TREE);
 }
 
 /**
@@ -179,7 +179,7 @@ obj mapToObj(map value, size_t size) {
  * @return Objeto contendo o valor.
  */
 obj unknownToObj(void* value, size_t size) {
-  return voidToObj(value, size, TYPE_UNKNOWN);
+  return voidToObj(&value, size, TYPE_UNKNOWN);
 }
 
 /**
@@ -196,6 +196,82 @@ obj objDestroy(obj a) {
 }
 
 /**
+ * @brief Cria uma cópia de um objeto.
+ * 
+ * @param a Objeto a ser copiado.
+ * @return Objeto cópia, NULL em caso de falha.
+ */
+obj objCopy(const obj a) {
+  obj b = malloc(sizeof(struct obj_t));
+  if (b == NULL) return NULL;
+  b->size = a->size;
+  b->type = a->type;
+  b->data = malloc(a->size);
+  if (b->data == NULL) {
+    free(b);
+    return NULL;
+  }
+  switch (a->type) {
+    case TYPE_STRING: {
+      string str = stringCopy((string)a->data);
+      if (str == NULL) {
+        free(b->data);
+        free(b);
+        return NULL;
+      }
+      b->data = str;
+      break;
+    }
+    case TYPE_LIST: {
+      list lst = listCopy((list)a->data);
+      if (lst == NULL) {
+        free(b->data);
+        free(b);
+        return NULL;
+      }
+      b->data = lst; 
+      break;
+    }
+    case TYPE_QUEUE: {
+      queue qeu = queueCopy((queue)a->data);
+      if (qeu == NULL) {
+        free(b->data);
+        free(b);
+        return NULL;
+      }
+      b->data = qeu;  
+      break;
+    }
+    case TYPE_STACK: {
+      stack stk = stackCopy((stack)a->data);
+      if (stk == NULL) {
+        free(b->data);
+        free(b);
+        return NULL;
+      }
+      b->data = stk;
+      break;
+    }
+    case TYPE_TREE: {
+      tree tre = treeCopy((tree)a->data);
+      if (tre == NULL) {
+        free(b->data);
+        free(b);
+        return NULL;
+      }
+      b->data = tre; 
+      break;
+    }
+    default: {
+      memcpy(b->data, a->data, a->size); 
+      break;
+    }
+  }
+  return b; 
+}
+
+
+/**
  * @brief Compara dois objetos obj.
  * 
  * @param a Primeiro objeto.
@@ -203,10 +279,9 @@ obj objDestroy(obj a) {
  * @return 0 se forem iguais, valor negativo se a < b, valor positivo se a > b.
  */
 int objCmp(obj a, obj b) {
-  if (a == NULL && b == NULL) return 0;
-  if (a == NULL || b == NULL) return (a == NULL) ? -1 : 1;
-  if (a->data == NULL || b->data == NULL) return (a->data == NULL) ? -1 : 1;
-  if (a->type != b->type) return 1;
+  if (a == NULL || b == NULL) return (a == b) ? 0 : (a == NULL) ? -1 : 1;
+  if (a->data == NULL || b->data == NULL) return (a->data == b->data) ? 0 : (a->data == NULL) ? -1 : 1;
+  if (a->type != b->type) return a->type - b->type;
   switch (a->type) {
     case TYPE_INT:
       return (*(int*)a->data < *(int*)b->data) ? -1 : (*(int*)a->data > *(int*)b->data);
@@ -221,15 +296,15 @@ int objCmp(obj a, obj b) {
     case TYPE_BOOL:
       return (*(bool*)a->data == *(bool*)b->data) ? 0 : (*(bool*)a->data ? 1 : -1);
     case TYPE_STRING:
-      return stringCmp(*(string*)a->data, *(string*)b->data);
+      return stringCmp((string)a->data, (string)b->data);
     case TYPE_LIST:
-      return listCmp(*(list*)a->data, *(list*)b->data);
+      return listCmp((list)a->data, (list)b->data);
     case TYPE_QUEUE:
-      return queueCmp(*(queue*)a->data, *(queue*)b->data);
+      return queueCmp((queue)a->data, (queue)b->data);
     case TYPE_STACK:
-      return stackCmp(*(stack*)a->data, *(stack*)b->data);
-    case TYPE_MAP:
-      return mapCmp(*(map*)a->data, *(map*)b->data);
+      return stackCmp((stack)a->data, (stack)b->data);
+    case TYPE_TREE:
+      return treeCmp((tree)a->data, (tree)b->data);
     case TYPE_UNKNOWN:
       return memcmp(a->data, b->data, a->size);
     default:
@@ -306,8 +381,8 @@ int objPrint(obj a) {
     case TYPE_STACK:
       stackPrint((stack)a->data);
       break; 
-    case TYPE_MAP:
-      mapPrint((map)a->data);
+    case TYPE_TREE:
+      treePrint((tree)a->data);
       break;
     default:
       printf("Unknown Type");

@@ -22,6 +22,20 @@ typedef struct stack_t {
 } *stack;
 
 /**
+ * @brief Calcula o tamanho em bytes da estrutura de dados 'stack_t'.
+ * 
+ * Esta função utiliza o operador 'sizeof' para retornar o tamanho em bytes da estrutura
+ * 'stack_t', que representa um nó ou elemento da pilha. Ela não retorna o número de 
+ * elementos presentes na pilha, mas sim a quantidade de memória que um único elemento 
+ * dessa estrutura ocupa.
+ * 
+ * @return O tamanho em bytes da estrutura 'stack_t'.
+ */
+size_t sizeofStack() {
+  return sizeof(struct stack_t);
+}
+
+/**
  * @brief Cria uma nova pilha.
  * 
  * Esta função aloca memória para uma nova estrutura de pilha ('stack_t'), inicializa 
@@ -73,7 +87,7 @@ stack stackDestroy(stack stk) {
  * @param stk Ponteiro para a pilha a ser verificada.
  * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
-int stackIsEmpty(stack stk) {
+int stackIsEmpty(const stack stk) {
   return (stk == NULL || stk->top == NULL);
 }  
 
@@ -88,7 +102,7 @@ int stackIsEmpty(stack stk) {
  * @param stk Ponteiro para a pilha cuja quantidade de elementos deve ser verificada.
  * @return O número de elementos na pilha. Retorna 0 se a pilha for NULL'.
  */
-size_t stackSize(stack stk) {
+size_t stackSize(const stack stk) {
   return (stk == NULL) ? 0 : stk->N;
 }
 
@@ -110,7 +124,7 @@ stack stackPush(stack stk, obj info) {
   if (stk == NULL) return NULL;
   NodeS* newNode = (NodeS*)malloc(sizeof(NodeS));
   if (newNode == NULL) return stk;
-  newNode->info = info;
+  newNode->info = objCopy(info);
   newNode->prox = stk->top;
   stk->top = newNode;
   stk->N++;
@@ -130,7 +144,7 @@ stack stackPush(stack stk, obj info) {
  * @param info Ponteiro para a variável onde o elemento do topo será armazenado.
  * @return 1 se a operação for bem-sucedida, ou 0 se a pilha estiver vazia.
  */
-int stackTop(stack stk, obj* info) {
+int stackTop(const stack stk, obj* info) {
   if (stackIsEmpty(stk)) return 0;
   *info = stk->top->info;
   return 1;
@@ -160,6 +174,23 @@ stack stackPop(stack stk, obj* info) {
 } 
 
 /**
+ * @brief Cria uma cópia de uma pilha.
+ *
+ * @param stk A pilha a ser copiada.
+ * @return Uma cópia da pilha, ou NULL se a alocação de memória falhar.
+ */
+ stack stackCopy(const stack stk) {
+  if (stk == NULL) return NULL;
+  stack newStack = stackNew();
+  NodeS* aux = stk->top;
+  while (aux!= NULL) {
+    stackPush(newStack, objCopy(aux->info));
+    aux = aux->prox;
+  }
+  return newStack;
+}
+
+/**
  * @brief Compara duas pilhas.
  * 
  * Esta função compara duas pilhas, verificando sua estrutura e o conteúdo 
@@ -174,7 +205,7 @@ stack stackPop(stack stk, obj* info) {
  * @param stk2 Ponteiro para a segunda pilha a ser comparada.
  * @return 0 se as pilhas forem iguais, -1 se a primeira pilha for menor, 1 se a primeira pilha for maior
  */
-int stackCmp(stack stk1, stack stk2) {
+int stackCmp(const stack stk1, const stack stk2) {
   if (stk1 == NULL && stk2 == NULL) return 0; 
   if (stk1 == NULL) return -1; 
   if (stk2 == NULL) return 1; 
@@ -203,7 +234,7 @@ int stackCmp(stack stk1, stack stk2) {
  * @param stk Ponteiro para a pilha a ser convertida em string.
  * @return Uma string representando a pilha, ou NULL se a pilha estiver vazia.
  */
-string stackToString(stack stk) {
+string stackToString(const stack stk) {
   if (stackIsEmpty(stk)) return NULL;
   NodeS* aux = stk->top;
   string str = stringNew();
@@ -225,14 +256,14 @@ string stackToString(stack stk) {
  * Esta função imprime todos os elementos da pilha na saída padrão. Se a 
  * pilha estiver vazia, a função retorna 0 e não realiza nenhuma operação. 
  * Caso contrário, a função converte a pilha em uma representação de string 
- * usando `stackToString`, imprime essa string com `stringPrint`, e em seguida 
+ * usando 'stackToString', imprime essa string com 'stringPrint', e em seguida 
  * libera a memória alocada para a string. A função retorna 1 ao final 
  * indicando que a impressão foi bem-sucedida.
  * 
  * @param stk Ponteiro para a pilha a ser impressa.
  * @return 1 se a pilha foi impressa com sucesso, ou 0 se a pilha estiver vazia.
  */
-int stackPrint(stack stk) {
+int stackPrint(const stack stk) {
   if (stackIsEmpty(stk)) return 0;
   string str = stackToString(stk);
   stringPrint(str);

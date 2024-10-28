@@ -6,7 +6,7 @@
 #include "list.h"
 #include "queue.h"
 #include "stack.h"
-#include "map.h"
+#include "tree.h"
 
  
 /**
@@ -23,9 +23,13 @@ typedef struct string_t {
 } *string;
 
 /**
- * @brief Obtém o tamanho da struct string.
+ * @brief Calcula o tamanho em bytes da estrutura de dados 'string_t'.
  * 
- * @return O tamanho da struct string.
+ * Esta função utiliza o operador 'sizeof' para retornar o tamanho em bytes da estrutura
+ * 'string_t', que representa uma string. Ela não retorna o tamanho da string, mas sim a 
+ * quantidade de memória que essa estrutura ocupa.
+ * 
+ * @return O tamanho em bytes da estrutura 'string_t'.
  */
 size_t sizeofString() {
   return sizeof(struct string_t);
@@ -58,11 +62,10 @@ string stringNew() {
  * Essa função copia o conteúdo de uma string literal para uma nova
  * string, alocando a memória necessária para armazenar o conteúdo. 
  *
- * @param str Objeto string literal.
+ * @param str String literal.
  * @return A nova string inicializada.
  */
 string stringInit(const char* str) {
-  // Aloca memória para string
   string newStr = (string)malloc(sizeof(struct string_t));
   if (newStr == NULL) return NULL;
   newStr->size = strlen(str);
@@ -81,7 +84,7 @@ string stringInit(const char* str) {
  * evitando vazamentos de memória. Deve ser chamada sempre que uma string
  * não for mais necessária.
  *
- * @param str Objeto string a ser liberado.
+ * @param str String a ser liberado.
  * @return 1 se a string não é vazia, 0 caso contrário.
  */
 int stringDestroy(string str) {
@@ -101,7 +104,7 @@ int stringDestroy(string str) {
  * contar o terminador nulo. É uma maneira de verificar quantos caracteres
  * estão efetivamente armazenados na string.
  *
- * @param str Objeto string.
+ * @param str String.
  * @return O tamanho da string.
  */
 size_t stringSize(const string str) {
@@ -116,11 +119,11 @@ size_t stringSize(const string str) {
  * a nova capacidade seja maior que o tamanho atual da string, se
  * caracteres adicionais forem ser adicionados.
  *
- * @param str Objeto string a ser redimensionado.
+ * @param str String a ser redimensionada.
  * @param new_capacity Nova capacidade da string.
  * @return 1 se a string não é vazia, 0 caso contrário.
  */
-int stringResize(string str, size_t newCapacity) {
+int stringResize(string str, const size_t newCapacity) {
   if (str == NULL) return 0; 
   if (newCapacity > str->capacity) {
     char* newData = (char*)realloc(str->data, (newCapacity + 1) * sizeof(char));
@@ -138,17 +141,17 @@ int stringResize(string str, size_t newCapacity) {
  * atual da string não for suficiente, a função redimensiona a string
  * antes de adicionar o novo caractere.
  *
- * @param str Objeto string.
+ * @param str String.
  * @param c Caractere a ser adicionado.
- * @return 1 se a string não é vazia, 0 caso contrário.
+ * @return A string modificada, ou NULL se ocorrer um erro.
  */
-int stringAddChar(string str, char c) {
-  if (str == NULL) return 0; 
-  if (str->size + 1 >= str->capacity && !stringResize(str, str->capacity * 2)) return 0;  
+string stringAddChar(string str, const char c) {
+  if (str == NULL) return NULL; 
+  if (str->size + 1 >= str->capacity && !stringResize(str, str->capacity * 2)) return NULL; 
   str->data[str->size] = c;
   str->size++;
   str->data[str->size] = '\0'; 
-  return 1; 
+  return str;
 }
 
 /**
@@ -160,10 +163,10 @@ int stringAddChar(string str, char c) {
  *
  * @param str1 Ponteiro para a primeira string que será modificada.
  * @param str2 Constante para a segunda string que será concatenada.
- * @return A string modificada (str1).
+ * @return A string modificada (str1), ou NULL se ocorrer um erro.
  */
 string stringAppend(string str1, const string str2) {
-  if (str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL) return str1; 
+  if (str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL) return NULL; 
   size_t newSize = str1->size + str2->size;
   if (!stringResize(str1, newSize)) return NULL;
   strcat(str1->data, str2->data);
@@ -181,16 +184,34 @@ string stringAppend(string str1, const string str2) {
  *
  * @param str1 Ponteiro para a primeira string que será modificada.
  * @param str2 Constante para a segunda string literal que será concatenada.
- * @return A string modificada (str1).
+ * @return A string modificada (str1), ou NULL se ocorrer um erro.
  */
 string stringCat(string str1, const char* str2) {
-  if (str1 == NULL || str2 == NULL) return str1;
+  if (str1 == NULL || str2 == NULL) return NULL;
   size_t newSize = str1->size + strlen(str2);
-  if (!stringResize(str1, newSize)) return 0;
+  if (!stringResize(str1, newSize)) return NULL;
   strcat(str1->data, str2);
   str1->size = newSize;
   str1->data[newSize] = '\0'; 
   return str1; 
+}
+
+/**
+ * @brief Cria uma cópia de uma string.
+ *
+ * @param str A string a ser copiada.
+ * @return Uma cópia da string, ou NULL se a alocação de memória falhar.
+ */
+string stringCopy(const string str) {
+  if (str == NULL) return NULL;
+  string newStr = (string)malloc(sizeof(struct string_t));
+  if (newStr == NULL) return NULL;
+  newStr->size = str->size;
+  newStr->capacity = newStr->size + 1;
+  newStr->data = (char*)malloc(newStr->capacity * sizeof(char));
+  if (newStr->data == NULL) return NULL;
+  strcpy(newStr->data, str->data);
+  return newStr;
 }
 
 /**
@@ -204,7 +225,7 @@ string stringCat(string str1, const char* str2) {
  *
  * @param str1 Constante para a primeira string.
  * @param str2 Constante para a segunda string.
- * @return Retorna um valor inteiro conforme a relação entre as Strings.
+ * @return Um valor inteiro conforme a relação entre as Strings.
  */
 int stringCmp(const string str1, const string str2) {
   return (str1 == NULL || str2 == NULL) ? 0 : strcmp(str1->data, str2->data);
@@ -217,7 +238,7 @@ int stringCmp(const string str1, const string str2) {
  * A entrada é lida até que o usuário pressione a tecla Enter. A string
  * resultante é retornada para uso posterior.
  *
- * @return A string lida.
+ * @return A string lida, ou NULL se ocorrer um erro.
  */
 string stringInput() {
   string input = (string)malloc(sizeof(struct string_t));
@@ -242,20 +263,20 @@ string stringInput() {
  * caractere especificado por outro. Retorna o número de substituições
  * realizadas, o que pode ser útil para relatórios ou verificações.
  *
- * @param str Objeto string.
+ * @param str String.
  * @param a Caractere a ser substituído.
  * @param b Caractere que irá substituir.
  * @return O número de substituições realizadas.
  */
 size_t stringReplace(string str, const char a, const char b) {
-  size_t cont = 0;
+  size_t count = 0;
   for (size_t i = 0; i < str->size; i++) {
     if (str->data[i] == a) { 
       str->data[i] = b;
-      cont++;
+      count++;
     }
   }
-  return cont;
+  return count;
 }
 
 /**
@@ -267,10 +288,10 @@ size_t stringReplace(string str, const char a, const char b) {
  * padrões ou validação de conteúdo.
  *
  * @param str Constante para a string.
- * @param substr Objeto substring a ser encontrada.
+ * @param substr Substring a ser encontrada.
  * @return O índice da substring, ou -1 se não encontrada.
  */
-int stringIndexOf(const string str, const char* substr) {
+int stringIndex(const string str, const char* substr) {
   if (str == NULL || substr == NULL) return -1;
   char* pos = strstr(str->data, substr);
   return pos ? (int)(pos - str->data) : -1; 
@@ -284,13 +305,20 @@ int stringIndexOf(const string str, const char* substr) {
  * transformar a representação da string.
  *
  * @param str A string a ser invertida.
- * @return A string invertida.
+ * @return A string invertida, ou NULL se ocorrer um erro.
  */
-string stringReverse(const string str) {
-  if (str == NULL || str->size == 0 || str->data == NULL) return str;
-  string reverse = stringNew(); 
-  for (size_t i = 0; i < str->size; i++) stringAddChar(reverse, str->data[str->size - 1 - i]);
-  return reverse; 
+string stringReverse(string str) {
+  if (str == NULL || str->size == 0 || str->data == NULL) return NULL;
+  size_t left = 0;
+  size_t right = str->size - 1;
+  while (left < right) {
+    char temp = str->data[left];
+    str->data[left] = str->data[right];
+    str->data[right] = temp;
+    left++;
+    right--;
+  }
+  return str;
 }
 
 /**
@@ -335,7 +363,7 @@ string* stringSplit(const string str, const char* dlm) {
 /**
  * @brief Pega o conteúdo de uma string
  * 
- * @param str Objeto string.
+ * @param str String.
  * @return Conteúdo da string.
  */
 const char* stringGet(const string str) {
@@ -365,12 +393,12 @@ char* stringGetChar(const string str, size_t pos) {
  * armazena o resultado em uma string de destino. É útil para
  * manipulações de strings onde a formatação é necessária.
  *
- * @param dest Objeto string de destino.
+ * @param dest String de destino.
  * @param format Formato da string.
- * @return Retorna 1 em caso de sucesso ou 0 em caso de falha.
+ * @return A string modificada (str1), ou NULL se ocorrer um erro.
  */
-int stringSnprintf(string dest, const char* format, ...) {
-  if (dest == NULL) return 0;
+string stringSnprintf(string dest, const char* format, ...) {
+  if (dest == NULL) return NULL;
   va_list args;
   va_start(args, format);
   va_list args_copy;
@@ -379,24 +407,13 @@ int stringSnprintf(string dest, const char* format, ...) {
   va_end(args_copy);
   if (size > dest->size) {
     char* new_data = (char*)realloc(dest->data, size);
-    if (new_data == NULL) return 0;
+    if (new_data == NULL) return NULL;
     dest->data = new_data;
     dest->size = size;
   }
   vsnprintf(dest->data, dest->size, format, args);
   va_end(args);
-  return 1;
-}
-
-/** 
- * @brief Exibe uma string na tela.
- * @param str Objeto string.
- * @return 1 se a string não é vazia, 0 caso contrário.
- */
-int stringPrint(string str) {
-  if (str == NULL) return 0;
-  printf("%s", str->data);
-  return 1;
+  return dest;
 }
 
 /**
@@ -407,15 +424,27 @@ int stringPrint(string str) {
  * de tipo dinâmico para determinar qual conversão realizar.
  * 
  * @param info Tipo do dado que será transformado.
- * @return Uma nova instância da struct string contendo o conteúdo transformado.
+ * @return Uma nova instância de string contendo o conteúdo transformado.
  */
-string toString(obj info) {
+string toString(const obj info) {
   string str = stringNew();
   size_t initialCapacity = 64; 
   if (!stringResize(str, initialCapacity)) return NULL;
   void* data = objGetData(info);
   size_t requiredSize = 0;
   switch (objGetType(info)) {
+    case TYPE_CHAR: {
+      requiredSize = snprintf(str->data, str->capacity, "%c", *(char*)data);
+      break;
+    }
+    case TYPE_BOOL: {
+      const char* boolStr = (*(bool*)data) ? "true" : "false";
+      requiredSize = strlen(boolStr);
+      if (!stringResize(str, requiredSize + 1)) return NULL;
+      strcpy(str->data, boolStr); 
+      str->size = requiredSize;
+      return str;
+    }
     case TYPE_INT: {
       requiredSize = snprintf(str->data, str->capacity, "%d", *(int*)data);
       break;
@@ -428,101 +457,61 @@ string toString(obj info) {
       requiredSize = snprintf(str->data, str->capacity, "%lf", *(double*)data);
       break;
     }
-    case TYPE_CHAR: {
-      requiredSize = snprintf(str->data, str->capacity, "%c", *(char*)data);
-      break;
-    }
     case TYPE_CHAR_PTR: {
       requiredSize = snprintf(str->data, str->capacity, "%s", (char*)data);
       break;
     }
-    case TYPE_BOOL: {
-      const char* boolStr = (*(bool*)data) ? "true" : "false";
-      requiredSize = strlen(boolStr);
-      if (!stringResize(str, requiredSize + 1)) return NULL;
-      strcpy(str->data, boolStr); 
-      str->size = requiredSize;
-      return str;
-    }
     case TYPE_STRING: {
-      string srcStr = *(string *)data;
+      string srcStr = (string)data;
       if (srcStr == NULL) return NULL;
       if (srcStr->size + 1 > str->capacity && !stringResize(str, srcStr->size + 1)) return NULL;
       memcpy(str->data, srcStr->data, srcStr->size);
-      str->data[srcStr->size] = '\0';  
+      str->data[srcStr->size] = '\0'; 
       str->size = srcStr->size;
       return str;
     }
     case TYPE_LIST: {
-      list lst = (list)objGetData(info);  
-      if (lst != NULL) {
-        string strList = listToString(lst);
-        if (!strList || !stringResize(str, strList->size + 1)) return NULL;
-        memcpy(str->data, strList->data, strList->size);
-        str->data[strList->size] = '\0';
-        str->size = strList->size;
-        stringDestroy(strList); 
-      } else { 
-        const char* invalidStr = "Invalid list";
-        requiredSize = strlen(invalidStr);
-        if (!stringResize(str, requiredSize + 1)) return NULL;
-        strcpy(str->data, invalidStr);
-        str->size = requiredSize;
-      }
+      list lst = (list)data;  
+      if (lst == NULL) return NULL;
+      string strList = listToString(lst);
+      if (!strList || !stringResize(str, strList->size + 1)) return NULL;
+      memcpy(str->data, strList->data, strList->size);
+      str->data[strList->size] = '\0';
+      str->size = strList->size;
+      stringDestroy(strList); 
       return str;
     }
     case TYPE_QUEUE: {
-      queue qeu = (queue)objGetData(info);
-      if (qeu != NULL) {
-        string strQueue = queueToString(qeu);
-        if (!strQueue || !stringResize(str, strQueue->size + 1)) return NULL;
-        memcpy(str->data, strQueue->data, strQueue->size);
-        str->data[strQueue->size] = '\0';
-        str->size = strQueue->size;
-        stringDestroy(strQueue); 
-      } else {
-        const char* invalidStr = "Invalid queue";
-        requiredSize = strlen(invalidStr);
-        if (!stringResize(str, requiredSize + 1)) return NULL;
-        strcpy(str->data, invalidStr);
-        str->size = requiredSize;
-      }
+      queue qeu = (queue)data;
+      if (qeu == NULL) return NULL;
+      string strQueue = queueToString(qeu);
+      if (!strQueue || !stringResize(str, strQueue->size + 1)) return NULL;
+      memcpy(str->data, strQueue->data, strQueue->size);
+      str->data[strQueue->size] = '\0';
+      str->size = strQueue->size;
+      stringDestroy(strQueue); 
       return str;
     }
     case TYPE_STACK: {
-      stack stk = (stack)objGetData(info);
-      if (stk != NULL) {
-        string strStack = stackToString(stk);
-        if (!strStack || !stringResize(str, strStack->size + 1)) return NULL;
-        memcpy(str->data, strStack->data, strStack->size);
-        str->data[strStack->size] = '\0';
-        str->size = strStack->size;
-        stringDestroy(strStack); 
-      } else {
-        const char* invalidStr = "Invalid stack";
-        requiredSize = strlen(invalidStr);
-        if (!stringResize(str, requiredSize + 1)) return NULL;
-        strcpy(str->data, invalidStr);
-        str->size = requiredSize;
-      }
+      stack stk = (stack)data;
+      if (stk == NULL) return NULL;
+      string strStack = stackToString(stk);
+      if (!strStack || !stringResize(str, strStack->size + 1)) return NULL;
+      memcpy(str->data, strStack->data, strStack->size);
+      str->data[strStack->size] = '\0';
+      str->size = strStack->size;
+      stringDestroy(strStack); 
       return str;
     }
-    case TYPE_MAP: {
-      map tre = (map)objGetData(info);
-      if (tre != NULL) {
-        string strMap = mapToString(tre);
-        if (!strMap || !stringResize(str, strMap->size + 1)) return NULL;
-        memcpy(str->data, strMap->data, strMap->size);
-        str->data[strMap->size] = '\0';
-        str->size = strMap->size;
-        stringDestroy(strMap);
-      } else {
-        const char* invalidStr = "Invalid map";
-        requiredSize = strlen(invalidStr);
-        if (!stringResize(str, requiredSize + 1)) return NULL;
-        strcpy(str->data, invalidStr);
-        str->size = requiredSize;
-      }
+    case TYPE_TREE: {
+      tree tre = (tree)data;
+      if (tre == NULL) return NULL; 
+      string strTree = treeToString(tre);
+      if (!strTree || !stringResize(str, strTree->size + 1)) return NULL;
+      memcpy(str->data, strTree->data, strTree->size);
+      str->data[strTree->size] = '\0';
+      str->size = strTree->size;
+      stringDestroy(strTree);
       return str;
     }
     case TYPE_UNKNOWN: {
@@ -533,14 +522,8 @@ string toString(obj info) {
       str->size = dataSize;
       return str;
     }
-    default: {
-      const char* invalidStr = "Invalid Type";
-      requiredSize = strlen(invalidStr);
-      if (!stringResize(str, requiredSize + 1)) return NULL;
-      strcpy(str->data, invalidStr);
-      str->size = requiredSize;
-      return str;
-    }
+    default: 
+      return NULL;
   }
   if (requiredSize >= str->capacity) {
     if (!stringResize(str, requiredSize + 1)) return NULL;
@@ -548,4 +531,15 @@ string toString(obj info) {
   }
   str->size = requiredSize;
   return str;
+}
+
+/** 
+ * @brief Exibe uma string na tela.
+ * @param str String a ser exibida.
+ * @return 1 se a string não é vazia, 0 caso contrário.
+ */
+int stringPrint(const string str) {
+  if (str == NULL) return 0;
+  printf("%s", str->data);
+  return 1;
 }

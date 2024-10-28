@@ -9,31 +9,43 @@
  * e operações auxiliares como limpar o buffer de entrada e validar alocações de memória.
  * 
  * Macros:
- * - `foreach`: Permite a iteração sobre arrays de tamanho conhecido em tempo de compilação.
+ * - 'sizeArray': Calcula o número de elementos em um array.
+ * - 'randInt': Seleciona aleatoriamente um elemento do array dado.
+ * - 'timeInt':  Mede o tempo de execução de uma função ou bloco de código.
+ * - 'foreach': Permite a iteração sobre arrays de tamanho conhecido em tempo de compilação.
+ * - 'print': Conta automaticamente o número de argumentos e chama a função printArgs para exibir.
  *
  * Funções principais:
- * - `printsf`: Imprime uma string formatada com suporte a novos tipos de dados.
- * - `input`: Exibe uma mensagem formatada e captura a entrada do usuário.
- * - `cleanBuffer`: Limpa o buffer do teclado.
- * - `cleanScreen`: Limpa a tela do terminal.
- * - `waitCleanScreen`: Exibe uma mensagem e espera antes de limpar a tela.
- * - `choose`: Solicita ao usuário um número dentro de um intervalo.
- * - `confirm`: Solicita a confirmação de uma ação.
- * - `fileName`: Gera um nome de arquivo único.
- * - `filePrint`: Exibe o conteúdo de um arquivo com uma cor especificada.
- * - `verAlloc`: Verifica se a alocação de memória foi bem-sucedida.
+ * - 'printsf': Imprime uma string formatada com suporte a novos tipos de dados.
+ * - 'input': Exibe uma mensagem formatada e captura a entrada do usuário.
+ * - 'cleanBuffer': Limpa o buffer do teclado.
+ * - 'cleanScreen': Limpa a tela do terminal.
+ * - 'waitCleanScreen': Exibe uma mensagem e espera antes de limpar a tela.
+ * - 'chooseInt': Solicita ao usuário um número dentro de um intervalo.
+ * - 'confirm': Solicita a confirmação de uma ação.
+ * - 'fileExists': Verifica se um arquivo existe no sistema.
+ * - 'fileSize': Obtém o tamanho do arquivo em bytes.
+ * - 'fileName': Garante que o nome do arquivo é único e válido.
+ * - 'fileDelete': Deleta o arquivo especificado pelo nome.
+ * - 'filePrint': Exibe o conteúdo de um arquivo com uma cor especificada.
+ * - 'fileRename': Renomeia um arquivo.
+ * - 'fileAppend': Adiciona texto ao final de um arquivo.
+ * - 'fileCompare': Compara dois arquivos para verificar se são idênticos.
+ * 
  * 
  * @note Funções que interagem com o terminal podem ser dependentes da plataforma.
  * 
  * @warning Algumas funções requerem o uso correto de ponteiros e strings. 
  * Certifique-se de passar os parâmetros corretamente para evitar falhas.
  * 
- * @version 1.0
+ * @version 2.0
  * @date 12/10/2024
  */
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdint.h>
+#include <time.h>
 #include "stringlib.h"
 
 /**
@@ -53,6 +65,34 @@
 #define randInt(arr) (arr[rand() % sizeArray(arr)])
 
 /**
+ * @brief Mede o tempo de execução de uma função ou bloco de código.
+ *
+ * Executa o código fornecido e exibe o tempo gasto em segundos.
+ * Usa 'clock()' da biblioteca '<time.h>' para medir o tempo em ciclos
+ * de clock e converte para segundos com 'CLOCKS_PER_SEC'.
+ *
+ * @param func Função ou bloco de código a ser medido.
+ */
+#define timer(func)                                                 \
+  ({                                                                \
+    clock_t start, end;                                             \
+    start = clock();                                                \
+    if (start == (clock_t)-1) {                                     \
+      perror("Erro ao iniciar o temporizador");                     \
+      return;                                                       \
+    }                                                               \
+    func;                                                           \
+    end = clock();                                                  \
+    if (end == (clock_t)-1) {                                       \
+      perror("Erro ao parar o temporizador");                       \
+      return;                                                       \
+    }                                                               \
+    double elapsed_time = ((double)(end - start)) / CLOCKS_PER_SEC; \
+    printf("Tempo de execução: %g segundos\n", elapsed_time);       \
+    elapsed_time;                                                   \
+  })
+
+/**
  * @def foreach(item, array)
  * @brief Itera sobre cada elemento de um array estático.
  *
@@ -67,12 +107,28 @@
     item++)
 
 /**
- * @brief Macro para contar automaticamente o número de argumentos e chamar a função printMultiple.
+ * @brief Imprime um número variável de strings.
+ *
+ * Esta função aceita um número variável de argumentos do tipo string e os imprime
+ * um por um. Se algum argumento for nulo, imprime "NULL".
+ *
+ * @param count O número de argumentos passados para a função.
+ * @param ... Os argumentos do tipo string que devem ser impressos.
  */
-#define print(...) printMultiple(sizeof((obj[]){__VA_ARGS__}) / sizeof(obj), __VA_ARGS__)
+int printArgs(int count, ...);
+
+/**
+ * @brief Imprime um número variável de strings.
+ *
+ * Esta macro facilita a impressão de múltiplas strings, calculando automaticamente
+ * o número de argumentos passados e chamando a função 'printArgs'.
+ *
+ * @param ... As strings que devem ser impressas.
+ */
+#define print(...) printArgs(sizeof((string[]){__VA_ARGS__}) / sizeof(string), __VA_ARGS__)
 
 /** 
- * @brief Simula o printf e aceita novos tipos.
+ * @brief Imprime uma string formatada com suporte a novos tipos de dado.
  * 
  * @param format A string de formato.
  * @param ... Os argumentos a serem formatados.
@@ -80,21 +136,9 @@
 void printfs(const char* format, ...); 
 
 /**
- * @brief Exibe o texto correspondente a múltiplos objetos `obj`.
- *
- * A função converte cada objeto `obj` para uma `string` e exibe seus textos.
- * Aceita múltiplos argumentos.
- *
- * @param count Número de objetos obj.
- * @param ... Lista de objetos obj.
- * @return 1 se todos os textos foram exibidos corretamente, 0 caso algum falhar.
- */
-int printMultiple(int count, ...);
-
-/**
  * @brief Exibe uma mensagem formatada e obtém a entrada do usuário.
  *
- * @brief A função imprime uma mensagem formatada e retorna a entrada como uma `string`.
+ * @brief A função imprime uma mensagem formatada e retorna a entrada como uma 'string'.
  *
  * @param format string de formato para a mensagem.
  * @param ... Argumentos para a formatação da mensagem.
@@ -124,9 +168,9 @@ void waitCleanScreen(const char* msg);
  * @param msg Mensagem a ser exibida ao usuário.
  * @param min O valor mínimo do intervalo.
  * @param max O valor máximo do intervalo.
- * @return Um número inteiro escolhido pelo usuário.
+ * @return O número escolhido pelo usuário.
  */
-int choose(const char* msg, const int min, const int max);
+int64_t chooseInt(const char* msg, const int64_t min, const int64_t max);
 
 /**
  * @brief Solicita confirmação do usuário com mensagem formatada.
@@ -134,7 +178,7 @@ int choose(const char* msg, const int min, const int max);
  * @param msg Mensagem formatada (como em printf) para exibir ao usuário.
  * @param ... Argumentos variáveis para formatar a mensagem.
  *
- * @return Retorna 1 se o usuário confirmar (responder 'S'), ou 0 se o usuário
+ * @return 1 se o usuário confirmar (responder 'S'), ou 0 se o usuário
  * negar (responder 'N').
  */
 int confirm(const char* msg, ...); 
@@ -187,7 +231,7 @@ int filePrint(const char* nome);
  * @param newName Novo nome para o arquivo.
  * @return 1 se o arquivo foi renomeado com sucesso, ou 0 se houve erro.
  */
-int renameFile(const char* oldName, const char* newName);
+int fileRename(const char* oldName, const char* newName);
 
 /**
  * @brief Adiciona texto ao final de um arquivo.
@@ -196,7 +240,7 @@ int renameFile(const char* oldName, const char* newName);
  * @param text Texto a ser adicionado ao final do arquivo.
  * @return 1 se o texto foi adicionado com sucesso, ou 0 se houve erro.
  */
-int appendToFile(const char* fileName, const char* text);
+int fileAppend(const char* fileName, const char* text);
 
 /**
  * @brief Compara dois arquivos para verificar se são idênticos.

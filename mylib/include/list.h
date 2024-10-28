@@ -6,7 +6,11 @@
  * A lista é composta por nós que armazenam um valor 'info' (que pode ser de qualquer tipo) e ponteiros para os nós anterior e próximo.
  * Além disso, a lista contém ponteiros para o primeiro e o último nó, assim como o tamanho atual da lista e o tamanho do tipo dos elementos armazenados.
  * 
+ * Macros:
+ * - 'listAdd': Adiciona um valor ao final da lista.
+ * 
  * Funções disponíveis:
+ * - 'sizeofList': Calcula o tamanho em bytes da estrutura de dados 'list_t'. 
  * - 'listNew': Cria uma nova lista.
  * - 'listDestroy': Destrói uma lista, liberando toda a memória alocada.
  * - 'listIsEmpty': Verifica se a lista está vazia.
@@ -16,9 +20,12 @@
  * - 'listRemove': Remove um elemento da lista em uma posição específica.
  * - 'listSearch': Busca um elemento na lista em uma posição específica.
  * - 'listIndex': Busca o índice de um elemento na lista.
+ * - 'listCopy': Cria uma cópia de uma lista encadeada.
+ * - 'listCmp': Compara duas listas elemento por elemento.
  * - 'listSort': Ordena a lista usando o algoritmo Merge Sort.
- * - 'listMerge': Mescla duas listas ordenadas em uma nova lista.
  * - 'listGet': Obtém o valor de um elemento em uma posição específica.
+ * - 'listMerge': Mescla duas listas ordenadas em uma nova lista.
+ * - 'listToString': Converte uma lista encadeada em uma representação de string.
  * - 'listPrint': Printa todos os elementos da lista.
  * 
  * Esta implementação é flexível, permitindo que qualquer tipo de dado seja armazenado, desde que seja informado o tamanho do tipo 
@@ -36,6 +43,13 @@
 #define LIST_H
 
 #include "typeslib.h"
+
+/**
+ * @brief Calcula o tamanho em bytes da estrutura de dados 'list_t'.
+ * 
+ * @return size_t O tamanho em bytes da estrutura 'list_t'.
+ */
+size_t sizeofList();
  
 /**
  * @brief Cria uma nova lista duplamente encadeada e inicializa seus campos.
@@ -58,7 +72,7 @@ list listDestroy(list lst);
  * @param lst A lista a ser verificada.
  * @return 1 se a lista estiver vazia, 0 caso contrário.
  */
-int listIsEmpty(list lst);
+int listIsEmpty(const list lst);
 
 /**
  * @brief Retorna o número de elementos na lista.
@@ -66,7 +80,7 @@ int listIsEmpty(list lst);
  * @param lst A lista da qual se deseja obter o tamanho.
  * @return O número de nós na lista ou 0 se a lista for nula.
  */
-size_t listSize(list lst);
+size_t listSize(const list lst);
 
 /**
  * @brief Adiciona um novo nó no início da lista.
@@ -75,7 +89,7 @@ size_t listSize(list lst);
  * @param info O objeto a ser armazenado no novo nó.
  * @return A lista atualizada com o novo nó no início.
  */
-list listAddIni(list lst, obj info);
+list listAddIni(list lst, const obj info);
 
 /**
  * @brief Adiciona um novo nó ao final da lista.
@@ -84,7 +98,18 @@ list listAddIni(list lst, obj info);
  * @param info O objeto a ser armazenado no novo nó.
  * @return A lista atualizada com o novo nó no final.
  */
-list listAddEnd(list lst, obj info);
+list listAddEnd(list lst, const obj info);
+
+/**
+ * @brief Adiciona um valor ao final da lista.
+ * 
+ * Macro que adiciona um valor ('value') ao final de uma lista ('lst'), 
+ * convertendo-o automaticamente para o tipo adequado.
+ *
+ * @param lst Lista onde o valor será adicionado.
+ * @param value Valor a ser adicionado na lista.
+ */
+#define listAdd(lst, value) listAddEnd(lst, toObj(value))
 
 /**
  * @brief Remove um nó da lista em uma posição específica.
@@ -104,7 +129,7 @@ list listRemove(list lst, const int pos);
  * @return 1 se o objeto for encontrado e armazenado com sucesso,
  * ou -1 se a lista estiver vazia, a posição for inválida, ou o ponteiro 'info' for nulo.
  */
-int listSearch(list lst, const int pos, obj *info); 
+int listSearch(const list lst, const int pos, obj* info); 
 
 /**
  * @brief Retorna o objeto armazenado em uma posição específica da lista.
@@ -113,16 +138,25 @@ int listSearch(list lst, const int pos, obj *info);
  * @param pos A posição do nó de onde o objeto será obtido (de 0 a N-1).
  * @return O objeto armazenado no nó na posição especificada ou NULL se a posição for inválida.
  */
-obj listGet(list lst, const int pos);
+obj listGet(const list lst, const int pos);
 
-/**
+/** 
  * @brief Retorna o índice da primeira ocorrência de um objeto na lista.
  *
  * @param lst A lista onde o objeto será procurado.
  * @param info O objeto a ser comparado com os elementos da lista.
  * @return O índice do primeiro nó contendo o objeto ou -1 se o objeto não for encontrado.
  */
-int listIndex(list lst, obj info);
+int listIndex(const list lst, const obj info);
+
+
+/**
+ * @brief Cria uma cópia de uma lista encadeada.
+ *
+ * @param lst A lista a ser copiada.
+ * @return Uma cópia da lista, ou NULL se a alocação de memória falhar.
+ */
+list listCopy(const list lst);
 
 /**
  * @brief Compara duas listas elemento por elemento.
@@ -131,7 +165,7 @@ int listIndex(list lst, obj info);
  * @param lst2 A segunda lista a ser comparada.
  * @return 0 se as listas forem iguais, 1 se 'lst1' for maior, -1 se 'lst2' for maior.
  */
-int listCmp(list lst1, list lst2);
+int listCmp(const list lst1, const list lst2);
 
 /**
  * @brief Ordena uma lista encadeada usando o algoritmo Quick Sort.
@@ -149,7 +183,7 @@ list listSort(list lst);
  * @param lst2 A segunda lista a ser mesclada.
  * @return A lista mesclada ordenada, ou NULL se a alocação de memória falhar.
  */
-list listMerge(list lst1, list lst2);
+list listMerge(const list lst1, const list lst2);
 
 /**
  * @brief Converte uma lista encadeada em uma representação de string.
@@ -157,7 +191,7 @@ list listMerge(list lst1, list lst2);
  * @param lst A lista a ser convertida em string.
  * @return A representação de string da lista, ou NULL se a lista estiver vazia.
  */
-string listToString(list lst);
+string listToString(const list lst);
 
 /**
  * @brief Exibe a representação em string de uma lista encadeada.
@@ -165,6 +199,6 @@ string listToString(list lst);
  * @param lst A lista a ser exibida.
  * @return 1 se a impressão foi bem-sucedida ou 0 se a lista estiver vazia.
  */
-int listPrint(list lst);
+int listPrint(const list lst);
                                                               
 #endif

@@ -1,28 +1,28 @@
-#include <map.h>
+#include <tree.h>
 #include <stdlib.h>
 #include "stringlib.h"
 
 /**
  * @brief Estrutura que representa um nó da árvore binária.
  */
-typedef struct map_t {
-  obj info;            /**< Dados do nó, utilizando obj */
-  struct map_t* left;  /**< Ponteiro para o filho esquerdo */
-  struct map_t* right; /**< Ponteiro para o filho direito */
-} *map;
+typedef struct tree_t {
+  obj info;             /**< Informação armazenada na árvore */
+  struct tree_t* left;  /**< Ponteiro para o filho esquerdo da árvore */
+  struct tree_t* right; /**< Ponteiro para o filho direito da árvore */
+} *tree;
 
 /**
- * @brief Retorna o tamanho da estrutura map_t em bytes.
+ * @brief Retorna o tamanho da estrutura tree_t em bytes.
  *
  * Esta função utiliza o operador sizeof para calcular o tamanho
- * da estrutura `struct map_t` em tempo de compilação. O tamanho
+ * da estrutura 'struct tree_t' em tempo de compilação. O tamanho
  * é útil para operações que envolvem a alocação de memória ou
  * manipulação de blocos de dados.
  *
- * @return size_t O tamanho da estrutura `struct map_t` em bytes.
+ * @return size_t O tamanho da estrutura 'struct tree_t' em bytes.
  */
-size_t sizeofMap() {
-  return sizeof(struct map_t);
+size_t sizeofTree() {
+  return sizeof(struct tree_t);
 }
 
 /**
@@ -32,7 +32,7 @@ size_t sizeofMap() {
  * 
  * @return Um ponteiro para a nova árvore criada.
  */
-map mapNew() {
+tree treeNew() {
   return NULL;
 }
 
@@ -42,10 +42,10 @@ map mapNew() {
  * @param tre Um ponteiro para a árvore a ser destruída.
  * @return  NULL após liberar a memória.
  */
-map mapDestroy(map tre) {
+tree treeDestroy(tree tre) {
   if (tre == NULL) return NULL;  
-  mapDestroy(tre->left); 
-  mapDestroy(tre->right);  
+  treeDestroy(tre->left); 
+  treeDestroy(tre->right);  
   free(tre); 
   return NULL;
 }
@@ -58,7 +58,7 @@ map mapDestroy(map tre) {
  * @param tre Um ponteiro para a árvore que será verificada.
  * @return 1 se a árvore estiver vazia, ou 0 se contiver elementos.
  */
-int mapIsEmpty(map tre) {
+int treeIsEmpty(const tree tre) {
   return (tre == NULL);
 }
 
@@ -70,12 +70,12 @@ int mapIsEmpty(map tre) {
  * @param tre Um ponteiro para a árvore que será verificada.
  * @return A quantidade de galhos na árvore.
  */
-int mapCountBranches(map tre) {
+int treeCountBranches(const tree tre) {
   if (tre == NULL) return 0; 
   int count = 0;
   if (tre->left != NULL || tre->right != NULL) count = 1; 
-  count += mapCountBranches(tre->left);
-  count += mapCountBranches(tre->right);
+  count += treeCountBranches(tre->left);
+  count += treeCountBranches(tre->right);
   return count;
 }
 
@@ -87,10 +87,10 @@ int mapCountBranches(map tre) {
  * @param tre Um ponteiro para a árvore que será verificada.
  * @return A quantidade de folhas na árvore.
  */
-int mapCountLeaves(map tre) {
+int treeCountLeaves(const tree tre) {
   if (tre == NULL) return 0; 
   if (tre->left == NULL && tre->right == NULL) return 1;
-  return mapCountLeaves(tre->left) + mapCountLeaves(tre->right);
+  return treeCountLeaves(tre->left) + treeCountLeaves(tre->right);
 }
 
 /**
@@ -99,8 +99,8 @@ int mapCountLeaves(map tre) {
  * @param tre Um ponteiro para a árvore a ser contada.
  * @return O número total de nós na árvore.
  */
-int mapCountNodes(map tre) {
-  return (tre == NULL) ? 0 : 1 + mapCountNodes(tre->left) + mapCountNodes(tre->right);
+int treeCountNodes(const tree tre) {
+  return (tre == NULL) ? 0 : 1 + treeCountNodes(tre->left) + treeCountNodes(tre->right);
 }
 
 /**
@@ -111,31 +111,31 @@ int mapCountNodes(map tre) {
  * @param tre Um ponteiro para a árvore cuja altura será calculada.
  * @return A altura da árvore.
  */
-int mapHeight(map tre) {
+int treeHeight(const tree tre) {
   if (tre == NULL) return -1;  
-  int leftHeight = mapHeight(tre->left);
-  int rightHeight = mapHeight(tre->right);
+  int leftHeight = treeHeight(tre->left);
+  int rightHeight = treeHeight(tre->right);
   return (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
 }
 
 /**
  * @brief Insere um novo elemento na árvore.
  * 
- * Insere o valor `info` na posição correta na árvore de acordo com as regras da árvore binária de busca.
+ * Insere o valor 'info' na posição correta na árvore de acordo com as regras da árvore binária de busca.
  * 
  * @param tre Um ponteiro para a árvore onde o elemento será inserido.
  * @param info O valor a ser inserido na árvore.
  * @return 1 se a inserção for bem-sucedida, ou 0 em caso de erro.
  */
-map mapAdd(map tre, obj info) {
-  map node = (map)malloc(sizeof(struct map_t));
+tree treeInsert(tree tre, const obj info) {
+  tree node = (tree)malloc(sizeof(struct tree_t));
   if (node == NULL) return tre;
-  node->info = info;
+  node->info = objCopy(info);
   node->left = NULL;
   node->right = NULL;
   if (tre == NULL) return node;
-  map current = tre;
-  map parent = NULL;
+  tree current = tre;
+  tree parent = NULL;
   while (current != NULL) {
     parent = current; 
     if (objCmp(info, current->info) < 0) current = current->left;
@@ -149,15 +149,15 @@ map mapAdd(map tre, obj info) {
 /**
  * @brief Busca um elemento na árvore.
  * 
- * Verifica se o valor `info` está presente na árvore.
+ * Verifica se o valor 'info' está presente na árvore.
  * 
  * @param tre Um ponteiro para a árvore onde a busca será realizada.
  * @param info O valor a ser buscado na árvore.
  * @return 1 se o valor for encontrado, ou 0 caso contrário.
  */
-int mapSearch(map tre, obj info) {
+int treeSearch(const tree tre, const obj info) {
   if (tre == NULL) return 0;
-  map current = tre;
+  tree current = tre;
   while (current != NULL) {
     if (objCmp(info, current->info) == 0) return 1; 
     else if (objCmp(info, current->info) < 0) current = current->left;
@@ -172,10 +172,11 @@ int mapSearch(map tre, obj info) {
  * @param tre Um ponteiro para a árvore onde será feita a busca.
  * @return O valor máximo encontrado na árvore.
  */
-obj mapFindMax(map tre) {
-  if (tre == NULL) return NULL;  
-  while (tre->right != NULL) tre = tre->right;
-  return tre->info;
+obj treeFindMax(const tree tre) {
+  if (tre == NULL) return NULL;
+  tree current = tre;
+  while (current->right != NULL) current = current->right;
+  return current->info;
 }
 
 /**
@@ -184,25 +185,26 @@ obj mapFindMax(map tre) {
  * @param tre Um ponteiro para a árvore onde será feita a busca.
  * @return O valor mínimo encontrado na árvore.
  */
-obj mapFindMin(map tre) {
-  if (tre == NULL) return NULL; 
-  while (tre->left != NULL) tre = tre->left;
-  return tre->info;
+obj treeFindMin(const tree tre) {
+  if (tre == NULL) return NULL;
+  tree current = tre;
+  while (current->left != NULL) current = current->left;
+  return current->info;
 }
 
 /**
  * @brief Remove um elemento da árvore.
  * 
- * Remove o nó contendo o valor `info` da árvore.
+ * Remove o nó contendo o valor 'info' da árvore.
  * 
  * @param tre Um ponteiro para a árvore de onde o elemento será removido.
  * @param info O valor a ser removido da árvore.
  * @return 1 se a remoção for bem-sucedida, ou 0 em caso de erro.
  */
-map mapRemove(map tre, obj info) {
+tree treeRemove(tree tre, const obj info) {
   if (tre == NULL) return NULL; 
-  map current = tre;
-  map parent = NULL;
+  tree current = tre;
+  tree parent = NULL;
   while (current != NULL && objCmp(info, current->info) != 0) {
     parent = current;
     if (objCmp(info, current->info) < 0) current = current->left;
@@ -216,14 +218,14 @@ map mapRemove(map tre, obj info) {
     free(current);
   }
   else if (current->left == NULL || current->right == NULL) {
-    map child = (current->left != NULL) ? current->left : current->right;
+    tree child = (current->left != NULL) ? current->left : current->right;
     if (current == tre) tre = child;  
     else if (parent->left == current) parent->left = child;
     else parent->right = child;
     free(current);
   } else {
-    map successor = current->right;
-    map successorParent = current;
+    tree successor = current->right;
+    tree successorParent = current;
     while (successor->left != NULL) {
       successorParent = successor;
       successor = successor->left;
@@ -244,31 +246,47 @@ map mapRemove(map tre, obj info) {
  * @param tre Um ponteiro para a árvore a ser invertida.
  * @return A árvore invertida.
  */
-map mapInvert(map tre) {
+tree treeInvert(tree tre) {
   if (tre == NULL) return NULL; 
-  map temp = tre->left; 
-  tre->left = mapInvert(tre->right);
-  tre->right = mapInvert(temp); 
+  tree temp = tre->left; 
+  tre->left = treeInvert(tre->right);
+  tre->right = treeInvert(temp); 
   return tre;
+}
+
+/**
+ * @brief Cria uma cópia de uma árvore binária.
+ *
+ * @param tre A árvore a ser copiada.
+ * @return Uma cópia da árvore, ou NULL se a alocação de memória falhar.
+ */
+tree treeCopy(const tree tre) {
+  if (tre == NULL) return NULL;
+  tree newTree = (tree)malloc(sizeof(struct tree_t));
+  if (newTree == NULL) return NULL;
+  newTree->info = objCopy(tre->info);
+  newTree->left = treeCopy(tre->left);
+  newTree->right = treeCopy(tre->right);
+  return newTree;
 }
 
 /**
  * @brief Compara duas árvores binárias de forma semelhante ao strcmp.
  * 
- * @param map1 Ponteiro para a primeira árvore.
- * @param map2 Ponteiro para a segunda árvore.
- * @return 0 se as árvores forem iguais, um valor negativo se map1 < map2,
- * ou um valor positivo se map1 > map2.
+ * @param tree1 Ponteiro para a primeira árvore.
+ * @param tree2 Ponteiro para a segunda árvore.
+ * @return 0 se as árvores forem iguais, um valor negativo se tree1 < tree2,
+ * ou um valor positivo se tree1 > tree2.
  */
-int mapCmp(map map1, map map2) {
-  if (map1 == NULL && map2 == NULL) return 0; 
-  if (map1 == NULL) return -1;
-  if (map2 == NULL) return 1; 
-  int cmp = objCmp(map1->info, map2->info);
+int treeCmp(const tree tree1, const tree tree2) {
+  if (tree1 == NULL && tree2 == NULL) return 0; 
+  if (tree1 == NULL) return -1;
+  if (tree2 == NULL) return 1; 
+  int cmp = objCmp(tree1->info, tree2->info);
   if (cmp != 0) return cmp; 
-  int leftComparison = mapCmp(map1->left, map2->left);
+  int leftComparison = treeCmp(tree1->left, tree2->left);
   if (leftComparison != 0) return leftComparison;
-  return mapCmp(map1->right, map2->right); 
+  return treeCmp(tree1->right, tree2->right); 
 }
 
 /**
@@ -279,24 +297,25 @@ int mapCmp(map map1, map map2) {
  * @param tre Um ponteiro para a árvore a ser convertida.
  * @return A string resultante que representa a árvore.
  */
-string mapToString(map tre) {
-  if (tre == NULL) return stringNew(); 
+string treeToString(const tree tre) {
+  if (tre == NULL) return stringNew();
   string currentStr = toString(tre->info);
-  string leftStr = mapToString(tre->left);
-  string rightStr = mapToString(tre->right);
-  string result = stringNew(); 
-  stringAddChar(result, '<'); 
-  result = stringAppend(result, currentStr); 
-  if (leftStr != NULL) result = stringAppend(result, leftStr);
-  if (leftStr != NULL || rightStr != NULL) result = stringCat(result, ", "); 
-  if (rightStr != NULL) result = stringAppend(result, rightStr);
-  stringAddChar(result, '>'); 
+  string leftStr = treeToString(tre->left);
+  string rightStr = treeToString(tre->right);
+  string result = stringNew();
+  stringAddChar(result, '<');
+  result = stringAppend(result, currentStr);
+  if (leftStr || rightStr) {
+    if (leftStr) result = stringAppend(result, leftStr);
+    if (leftStr && rightStr) result = stringCat(result, ", ");
+    if (rightStr) result = stringAppend(result, rightStr);
+  }
+  stringAddChar(result, '>');
   stringDestroy(currentStr);
   stringDestroy(leftStr);
-  stringDestroy(rightStr); 
-  return result; 
+  stringDestroy(rightStr);
+  return result;
 }
-
 
 /**
  * @brief Imprime a árvore binária em ordem.
@@ -306,9 +325,9 @@ string mapToString(map tre) {
  * @param tre Ponteiro para a árvore binária.
  * @return 1 se a árvore não for vazia, 0 se a árvore estiver vazia.
  */
-int mapPrint(map tre) {
+int treePrint(const tree tre) {
   if (tre == NULL) return 0; 
-  string str = mapToString(tre);
+  string str = treeToString(tre);
   stringPrint(str);
   stringDestroy(str);
   return 1; 

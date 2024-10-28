@@ -6,6 +6,7 @@
  * A fila segue o modelo FIFO (First In, First Out), onde o primeiro elemento inserido é o primeiro a ser removido.
  * 
  * Funções disponíveis:
+ * - 'sizeofQueue': Calcula o tamanho em bytes da estrutura de dados 'queue_t'.
  * - 'queueNew': Cria uma nova fila.
  * - 'queueDestroy': Destrói a fila, liberando a memória alocada.
  * - 'queueIsEmpty': Verifica se a fila está vazia.
@@ -13,6 +14,9 @@
  * - 'queueEnqueue': Adiciona um novo elemento ao final da fila.
  * - 'queueDequeue': Remove um elemento do início da fila.
  * - 'queueFront': Consulta o elemento na frente da fila sem removê-lo.
+ * - 'queueCopy': Cria uma cópia de uma fila.
+ * - 'queueCmp': Compara duas filas.
+ * - 'queueToString': Converte a fila em uma representação de string.
  * - 'queuePrint': Printa todos os elementos da fila.
  * 
  * Esta implementação permite armazenar dados de qualquer tipo, desde que seja informado o tamanho do tipo (via 'sizeof(tipo)')
@@ -29,6 +33,13 @@
 #define QUEUE_H
 
 #include "typeslib.h"
+
+/**
+ * @brief Calcula o tamanho em bytes da estrutura de dados 'queue_t'.
+ * 
+ * @return O tamanho em bytes da estrutura 'queue_t'.
+ */
+size_t sizeofQueue();
  
 /**
  * @brief Cria uma nova fila vazia.
@@ -51,7 +62,7 @@ queue queueDestroy(queue qeu);
  * @param qeu Ponteiro para a fila a ser verificada.
  * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
-int queueIsEmpty(queue qeu);
+int queueIsEmpty(const queue qeu);
 
 /**
  * @brief Retorna o tamanho da fila.
@@ -59,7 +70,7 @@ int queueIsEmpty(queue qeu);
  * @param qeu Ponteiro para a fila cuja dimensão será verificada.
  * @return O número de elementos na fila. Retorna 0 se a fila for NULL.
  */
-size_t queueSize(queue qeu);
+size_t queueSize(const queue qeu);
 
 /**
  * @brief Insere um novo elemento na fila.
@@ -69,6 +80,17 @@ size_t queueSize(queue qeu);
  * @return Ponteiro para a fila atualizada, ou NULL se a fila for NULL ou a alocação falhar.
  */
 queue queueEnqueue(queue qeu, obj info);
+
+/**
+ * @brief Adiciona um valor ao final da fila.
+ * 
+ * Macro que adiciona um valor ('value') ao final de uma fila ('qeu'), 
+ * convertendo-o automaticamente para o tipo adequado.
+ *
+ * @param qeu Fila onde o valor será adicionado.
+ * @param value Valor a ser adicionado na fila.
+ */
+#define queueAdd(qeu, value) queueEnqueue(qeu, toObj(value))
 
 /**
  * @brief Remove e retorna o elemento do início da fila.
@@ -86,7 +108,15 @@ queue queueDequeue(queue qeu, obj* info);
  * @param info Ponteiro onde o valor do elemento do início da fila será armazenado.
  * @return 1 se o elemento foi obtido com sucesso, ou 0 se a fila estiver vazia.
  */
-int queueFront(queue qeu, obj* info); 
+int queueFront(const queue qeu, obj* info); 
+
+/**
+ * @brief Cria uma cópia de uma fila.
+ *
+ * @param qeu A fila a ser copiada.
+ * @return Uma cópia da fila, ou NULL se a alocação de memória falhar.
+ */
+queue queueCopy(const queue qeu);
 
 /**
  * @brief Compara duas filas.
@@ -95,7 +125,7 @@ int queueFront(queue qeu, obj* info);
  * @param qeu2 Ponteiro para a segunda fila a ser comparada.
  * @return 0 se as filas forem iguais, -1 se a primeira fila for menor, 1 se a primeira fila for maior.
  */
-int queueCmp(queue qeu1, queue qeu2);
+int queueCmp(const queue qeu1, const queue qeu2);
 
 /**
  * @brief Converte a fila em uma representação de string.
@@ -103,7 +133,7 @@ int queueCmp(queue qeu1, queue qeu2);
  * @param qeu Ponteiro para a fila a ser convertida em string.
  * @return Uma string representando a fila, ou NULL se a fila estiver vazia.
  */
-string queueToString(queue qeu);
+string queueToString(const queue qeu);
 
 /**
  * @brief Imprime a representação da fila na saída padrão.
@@ -111,6 +141,6 @@ string queueToString(queue qeu);
  * @param qeu Ponteiro para a fila a ser impressa.
  * @return 1 se a fila foi impressa com sucesso, ou 0 se a fila estiver vazia.
  */
-int queuePrint(queue qeu);
+int queuePrint(const queue qeu);
                                              
 #endif

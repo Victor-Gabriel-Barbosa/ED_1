@@ -23,6 +23,20 @@ typedef struct queue_t {
 } *queue;
 
 /**
+ * @brief Calcula o tamanho em bytes da estrutura de dados 'queue_t'.
+ * 
+ * Esta função utiliza o operador 'sizeof' para retornar o tamanho em bytes da estrutura
+ * 'queue_t', que representa um nó ou elemento da fila. Ela não retorna o número de 
+ * elementos presentes na fila, mas sim a quantidade de memória que um único elemento 
+ * dessa estrutura ocupa.
+ * 
+ * @return O tamanho em bytes da estrutura 'queue_t'.
+ */
+size_t sizeofQueue() {
+  return sizeof(struct queue_t);
+}
+
+/**
  * @brief Cria uma nova fila vazia.
  * 
  * Esta função aloca memória para uma nova fila e inicializa seus 
@@ -74,7 +88,7 @@ queue queueDestroy(queue qeu) {
  * @param qeu Ponteiro para a fila a ser verificada.
  * @return 1 se a fila estiver vazia, 0 caso contrário.
  */
-int queueIsEmpty(queue qeu) {
+int queueIsEmpty(const queue qeu) {
   return (qeu == NULL || qeu->head == NULL);
 }
 
@@ -87,7 +101,7 @@ int queueIsEmpty(queue qeu) {
  * @param qeu Ponteiro para a fila cuja dimensão será verificada.
  * @return O número de elementos na fila. Retorna 0 se a fila for NULL.
  */
-size_t queueSize(queue qeu) {
+size_t queueSize(const queue qeu) {
   return (qeu == NULL) ? 0 : qeu->N;
 }
 
@@ -106,7 +120,7 @@ queue queueEnqueue(queue qeu, const obj info) {
   if (qeu == NULL) return NULL;
   NodeQ* newNode = (NodeQ*) malloc(sizeof(NodeQ));
   if (newNode == NULL) return qeu; 
-  newNode->info = info;
+  newNode->info = objCopy(info);
   newNode->prox = NULL;
   if (queueIsEmpty(qeu)) qeu->head = newNode; 
   else qeu->tail->prox = newNode; 
@@ -148,10 +162,27 @@ queue queueDequeue(queue qeu, obj* info) {
  * @param info Ponteiro onde o valor do elemento do início da fila será armazenado.
  * @return 1 se o elemento foi obtido com sucesso, ou 0 se a fila estiver vazia.
  */
-int queueFront(queue qeu, obj* info) {
+int queueFront(const queue qeu, obj* info) {
   if (queueIsEmpty(qeu)) return 0;
   *info = qeu->head->info;
   return 1;
+}
+
+/**
+ * @brief Cria uma cópia de uma fila.
+ *
+ * @param qeu A fila a ser copiada.
+ * @return Uma cópia da fila, ou NULL se a alocação de memória falhar.
+ */
+queue queueCopy(const queue qeu) {
+  if (qeu == NULL) return NULL;
+  queue newQeu = queueNew();
+  NodeQ* aux = qeu->head;
+  while (aux != NULL) {
+    queueEnqueue(newQeu, objCopy(aux->info));
+    aux = aux->prox;
+  }
+  return newQeu;
 }
 
 /**
@@ -167,7 +198,7 @@ int queueFront(queue qeu, obj* info) {
  * @param qeu2 Ponteiro para a segunda fila a ser comparada.
  * @return 0 se as filas forem iguais, -1 se a primeira fila for menor, 1 se a primeira fila for maior.
  */
-int queueCmp(queue qeu1, queue qeu2) {
+int queueCmp(const queue qeu1, const queue qeu2) {
   if (qeu1 == NULL && qeu2 == NULL) return 0; 
   if (qeu1 == NULL) return -1; 
   if (qeu2 == NULL) return 1; 
@@ -193,7 +224,7 @@ int queueCmp(queue qeu1, queue qeu2) {
  * @param qeu Ponteiro para a fila a ser convertida em string.
  * @return Uma string representando a fila, ou NULL se a fila estiver vazia.
  */
-string queueToString(queue qeu) {
+string queueToString(const queue qeu) {
   if (queueIsEmpty(qeu)) return NULL;
   NodeQ *aux = qeu->head;
   string str = stringNew();
@@ -219,7 +250,7 @@ string queueToString(queue qeu) {
  * @param qeu Ponteiro para a fila a ser impressa.
  * @return 1 se a fila foi impressa com sucesso, ou 0 se a fila estiver vazia.
  */
-int queuePrint(queue qeu) {
+int queuePrint(const queue qeu) {
   if (queueIsEmpty(qeu)) return 0;
   string str = queueToString(qeu);
   stringPrint(str);

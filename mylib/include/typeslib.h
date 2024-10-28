@@ -10,26 +10,32 @@
  * obter informações sobre o tipo e o tamanho dos dados armazenados, e liberar a memória alocada de forma segura.
  * 
  * Funções disponíveis:
- * - 'voidToAuto': Encapsula um valor genérico ('void*') como um tipo 'obj'.
- * - 'intToAuto': Encapsula um valor do tipo 'int'.
- * - 'floatToAuto': Encapsula um valor do tipo 'float'.
- * - 'doubleToAuto': Encapsula um valor do tipo 'double'.
- * - 'charToAuto': Encapsula um valor do tipo 'char'.
- * - 'charPtrToAuto': Encapsula uma string ('const char*').
- * - 'boolToAuto': Encapsula um valor booleano ('bool').
- * - 'stringToAuto': Encapsula um valor do tipo 'string'.
- * - 'listToAuto': Encapsula um valor do tipo 'list'.
- * - 'queueToAuto': Encapsula um valor do tipo 'queue'.
- * - 'stackToAuto': Encapsula um valor do tipo 'stack'.
- * - 'unknownToAuto': Encapsula um valor genérico com tipo desconhecido.
- * - 'autoDestroy': Libera a memória alocada para um objeto 'obj'.
- * - 'autoCmp': Compara dois objetos 'obj'.
- * - 'autoGetType': Retorna o tipo de dado armazenado em um objeto 'obj'.
- * - 'autoGetData': Retorna o ponteiro para os dados encapsulados em um objeto 'obj'.
- * - 'autoGetSize': Retorna o tamanho em bytes dos dados armazenados em um objeto 'obj'.
+ * - 'voidToObj': Encapsula um valor genérico ('void*') como um tipo 'obj'.
+ * - 'intToObj': Encapsula um valor do tipo 'int'.
+ * - 'floatToObj': Encapsula um valor do tipo 'float'.
+ * - 'doubleToObj': Encapsula um valor do tipo 'double'.
+ * - 'charToObj': Encapsula um valor do tipo 'char'.
+ * - 'charPtrToObj': Encapsula uma string ('const char*').
+ * - 'boolToObj': Encapsula um valor booleano ('bool').
+ * - 'stringToObj': Encapsula um valor do tipo 'string'.
+ * - 'listToObj': Encapsula um valor do tipo 'list'.
+ * - 'queueToObj': Encapsula um valor do tipo 'queue'.
+ * - 'stackToObj': Encapsula um valor do tipo 'stack'.
+ * - 'unknownToObj': Encapsula um valor genérico com tipo desconhecido.
+ * - 'objDestroy': Libera a memória alocada para um objeto 'obj'.
+ * - 'objCopy': Cria uma cópia de um objeto.
+ * - 'objCmp': Compara dois objetos 'obj'.
+ * - 'objGetType': Retorna o tipo de dado armazenado em um objeto 'obj'.
+ * - 'objGetData': Retorna o ponteiro para os dados encapsulados em um objeto 'obj'.
+ * - 'objGetSize': Retorna o tamanho em bytes dos dados armazenados em um objeto 'obj'.
  * 
- * Esta biblioteca permite o uso flexível de diferentes tipos de dados sem precisar reescrever funções para cada tipo. Através do uso de 
- * '_Generic' no macro 'obj', é possível encapsular automaticamente um valor de qualquer tipo suportado.
+ * Macros:
+ * - 'toObj': Converte automaticamente tipos suportados para obj.
+ * - 'getTypeValue': Retorna o tipo de dado a partir de um valor.
+ * - 'objIsType': Verifica se um objeto é do tipo especificado.
+ * 
+ * Esta biblioteca permite o uso flexível de diferentes tipos de dados sem precisar reescrever funções para cada tipo. 
+ * Através do uso de '_Generic' no macro 'obj', é possível encapsular automaticamente um valor de qualquer tipo suportado.
  * 
  * @note Tipos customizados como 'list', 'queue' e 'stack' podem ser usados em conjunto com essa biblioteca, permitindo o uso genérico dessas estruturas.
  * 
@@ -48,7 +54,7 @@
 /**
  * @brief Estrutura abstrata para representar uma string.
  */
-typedef struct string_t *string;
+typedef struct string_t* string;
 
 /**
  * @brief Estrutura abstrata para representar uma lista.
@@ -68,7 +74,7 @@ typedef struct stack_t* stack;
 /**
  * @brief Estrutura que representa uma árvore binária.
  */
-typedef struct map_t* map;
+typedef struct tree_t* tree;
 
 /**
  * @brief Estrutura abstrata para representar qualquer tipo de dado.
@@ -80,17 +86,17 @@ typedef struct obj_t* obj;
  * @brief Enumeração que define os tipos de dados suportados pela biblioteca.
  */
 typedef enum {
+  TYPE_CHAR,     /**< Tipo caractere (char). */
+  TYPE_BOOL,     /**< Tipo booleano (bool). */
   TYPE_INT,      /**< Tipo inteiro (int). */
   TYPE_FLOAT,    /**< Tipo ponto flutuante (float). */
   TYPE_DOUBLE,   /**< Tipo ponto flutuante (double). */
-  TYPE_CHAR,     /**< Tipo caractere (char). */
   TYPE_CHAR_PTR, /**< Tipo ponteiro para caractere (char*). */
-  TYPE_BOOL,     /**< Tipo booleano (bool). */
   TYPE_STRING,   /**< Tipo string (string). */
   TYPE_LIST,     /**< Tipo lista (list). */
   TYPE_QUEUE,    /**< Tipo fila (queue). */
   TYPE_STACK,    /**< Tipo pilha (stack). */
-  TYPE_MAP,     /**< Tipo árvore (map). */
+  TYPE_TREE,     /**< Tipo árvore (tree). */
   TYPE_UNKNOWN   /**< Tipo genérico desconhecido, usado para tipos personalizados (void*). */
 } ObjType;
 
@@ -195,13 +201,13 @@ obj queueToObj(queue value, size_t size);
 obj stackToObj(stack value, size_t size);
 
 /**
- * @brief Converte uma árvore abstrata (map) para obj.
+ * @brief Converte uma árvore abstrata (tree) para obj.
  * 
- * @param value Estrutura map.
+ * @param value Estrutura tree.
  * @param size Tamanho da árvore (não utilizado nesta função).
  * @return Objeto contendo a árvore.
  */
-obj mapToObj(map value, size_t size);
+obj treeToObj(tree value, size_t size);
 
 /**
  * @brief Converte um valor desconhecido para obj.
@@ -245,6 +251,14 @@ void* objGetData(obj a);
 size_t objGetSize(obj a);
 
 /**
+ * @brief Cria uma cópia de um objeto.
+ * 
+ * @param a Objeto a ser copiado.
+ * @return Objeto cópia, NULL em caso de falha.
+ */
+obj objCopy(const obj a);
+
+/**
  * @brief Compara dois valores obj.
  * 
  * @param a Primeiro valor obj.
@@ -262,17 +276,36 @@ int objCmp(obj a, obj b);
 int objPrint(obj a);
 
 /**
- * @brief Macro para converter automaticamente tipos suportados para obj.
+ * @brief Troca os valores de dois objetos.
+ *
+ * A função recebe ponteiros para dois objetos 'a' e 'b' e troca seus valores.
+ * Se algum dos ponteiros for nulo, a troca não é realizada e a função retorna 0.
+ * Caso contrário, a troca é efetuada e a função retorna 1.
+ *
+ * @param a Ponteiro para o primeiro objeto a ser trocado.
+ * @param b Ponteiro para o segundo objeto a ser trocado.
+ * @return 1 se a troca for bem-sucedida, ou 0 se algum ponteiro for nulo.
+ */
+static inline int objSwap(obj* a, obj* b) {
+  if (a == NULL || b == NULL) return 0; 
+  obj temp = *a;
+  *a = *b;
+  *b = temp;
+  return 1;
+}
+
+/**
+ * @brief Converte automaticamente tipos suportados para obj.
  * 
  * @param value Valor a ser convertido.
  * @return Objeto correspondente ao tipo do valor.
  */
 #define toObj(value) _Generic((value), \
+  const char: charToObj, \
+  char: charToObj, \
   int: intToObj, \
   float: floatToObj, \
   double: doubleToObj, \
-  const char: charToObj, \
-  char: charToObj, \
   const char*: charPtrToObj, \
   char*: charPtrToObj, \
   bool: boolToObj, \
@@ -280,33 +313,34 @@ int objPrint(obj a);
   list: listToObj, \
   queue: queueToObj, \
   stack: stackToObj, \
-  map: mapToObj, \
+  tree: treeToObj, \
   default: unknownToObj \
 )(value, sizeof(value))
 
 /**
  * @brief Retorna o tipo de dado a partir de um valor.
  *
- * Este macro usa `_Generic` para identificar o tipo do valor fornecido e
+ * Este macro usa '_Generic' para identificar o tipo do valor fornecido e
  * retorna um identificador correspondente.
  *
  * @param value O valor a ser analisado.
  * @return Um identificador de tipo (ex.: TYPE_INT, TYPE_FLOAT, etc.) ou
  * TYPE_UNKNOWN se o tipo não for reconhecido.
  */
-#define getTypeFromValue(value) _Generic((value), \
+#define getTypeValue(value) _Generic((value), \
+  const char: TYPE_CHAR, \
+  char: TYPE_CHAR, \
+  bool: TYPE_BOOL, \
   int: TYPE_INT, \
   float: TYPE_FLOAT, \
   double: TYPE_DOUBLE, \
-  char: TYPE_CHAR, \
   const char*: TYPE_CHAR_PTR, \
   char*: TYPE_CHAR_PTR, \
-  bool: TYPE_BOOL, \
   string: TYPE_STRING, \
   list: TYPE_LIST, \
   queue: TYPE_QUEUE, \
   stack: TYPE_STACK, \
-  map: TYPE_MAP, \
+  tree: TYPE_TREE, \
   default: TYPE_UNKNOWN)
 
 /**
@@ -314,11 +348,11 @@ int objPrint(obj a);
  *
  * Este macro compara o tipo de um objeto com o tipo de um valor fornecido.
  *
- * @param obj O objeto cujo tipo será verificado.
+ * @param objet O objeto cujo tipo será verificado.
  * @param value O valor cujo tipo será comparado.
  * @return Um valor booleano (true ou false) indicando se o tipo do objeto
  * corresponde ao tipo do valor.
  */
-#define objIsType(obj, value) (objGetType(obj) == getTypeFromValue(value))
+#define objIsType(objet, value) (objGetType(objet) == getTypeValue(value))
 
 #endif
