@@ -15,7 +15,7 @@
  * ou de operações de arquivo.
  */
 void catchError() { 
-  fprintf(stderr, fError("\nErro: %s\n"), strerror(errno));
+  fprintf(stderr, fError("Error: %s\n"), strerror(errno));
   exit(EXIT_FAILURE);
 }
 

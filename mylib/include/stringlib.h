@@ -11,6 +11,7 @@
  * - 'stringNew': Cria uma nova string vazia.
  * - 'stringInit': Inicializa uma string com o conteúdo de uma string literal.
  * - 'stringDestroy': Libera a memória alocada para uma string.
+ * - 'stringIsEmpty': Verifica se uma string está vazia.
  * - 'stringSize': Retorna o tamanho da string.
  * - 'stringResize': Redimensiona a capacidade de armazenamento de uma string.
  * - 'stringAddChar': Adiciona um caractere ao final de uma string.
@@ -19,7 +20,8 @@
  * - 'stringCopy': Cria uma cópia de uma string.
  * - 'stringIsEqual': Compara duas Strings e retorna se são iguais.
  * - 'stringInput': Lê uma string a partir do teclado.
- * - 'stringReplace': Substitui todas as ocorrências de um caractere por outro.
+ * - 'stringReplace': Substitui um caractere por outro.
+ * - 'stringReplaceAll': Substitui todas as ocorrências de um caractere por outro.
  * - 'stringIndex': Busca uma substring e retorna sua posição.
  * - 'stringReverse': Inverte o conteúdo de uma string.
  * - 'stringSplit': Divide uma string em tokens, utilizando um delimitador.
@@ -62,6 +64,14 @@ size_t sizeofString();
 string stringNew();
 
 /** 
+ * @brief Libera a memória alocada para string.
+ * 
+ * @param str Ponteiro para string a ser liberada.
+ * @return 1 se string não é vazia, 0 caso contrário.
+ */
+int stringDestroy(string str);
+
+/** 
  * @brief Inicializa uma string com o conteúdo de uma string literal.
  * 
  * @param str A string a ser copiada.
@@ -69,13 +79,15 @@ string stringNew();
  */
 string stringInit(const char* str);
 
-/** 
- * @brief Libera a memória alocada para string.
- * 
- * @param str Ponteiro para string a ser liberada.
- * @return 1 se string não é vazia, 0 caso contrário.
+/**
+ * @brief Verifica se uma string está vazia.
+ *
+ * A função verifica se a string fornecida é nula ou tem tamanho zero.
+ *
+ * @param str A string a ser verificada.
+ * @return 1 se a string for nula ou estiver vazia, 0 caso contrário.
  */
-int stringDestroy(string str);
+int stringIsEmpty(string str);
 
 /** 
  * @brief Obtém o tamanho da string.
@@ -152,6 +164,16 @@ int stringCmp(const string str1, const string str2);
 string stringInput();
 
 /** 
+ * @brief Substitui um caractere por outro.
+ * 
+ * @param str String.
+ * @param a O caractere a ser substituído.
+ * @param b O caractere substituto.
+ * @return 1 se o caractere foi substituído, 0 caso contrário.
+ */
+int stringReplace(string str, const char a, const char b);
+
+/** 
  * @brief Substitui todas as ocorrências de um caractere por outro.
  * 
  * @param str String.
@@ -159,7 +181,7 @@ string stringInput();
  * @param b O caractere substituto.
  * @return O número de substituições realizadas.
  */
-size_t stringReplace(string str, const char a, const char b);
+size_t stringReplaceAll(string str, const char a, const char b);
 
 /** 
  * @brief Encontra uma Substring e retorna a posição inicial ou -1 se não encontrado.

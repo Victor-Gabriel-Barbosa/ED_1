@@ -5,7 +5,9 @@ typedef struct No *Arvore;
 
 Arvore arvoreCria();
 
-Arvore arvoreDestroi(Arvore arvore);
+Arvore arvoreLibera(Arvore arvore);
+
+Arvore encontraMinimo(Arvore arvore);
 
 Arvore arvoreVazia(Arvore arvore);
 

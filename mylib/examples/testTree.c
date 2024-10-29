@@ -18,7 +18,7 @@ int main() {
   printfs(f(RED, "\nArvore após remover Alice: %A"), arvore);
   arvore = treeInvert(arvore);
   printfs(f(BLUE, "\nArvore invertida: %A"), arvore);
-  print(toObj("\nPrint: "), toObj(arvore));
+  print(toStr("\nPrint: "), toStr(arvore));
   arvore = treeDestroy(arvore);
   return 0;
 }

@@ -98,6 +98,18 @@ int stringDestroy(string str) {
 }
 
 /**
+ * @brief Verifica se uma string está vazia.
+ *
+ * A função verifica se a string fornecida é nula ou tem tamanho zero.
+ *
+ * @param str A string a ser verificada.
+ * @return 1 se a string for nula ou estiver vazia, 0 caso contrário.
+ */
+int stringIsEmpty(string str) {
+  return (str == NULL) ? 1 : (str->size == 0);
+}
+
+/**
  * @brief Obtém o tamanho da string.
  *
  * Essa função retorna o número de caracteres presentes na string, sem
@@ -257,6 +269,29 @@ string stringInput() {
 }
 
 /**
+ * @brief Substitui o primeiro caractere encontrado em uma string.
+ *
+ * Esta função percorre a string fornecida e substitui a primeira ocorrência
+ * do caractere a pelo caractere b.
+ *
+ * @param str A string onde será feita a substituição. Não pode ser NULL.
+ * @param a O caractere que será procurado na string.
+ * @param b O caractere que substituirá o caractere a.
+ * @return 1 se a substituição for realizada com sucesso, 
+ *         ou 0 se o caractere a não for encontrado ou se str for NULL.
+ */
+int stringReplace(string str, const char a, const char b) {
+  if (str == NULL) return 0; 
+  for (size_t i = 0; i < str->size; i++) {
+    if (str->data[i] == a) {
+      str->data[i] = b;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/**
  * @brief Substitui todas as ocorrências de um caractere por outro.
  *
  * Essa função percorre a string e substitui todas as ocorrências do
@@ -268,7 +303,8 @@ string stringInput() {
  * @param b Caractere que irá substituir.
  * @return O número de substituições realizadas.
  */
-size_t stringReplace(string str, const char a, const char b) {
+size_t stringReplaceAll(string str, const char a, const char b) {
+  if (str == NULL) return 0;
   size_t count = 0;
   for (size_t i = 0; i < str->size; i++) {
     if (str->data[i] == a) { 

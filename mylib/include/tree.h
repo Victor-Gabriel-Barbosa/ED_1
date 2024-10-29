@@ -1,23 +1,30 @@
 /**
  * @file tree.h
- * @brief Biblioteca para manipulação de Árvores Binárias utilizando objetos genéricos.
+ * @brief Biblioteca para manipulação de Árvores Binárias AVL utilizando objetos genéricos.
  * 
  * Esta biblioteca fornece uma interface para criar, manipular e destruir 
  * árvores binárias. As árvores são estruturas de dados que consistem em 
  * nós, onde cada nó contém um valor e ponteiros para dois filhos, 
  * permitindo uma organização hierárquica dos dados.
- *
- * As principais funcionalidades desta biblioteca incluem:
+ * 
+ * Macros Disponíveis:
+ * - 'treeAdd': Adiciona um novo elemento na árvore AVL.
+ *  
+ * Funções Disponíveis:
  * - 'sizeofTree': Retorna o tamanho da estrutura tree_t em bytes.
- * - 'treeNew()': Criação de novas árvores binárias.
- * - 'treeAdd()', 'treeRemove()', 'treeSearch()': Inserção, remoção e busca de dados.
- * - 'treeCountNodes()', 'treeCountLeaves()', 'treeCountBranches()': Contagem de nós, folhas e galhos.
- * - 'treeHeight()': Cálculo da altura da árvore.
- * - 'treeInvert()': Inversão da estrutura da árvore.
- * - 'treeCopy': Cria uma cópia de uma árvore binária.
- * - 'treeCmp()': Comparação de duas árvores binárias.
- * - 'treeToString()': Conversão da árvore em uma representação de string.
- * - 'treePrint()': Impressão dos dados da árvore em ordem.
+ * - 'treeNew()': Cria uma nova árvore binária AVL.
+ * - 'treeInsert()': Insere um novo elemento na árvore AVL.
+ * - 'treeRemove()': Remove um elemento da árvore AVL.
+ * - 'treeSearch()': Inserção, remoção e busca de dados.
+ * - 'treeCountNodes()': Conta o número total de nós na árvore.
+ * - 'treeCountLeaves()': Conta a quantidade de folhas na árvore.
+ *  -'treeCountBranches()': Contagem de nós, folhas e galhos.
+ * - 'treeHeight()': Calcula a altura da árvore AVL.
+ * - 'treeInvert()': Inverte a árvore binária AVL.
+ * - 'treeCopy': Cria uma cópia de uma árvore binária AVL.
+ * - 'treeCmp()': Compara duas árvores binárias AVL de forma semelhante ao strcmp.
+ * - 'treeToString()': Converte uma árvore binária AVL em uma string.
+ * - 'treePrint()': Imprime os dados da árvore binária AVL (em ordem).
  *
  * Os dados armazenados na árvore são do tipo genérico 'obj', 
  * o que permite que a árvore armazene diferentes tipos de dados 
@@ -25,15 +32,6 @@
  * inseridos na árvore implementem as operações necessárias, como 
  * comparação e impressão.
  * 
- * **Uso Básico**:
- * 1. Inicie a biblioteca incluindo este cabeçalho.
- * 2. Crie uma nova árvore com 'treeNew()'.
- * 3. Insira dados usando 'treeAdd()'.
- * 4. Utilize funções como 'treeSearch()', 'treeCountLeaves()', 
- *    e 'treeHeight()' para interagir e analisar a árvore.
- * 5. Quando não precisar mais da árvore, use 'treeDestroy()' 
- *    para liberar a memória alocada.
- *
  * @author Victor Gabriel Barbosa
  * @date 20/10/2024
  */
@@ -50,7 +48,7 @@
 size_t sizeofTree();
 
 /**
- * @brief Cria uma nova árvore binária.
+ * @brief Cria uma nova árvore binária AVL.
  * 
  * @return Ponteiro para a árvore criada.
  */
@@ -97,24 +95,24 @@ int treeCountLeaves(const tree tre);
 int treeCountNodes(const tree tre);
 
 /**
- * @brief Calcula a altura da árvore.
+ * @brief Calcula a altura da árvore AVL.
  * 
  * @param tre Um ponteiro para a árvore cuja altura será calculada.
- * @return int A altura da árvore.
+ * @return A altura da árvore.
  */
-int treeHeight(const tree tre);
+size_t treeHeight(const tree tre);
 
 /**
- * @brief Insere um novo dado na árvore binária.
- * 
- * @param tree Ponteiro para a árvore binária.
- * @param info Dado a ser inserido, do tipo obj.
- * @return Ponteiro para a árvore.
+ * @brief Insere um novo elemento na árvore AVL.
+ *
+ * @param tre Um ponteiro para a árvore onde o elemento será inserido.
+ * @param info O valor a ser inserido na árvore.
+ * @return Um ponteiro para a raiz da árvore após a inserção e balanceamento.
  */
 tree treeInsert(tree tree, const obj info);
 
 /**
- * @brief Adiciona um valor ao final da árvore.
+ * @brief Adiciona um novo elemento na árvore AVL.
  * 
  * Macro que adiciona um valor ('value') ao final de uma árvore ('tre'), 
  * convertendo-o automaticamente para o tipo adequado.
@@ -123,6 +121,15 @@ tree treeInsert(tree tree, const obj info);
  * @param value Valor a ser adicionado na árvore.
  */
 #define treeAdd(tre, value) tre = treeInsert(tre, toObj(value))
+
+/**
+ * @brief Remove um elemento da árvore AVL.
+ *
+ * @param tre Um ponteiro para a árvore de onde o elemento será removido.
+ * @param info O valor a ser removido da árvore.
+ * @return Um ponteiro para a raiz da árvore após a remoção e balanceamento.
+ */
+tree treeRemove(tree tre, const obj info);
 
 /**
  * @brief Verifica se um dado está presente na árvore binária.
@@ -150,15 +157,6 @@ obj treeFindMax(const tree tre);
 obj treeFindMin(const tree tre);
 
 /**
- * @brief Remove um dado da árvore binária.
- * 
- * @param tree Ponteiro para a árvore binária.
- * @param info Dado a ser removido, do tipo obj.
- * @return Ponteiro para a árvore.
- */
-tree treeRemove(tree tre, const obj info);
-
-/**
  * @brief Remove um valor de uma árvore binária.
  * 
  * A macro 'treeDelete' facilita a remoção de um valor ('value') de uma árvore binária ('tre'),
@@ -170,7 +168,7 @@ tree treeRemove(tree tre, const obj info);
 #define treeDelete(tre, value) tre = treeRemove(tre, toObj(value));
 
 /**
- * @brief Inverte a árvore binária.
+ * @brief Inverte a árvore binária AVL.
  * 
  * @param tre Um ponteiro para a árvore a ser invertida.
  * @return tree Retorna a árvore invertida.
@@ -196,7 +194,7 @@ tree treeCopy(const tree tre);
 int treeCmp(const tree tree1, const tree tree2);
 
 /**
- * @brief Converte uma árvore binária em uma string.
+ * @brief Converte uma árvore binária AVL em uma string.
  * 
  * @param tre Um ponteiro para a árvore a ser convertida.
  * @return string A string resultante que representa a árvore.
@@ -204,7 +202,7 @@ int treeCmp(const tree tree1, const tree tree2);
 string treeToString(const tree tre);
 
 /**
- * @brief Imprime os dados da árvore binária (em ordem).
+ * @brief Imprime os dados da árvore binária AVL (em ordem).
  * 
  * @param tree Ponteiro para a árvore binária.
  * @return 1 se o dado for encontrado, 0 caso contrário.

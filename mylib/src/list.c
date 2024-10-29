@@ -74,7 +74,6 @@ list listDestroy(list lst) {
     aux = aux->prox;
     if (temp->info != NULL) temp->info = objDestroy(temp->info); 
     free(temp); 
-    temp = NULL;
   }
   free(lst);
   return NULL;
@@ -119,7 +118,7 @@ size_t listSize(const list lst) {
  * @return A lista atualizada com o novo nó no início.
  */
 list listAddIni(list lst, const obj info) {
-  if (lst == NULL) return NULL; 
+  if (lst == NULL || info == NULL) return NULL; 
   NodeL* newNode = (NodeL*)malloc(sizeof(NodeL));
   if (newNode == NULL) return lst; 
   newNode->info = objCopy(info); 
@@ -144,7 +143,7 @@ list listAddIni(list lst, const obj info) {
  * @return A lista atualizada com o novo nó no final.
  */
 list listAddEnd(list lst, const obj info) {
-  if (lst == NULL) return NULL;
+  if (lst == NULL || info == NULL) return NULL;
   NodeL* newNode = (NodeL*)malloc(sizeof(NodeL));
   if (newNode == NULL) return lst;  
   newNode->info = objCopy(info);
@@ -155,6 +154,57 @@ list listAddEnd(list lst, const obj info) {
   if (lst->head == NULL) lst->head = newNode;
   lst->N++;
   return lst;
+}
+
+/**
+ * @brief Substitui a primeira ocorrência de um objeto em uma lista.
+ *
+ * Esta função percorre a lista fornecida e substitui a primeira ocorrência
+ * do objeto a pelo objeto b.
+ *
+ * @param lst A lista onde será feita a substituição. Não pode estar vazia.
+ * @param info1 O objeto que será procurado na lista.
+ * @param info2 O objeto que substituirá o objeto a.
+ * @return A lista após a substituição. Se a lista estiver vazia, ou se a, ou b forem NULL, retorna a lista original.
+ */
+list listReplace(list lst, const obj info1, const obj info2) {
+  if (listIsEmpty(lst) || info1 == NULL || info2 == NULL) return lst;
+  NodeL* aux = lst->head;
+  while (aux != NULL) {
+    if (objCmp(aux->info, info1) == 0) {
+      objDestroy(aux->info);
+      aux->info = objCopy(info2);
+      return lst;
+    }
+    aux = aux->prox;
+  }
+  return lst;
+}
+
+/**
+ * @brief Substitui todas as ocorrências de um objeto em uma lista.
+ *
+ * Esta função percorre a lista fornecida e substitui todas as ocorrências
+ * do objeto a pelo objeto b, contando quantas substituições foram feitas.
+ *
+ * @param lst A lista onde serão feitas as substituições. Não pode estar vazia.
+ * @param info1 O objeto que será procurado na lista.
+ * @param info2 O objeto que substituirá o objeto a.
+ * @return O número de substituições realizadas. Se a lista estiver vazia, ou se a, ou b forem NULL, retorna 0.
+ */
+size_t listReplaceAll(list lst, const obj info1, const obj info2) {
+  if (listIsEmpty(lst) || info1 == NULL || info2 == NULL) return 0;
+  size_t count = 0;
+  NodeL* aux = lst->head;
+  while (aux != NULL) {
+    if (objCmp(aux->info, info1) == 0) {
+      objDestroy(aux->info);
+      aux->info = objCopy(info2);
+      count++;
+    }
+    aux = aux->prox;
+  }
+  return count;
 }
 
 /**
@@ -195,6 +245,69 @@ list listRemove(list lst, const int pos) {
   lst->N--;
   return lst;
 }
+
+/**
+ * @brief Remove a primeira as ocorrência de um objeto em uma lista.
+ *
+ * Esta função percorre a lista fornecida e remove a primeira ocorrências do objeto info.
+ *
+ * @param lst A lista da qual os objetos serão removidos.
+ * @param info O objeto que será removido da lista.
+ * @return A lista após as remoções.
+ */
+list listRemoveIf(list lst, const obj info) {
+  if (listIsEmpty(lst) || info == NULL) return lst;
+  NodeL* aux = lst->head;
+  NodeL* prev = NULL;
+  while (aux != NULL) {
+    if (objCmp(aux->info, info) == 0) {
+      if (prev == NULL) lst->head = aux->prox;
+      else prev->prox = aux->prox;
+      if (aux->prox!= NULL) aux->prox->ant = prev;
+      else lst->tail = prev;
+      objDestroy(aux->info);
+      free(aux);
+      lst->N--;
+      return lst;
+    }
+    prev = aux;
+    aux = aux->prox;
+  }
+  return lst;
+}
+
+/**
+ * @brief Remove todas as ocorrências de um objeto em uma lista e retorna a quantidade de elementos removidos.
+ *
+ * Esta função percorre a lista fornecida e remove todas as ocorrências do objeto info, contando quantas remoções foram feitas.
+ *
+ * @param lst A lista da qual os objetos serão removidos.
+ * @param info O objeto que será removido da lista.
+ * @return O número de elementos removidos.
+ */
+size_t listRemoveAllIf(list lst, const obj info) {
+  if (listIsEmpty(lst) || info == NULL) return 0;
+  size_t count = 0;
+  NodeL* aux = lst->head;
+  NodeL* prev = NULL;
+  while (aux != NULL) {
+    if (objCmp(aux->info, info) == 0) {
+      NodeL* next = aux->prox;
+      objDestroy(aux->info);
+      free(aux);
+      if (prev == NULL) lst->head = next;
+      else prev->prox = next;
+      aux = next;
+      lst->N--;
+      count++;
+    } else {
+      prev = aux;
+      aux = aux->prox;
+    }
+  }
+  return count;
+}
+
 
 /**
  * @brief Busca um objeto em uma posição específica da lista.
@@ -301,7 +414,8 @@ int listCmp(const list lst1, const list lst2) {
   NodeL* aux1 = lst1->head;
   NodeL* aux2 = lst2->head;
   while (aux1 != NULL && aux2 != NULL) {
-    if (objCmp(aux1->info, aux2->info) != 0) return (objCmp(aux1->info, aux2->info) > 0) ? 1 : -1; 
+    int cmp = objCmp(aux1->info, aux2->info);
+    if (cmp != 0) return cmp;
     aux1 = aux1->prox;
     aux2 = aux2->prox;
   }
@@ -309,9 +423,32 @@ int listCmp(const list lst1, const list lst2) {
 }
 
 /**
+ * @brief Ordena uma pequena lista usando o algoritmo Insertion Sort.
+ *
+ * Este método é mais eficiente para pequenos subconjuntos de dados devido ao
+ * baixo overhead e ao desempenho superior em arrays pequenos em comparação
+ * com o Quick Sort.
+ *
+ * @param low O primeiro nó da lista a ser ordenada.
+ * @param high O último nó da lista a ser ordenada.
+ */
+void insertionSort(NodeL* low, NodeL* high) {
+  for (NodeL* i = low->prox; i != high->prox; i = i->prox) {
+    obj key = i->info;
+    NodeL* j = i->ant;
+    while (j != NULL && objCmp(j->info, key) > 0) {
+      j->prox->info = j->info;
+      j = j->ant;
+    }
+    if (j == NULL) low->info = key;
+    else j->prox->info = key;
+  }
+}
+
+/**
  * @brief Reorganiza um subárvore para manter a propriedade do heap.
  *
- * A função ajusta um subárvore com raiz no índice 'i' de um array de nós 
+ * A função ajusta uma subárvore com raiz no índice 'i' de um array de nós 
  * para garantir que a propriedade do heap (máximo ou mínimo) seja mantida.
  * Isso é feito comparando o nó atual com seus filhos e trocando os valores
  * quando necessário. A função é recursiva e continuará a ajustar o heap
@@ -346,7 +483,7 @@ void heapify(NodeL** arr, int n, int i) {
  * @param high O último nó da lista que será ordenada.
  * @return 0 se a ordenação for bem-sucedida ou -1 se ocorrer um erro de alocação de memória.
  */
-int heapSort(NodeL* low, NodeL* high) {
+void heapSort(NodeL* low, NodeL* high) {
   int n = 0;
   NodeL* temp = low;
   while (temp != high->prox) {
@@ -354,11 +491,11 @@ int heapSort(NodeL* low, NodeL* high) {
     temp = temp->prox;
   }
   NodeL** arr = malloc(n * sizeof(NodeL*));
-  if (arr == NULL) return -1;
+  if (arr == NULL) return;  // Falha de alocação
   temp = low;
   for (int i = 0; i < n; i++) {
-    arr[i] = temp;
-    temp = temp->prox;
+      arr[i] = temp;
+      temp = temp->prox;
   }
   for (int i = n / 2 - 1; i >= 0; i--) heapify(arr, n, i);
   for (int i = n - 1; i >= 0; i--) {
@@ -366,7 +503,27 @@ int heapSort(NodeL* low, NodeL* high) {
     heapify(arr, i, 0);
   }
   free(arr);
-  return 0;
+}
+
+/**
+ * @brief Escolhe o pivô usando a "mediana de três" para melhorar o particionamento.
+ *
+ * Este método reduz a chance de escolher pivôs ruins ao ordenar, 
+ * o que poderia causar um desempenho degenerado.
+ *
+ * @param low O primeiro nó da lista.
+ * @param high O último nó da lista.
+ * @return O ponteiro para o pivô escolhido.
+ */
+NodeL* medianOfThree(NodeL* low, NodeL* high) {
+  NodeL* mid = low;
+  int size = 0;
+  for (NodeL* temp = low; temp != high; temp = temp->prox) size++;
+  for (int i = 0; i < size / 2; i++) mid = mid->prox;
+  if (objCmp(low->info, mid->info) > 0) objSwap(&low->info, &mid->info);
+  if (objCmp(low->info, high->info) > 0) objSwap(&low->info, &high->info);
+  if (objCmp(mid->info, high->info) > 0) objSwap(&mid->info, &high->info);
+  return mid;
 }
 
 /**
@@ -382,14 +539,16 @@ int heapSort(NodeL* low, NodeL* high) {
  * @return O ponteiro para o novo pivô após a partição.
  */
 NodeL* partition(NodeL* low, NodeL* high) {
-  obj pivot = high->info;
-  NodeL* i = low->ant;
+  NodeL* pivot = medianOfThree(low, high);
+  obj pivotValue = pivot->info;
+  objSwap(&pivot->info, &high->info);   
+  NodeL* i = low->ant;  
   for (NodeL* j = low; j != high; j = j->prox) {
-    if (objCmp(j->info, pivot) <= 0) {
+    if (objCmp(j->info, pivotValue) <= 0) {
       i = (i == NULL) ? low : i->prox;
       objSwap(&i->info, &j->info);
     }
-  } 
+  }
   i = (i == NULL) ? low : i->prox;
   objSwap(&i->info, &high->info);
   return i;
@@ -409,14 +568,24 @@ NodeL* partition(NodeL* low, NodeL* high) {
  * @param depthLimit O limite de profundidade para a recursão.
  * @return 0 se a ordenação for bem-sucedida ou -1 se ocorrer um erro.
  */
-int introSort(NodeL* low, NodeL* high, int depthLimit) {
-  if (high && low != high && low != high->prox) {
-    if (depthLimit == 0) return (heapSort(low, high) != 0) ? -1 : 0;
+void introSort(NodeL* low, NodeL* high, int depthLimit) {
+  const int insertionLimit = 16;
+  while (high && low != high && low != high->prox) {
+    int size = 0;
+    for (NodeL* temp = low; temp != high->prox; temp = temp->prox) size++;
+    if (size < insertionLimit) {
+      insertionSort(low, high);
+      return;
+    }
+    if (depthLimit == 0) {
+      heapSort(low, high);
+      return;
+    }
     NodeL* p = partition(low, high);
-    if (introSort(low, p->ant, depthLimit - 1) != 0) return -1;
-    if (introSort(p->prox, high, depthLimit - 1) != 0) return -1;
+    depthLimit--;
+    introSort(low, p->ant, depthLimit);
+    low = p->prox;
   }
-  return 0; 
 }
 
 /**
@@ -434,13 +603,9 @@ int introSort(NodeL* low, NodeL* high, int depthLimit) {
  */
 int quickSort(NodeL* low, NodeL* high) {
   int n = 0;
-  NodeL* temp = low;
-  while (temp != high->prox) {
-    n++;
-    temp = temp->prox;
-  }
+  for (NodeL* temp = low; temp != high->prox; temp = temp->prox) n++;
   int depthLimit = 2 * (int)log2(n); 
-  if (introSort(low, high, depthLimit) != 0) return -1;
+  introSort(low, high, depthLimit);
   return 0;  
 }
 
@@ -459,7 +624,7 @@ int quickSort(NodeL* low, NodeL* high) {
 list listSort(list lst) {
   if (listIsEmpty(lst) || lst->N <= 1) return lst;
   NodeL* high = lst->tail;
-  if (quickSort(lst->head, high) != 0) fprintf(stderr, "Error: listSort failed");
+  if (quickSort(lst->head, high) != 0) fprintf(stderr, "Error: listSort failed\n");
   return lst;
 } 
 
@@ -549,6 +714,7 @@ string listToString(const list lst) {
 int listPrint(const list lst) {
   if (listIsEmpty(lst)) return 0;
   string str = listToString(lst);
+  if (str == NULL) return 0;
   stringPrint(str);
   stringDestroy(str);
   return 1;

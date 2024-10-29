@@ -46,7 +46,41 @@
 
 #include <stdint.h>
 #include <time.h>
+#include <setjmp.h>
 #include "stringlib.h"
+
+jmp_buf jump_buffer;
+
+/**
+ * @brief Inicia um bloco de código onde exceções podem ser capturadas.
+ *
+ * Este macro define um ponto de salvamento para o estado do programa usando 'setjmp'.
+ * Se uma exceção for lançada usando 'throw', o controle será transferido para o bloco
+ * 'catch' associado. Caso contrário, o código dentro do bloco 'try' é executado normalmente.
+ *
+ * @note Este macro deve ser seguido por um bloco 'catch' para capturar exceções.
+ */
+#define try if (setjmp(jump_buffer) == 0)
+
+/**
+ * @brief Captura exceções lançadas dentro de um bloco 'try'.
+ *
+ * O código dentro deste bloco será executado apenas se uma exceção for lançada no
+ * bloco 'try' associado. Isso ocorre quando 'throw' é chamado, pulando o restante do
+ * código no bloco 'try' e transferindo o controle para o bloco 'catch'.
+ */
+#define catch else
+
+/**
+ * @brief Lança uma exceção dentro de um bloco 'try'.
+ *
+ * Este macro usa 'longjmp' para transferir o controle de volta para o ponto definido
+ * pelo 'try', interrompendo o fluxo normal do programa e ativando o bloco 'catch'.
+ *
+ * @note 'throw' só deve ser chamado dentro de um bloco 'try', pois depende do estado
+ * salvo por 'setjmp'.
+ */
+#define throw longjmp(jump_buffer, 1)
 
 /**
  * @brief Calcula o número de elementos em um array.

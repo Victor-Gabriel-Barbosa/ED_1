@@ -3,12 +3,13 @@
 #include "stringlib.h"
 
 /**
- * @brief Estrutura que representa um nó da árvore binária.
+ * @brief Estrutura que representa um nó da árvore AVL.
  */
 typedef struct tree_t {
   obj info;             /**< Informação armazenada na árvore */
   struct tree_t* left;  /**< Ponteiro para o filho esquerdo da árvore */
   struct tree_t* right; /**< Ponteiro para o filho direito da árvore */
+  int treeHeight;       /**< Altura do nó para manter o balanceamento AVL */
 } *tree;
 
 /**
@@ -63,6 +64,93 @@ int treeIsEmpty(const tree tre) {
 }
 
 /**
+ * @brief Calcula a altura da árvore AVL.
+ * 
+ * @param tre Um ponteiro para a árvore cuja altura será calculada.
+ * @return A altura da árvore.
+ */
+size_t treeHeight(const tree tre) {
+  return (tre == NULL) ? -1 : tre->treeHeight;
+}
+
+/**
+ * @brief Calcula o fator de balanceamento do nó.
+ *
+ * @param tre Um ponteiro para o nó da árvore.
+ * @return O fator de balanceamento do nó.
+ */
+int treeBalanceFactor(const tree tre) {
+  return (tre == NULL) ? 0 : treeHeight(tre->left) - treeHeight(tre->right);
+}
+
+/**
+ * @brief Atualiza a altura do nó.
+ *
+ * @param tre Um ponteiro para o nó da árvore.
+ */
+void treeUpdateHeight(tree tre) {
+  if (tre != NULL) {
+    size_t leftHeight = treeHeight(tre->left);
+    size_t rightHeight = treeHeight(tre->right);
+    tre->treeHeight = (size_t)((leftHeight > rightHeight ? leftHeight : rightHeight) + 1);
+  }
+}
+
+/**
+ * @brief Realiza uma rotação simples para a direita.
+ *
+ * @param y Um ponteiro para o nó desbalanceado.
+ * @return Um ponteiro para a nova raiz após a rotação.
+ */
+tree treeRotateRight(tree y) {
+  tree x = y->left;
+  tree T2 = x->right;
+  x->right = y;
+  y->left = T2;
+  treeUpdateHeight(y);
+  treeUpdateHeight(x);
+  return x;
+}
+
+/**
+ * @brief Realiza uma rotação simples para a esquerda.
+ *
+ * @param x Um ponteiro para o nó desbalanceado.
+ * @return Um ponteiro para a nova raiz após a rotação.
+ */
+tree treeRotateLeft(tree x) {
+  tree y = x->right;
+  tree T2 = y->left;
+  y->left = x;
+  x->right = T2;
+  treeUpdateHeight(x);
+  treeUpdateHeight(y);
+  return y;
+}
+
+/**
+ * @brief Balanceia o nó da árvore AVL.
+ *
+ * @param tre Um ponteiro para o nó desbalanceado.
+ * @return Um ponteiro para o nó balanceado.
+ */
+tree treeBalance(tree tre) {
+  treeUpdateHeight(tre);
+  int bf = (int)treeBalanceFactor(tre);
+  if (bf > 1 && treeBalanceFactor(tre->left) >= 0) return treeRotateRight(tre);
+  if (bf > 1 && treeBalanceFactor(tre->left) < 0) {
+    tre->left = treeRotateLeft(tre->left);
+    return treeRotateRight(tre);
+  }
+  if (bf < -1 && treeBalanceFactor(tre->right) <= 0) return treeRotateLeft(tre);
+  if (bf < -1 && treeBalanceFactor(tre->right) > 0) {
+    tre->right = treeRotateRight(tre->right);
+    return treeRotateLeft(tre);
+  }
+  return tre;
+}
+
+/**
  * @brief Conta a quantidade de galhos na árvore.
  * 
  * Um galho é definido como um nó que possui pelo menos um filho.
@@ -104,46 +192,56 @@ int treeCountNodes(const tree tre) {
 }
 
 /**
- * @brief Calcula a altura da árvore.
- * 
- * A altura é definida como o número de arestas no caminho mais longo da raiz até uma folha.
- * 
- * @param tre Um ponteiro para a árvore cuja altura será calculada.
- * @return A altura da árvore.
+ * @brief Insere um novo elemento na árvore AVL.
+ *
+ * @param tre Um ponteiro para a árvore onde o elemento será inserido.
+ * @param info O valor a ser inserido na árvore.
+ * @return Um ponteiro para a raiz da árvore após a inserção e balanceamento.
  */
-int treeHeight(const tree tre) {
-  if (tre == NULL) return -1;  
-  int leftHeight = treeHeight(tre->left);
-  int rightHeight = treeHeight(tre->right);
-  return (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+tree treeInsert(tree tre, const obj info) {
+  if (tre == NULL) {
+    tree node = (tree)malloc(sizeof(struct tree_t));
+    if (node == NULL) return NULL;
+    node->info = objCopy(info);
+    node->left = NULL;
+    node->right = NULL;
+    node->treeHeight = 0;
+    return node;
+  }
+  if (objCmp(info, tre->info) < 0) tre->left = treeInsert(tre->left, info);
+  else if (objCmp(info, tre->info) > 0) tre->right = treeInsert(tre->right, info);
+  else return tre;
+  return treeBalance(tre);
 }
 
 /**
- * @brief Insere um novo elemento na árvore.
- * 
- * Insere o valor 'info' na posição correta na árvore de acordo com as regras da árvore binária de busca.
- * 
- * @param tre Um ponteiro para a árvore onde o elemento será inserido.
- * @param info O valor a ser inserido na árvore.
- * @return 1 se a inserção for bem-sucedida, ou 0 em caso de erro.
+ * @brief Remove um elemento da árvore AVL.
+ *
+ * @param tre Um ponteiro para a árvore de onde o elemento será removido.
+ * @param info O valor a ser removido da árvore.
+ * @return Um ponteiro para a raiz da árvore após a remoção e balanceamento.
  */
-tree treeInsert(tree tre, const obj info) {
-  tree node = (tree)malloc(sizeof(struct tree_t));
-  if (node == NULL) return tre;
-  node->info = objCopy(info);
-  node->left = NULL;
-  node->right = NULL;
-  if (tre == NULL) return node;
-  tree current = tre;
-  tree parent = NULL;
-  while (current != NULL) {
-    parent = current; 
-    if (objCmp(info, current->info) < 0) current = current->left;
-    else current = current->right;
+tree treeRemove(tree tre, const obj info) {
+  if (tre == NULL) return NULL;
+  if (objCmp(info, tre->info) < 0) tre->left = treeRemove(tre->left, info);
+  else if (objCmp(info, tre->info) > 0) tre->right = treeRemove(tre->right, info);
+  else {
+    if (tre->left == NULL || tre->right == NULL) {
+      tree temp = (tre->left != NULL) ? tre->left : tre->right;
+      if (temp == NULL) {
+        temp = tre;
+        tre = NULL;
+      } else *tre = *temp;
+      free(temp);
+    } else {
+      tree temp = tre->right;
+      while (temp->left != NULL) temp = temp->left;
+      tre->info = temp->info;
+      tre->right = treeRemove(tre->right, temp->info);
+    }
   }
-  if (objCmp(info, parent->info) < 0) parent->left = node;
-  else parent->right = node;
-  return tre; 
+  if (tre == NULL) return tre;
+  return treeBalance(tre);
 }
 
 /**
@@ -190,52 +288,6 @@ obj treeFindMin(const tree tre) {
   tree current = tre;
   while (current->left != NULL) current = current->left;
   return current->info;
-}
-
-/**
- * @brief Remove um elemento da árvore.
- * 
- * Remove o nó contendo o valor 'info' da árvore.
- * 
- * @param tre Um ponteiro para a árvore de onde o elemento será removido.
- * @param info O valor a ser removido da árvore.
- * @return 1 se a remoção for bem-sucedida, ou 0 em caso de erro.
- */
-tree treeRemove(tree tre, const obj info) {
-  if (tre == NULL) return NULL; 
-  tree current = tre;
-  tree parent = NULL;
-  while (current != NULL && objCmp(info, current->info) != 0) {
-    parent = current;
-    if (objCmp(info, current->info) < 0) current = current->left;
-    else current = current->right;
-  }
-  if (current == NULL) return tre;
-  if (current->left == NULL && current->right == NULL) {
-    if (current == tre) tre = NULL;
-    else if (parent->left == current) parent->left = NULL;
-    else parent->right = NULL;
-    free(current);
-  }
-  else if (current->left == NULL || current->right == NULL) {
-    tree child = (current->left != NULL) ? current->left : current->right;
-    if (current == tre) tre = child;  
-    else if (parent->left == current) parent->left = child;
-    else parent->right = child;
-    free(current);
-  } else {
-    tree successor = current->right;
-    tree successorParent = current;
-    while (successor->left != NULL) {
-      successorParent = successor;
-      successor = successor->left;
-    }
-    current->info = successor->info;
-    if (successorParent->left == successor) successorParent->left = successor->right; 
-    else successorParent->right = successor->right;
-    free(successor);
-  }
-  return tre;
 }
 
 /**
@@ -304,11 +356,16 @@ string treeToString(const tree tre) {
   string rightStr = treeToString(tre->right);
   string result = stringNew();
   stringAddChar(result, '<');
-  result = stringAppend(result, currentStr);
-  if (leftStr || rightStr) {
-    if (leftStr) result = stringAppend(result, leftStr);
-    if (leftStr && rightStr) result = stringCat(result, ", ");
-    if (rightStr) result = stringAppend(result, rightStr);
+  stringAppend(result, currentStr);
+  if (!stringIsEmpty(leftStr) || !stringIsEmpty(rightStr)) {
+    if (!stringIsEmpty(leftStr)) {
+      stringCat(result, ", ");
+      stringAppend(result, leftStr);
+    }
+    if (!stringIsEmpty(rightStr)) {
+      stringCat(result, ", ");
+      stringAppend(result, rightStr);
+    }
   }
   stringAddChar(result, '>');
   stringDestroy(currentStr);
@@ -316,6 +373,7 @@ string treeToString(const tree tre) {
   stringDestroy(rightStr);
   return result;
 }
+
 
 /**
  * @brief Imprime a árvore binária em ordem.
@@ -328,6 +386,7 @@ string treeToString(const tree tre) {
 int treePrint(const tree tre) {
   if (tre == NULL) return 0; 
   string str = treeToString(tre);
+  if (str == NULL) return 0;
   stringPrint(str);
   stringDestroy(str);
   return 1; 

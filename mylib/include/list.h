@@ -17,6 +17,10 @@
  * - 'listSize': Retorna o número de elementos na lista.
  * - 'listAddIni': Insere um novo elemento no início da lista.
  * - 'listAddEnd': Insere um novo elemento no final da lista.
+ * - 'listReplace': Substitui a primeira ocorrência de um objeto em uma lista.
+ * - 'listReplaceAll': Substitui todas as ocorrências de um objeto em uma lista.
+ * - 'listRemoveIf': Remove a primeira as ocorrência de um objeto em uma lista.
+ * - 'listRemoveAllIf': Remove todas as ocorrências de um objeto em uma lista.
  * - 'listRemove': Remove um elemento da lista em uma posição específica.
  * - 'listSearch': Busca um elemento na lista em uma posição específica.
  * - 'listIndex': Busca o índice de um elemento na lista.
@@ -112,6 +116,26 @@ list listAddEnd(list lst, const obj info);
 #define listAdd(lst, value) listAddEnd(lst, toObj(value))
 
 /**
+ * @brief Substitui a primeira ocorrência de um objeto em uma lista.
+ *
+ * @param lst A lista onde será feita a substituição. Não pode estar vazia.
+ * @param info1 O objeto que será procurado na lista.
+ * @param info2 O objeto que substituirá o objeto a.
+ * @return A lista após a substituição. Se a lista estiver vazia, ou se a, ou b forem NULL, retorna a lista original.
+ */
+list listReplace(list lst, const obj info1, const obj info2);
+
+/**
+ * @brief Substitui todas as ocorrências de um objeto em uma lista.
+ *
+ * @param lst A lista onde serão feitas as substituições. Não pode estar vazia.
+ * @param info1 O objeto que será procurado na lista.
+ * @param info2 O objeto que substituirá o objeto a.
+ * @return A lista após as substituições.
+ */
+size_t listReplaceAll(list lst, const obj info1, const obj info2);
+
+/**
  * @brief Remove um nó da lista em uma posição específica.
  *
  * @param lst A lista da qual o nó será removido.
@@ -119,6 +143,28 @@ list listAddEnd(list lst, const obj info);
  * @return A lista após a remoção do nó.
  */
 list listRemove(list lst, const int pos);
+
+/**
+ * @brief Remove a primeira as ocorrência de um objeto em uma lista.
+ *
+ * Esta função percorre a lista fornecida e remove a primeira ocorrências do objeto info.
+ *
+ * @param lst A lista da qual os objetos serão removidos.
+ * @param info O objeto que será removido da lista.
+ * @return A lista após as remoções.
+ */
+list listRemoveIf(list lst, const obj info);
+
+/**
+ * @brief Remove todas as ocorrências de um objeto em uma lista e retorna a quantidade de elementos removidos.
+ *
+ * Esta função percorre a lista fornecida e remove todas as ocorrências do objeto info, contando quantas remoções foram feitas.
+ *
+ * @param lst A lista da qual os objetos serão removidos. Não pode estar vazia.
+ * @param info O objeto que será removido da lista.
+ * @return O número de elementos removidos.
+ */
+size_t listRemoveAllIf(list lst, const obj info);
 
 /**
  * @brief Busca um objeto em uma posição específica da lista.

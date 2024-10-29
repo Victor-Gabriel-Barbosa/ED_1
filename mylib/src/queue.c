@@ -253,6 +253,7 @@ string queueToString(const queue qeu) {
 int queuePrint(const queue qeu) {
   if (queueIsEmpty(qeu)) return 0;
   string str = queueToString(qeu);
+  if (str == NULL) return 0;
   stringPrint(str);
   stringDestroy(str);
   return 1; 

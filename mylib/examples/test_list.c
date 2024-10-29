@@ -56,7 +56,9 @@ int main() {
 
   // Teste de ordenação
   printf("Ordenando a lista...\n");
-  minhaLista = listSort(minhaLista);
+  timer(
+    minhaLista = listSort(minhaLista);
+  );
   printf("Lista ordenada: ");
   if (confirm("Imprimir lista")) {
     timer(
@@ -77,7 +79,10 @@ int main() {
   objPrint(toObj(lista2));
   printf("\n");
 
-  list listaMesclada = listMerge(minhaLista, lista2);
+  list listaMesclada;
+  timer(
+    listaMesclada = listMerge(minhaLista, lista2);
+  );
   printf("Lista mesclada: ");
   if (confirm("Imprimir lista")) {
     timer(
@@ -87,9 +92,11 @@ int main() {
   }
 
   // Limpa as listas
-  minhaLista = listDestroy(minhaLista);
-  lista2 = listDestroy(lista2);
-  listaMesclada = listDestroy(listaMesclada);
+  timer(
+    minhaLista = listDestroy(minhaLista);
+    lista2 = listDestroy(lista2);
+    listaMesclada = listDestroy(listaMesclada);
+  );
 
   return 0;
 }

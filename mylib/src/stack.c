@@ -266,6 +266,7 @@ string stackToString(const stack stk) {
 int stackPrint(const stack stk) {
   if (stackIsEmpty(stk)) return 0;
   string str = stackToString(stk);
+  if (str == NULL) return 0;
   stringPrint(str);
   stringDestroy(str);
   return 1;
