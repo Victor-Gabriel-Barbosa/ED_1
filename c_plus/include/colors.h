@@ -8,51 +8,53 @@
  * Definições disponíveis:
  * 
  * - Efeitos de texto:
- *   - `RESET`: Reseta as cores e efeitos aplicados.
- *   - `BOLD`: Aplica negrito ao texto.
- *   - `UNDERLINE`: Aplica sublinhado ao texto.
- *   - `BLINK`: Aplica efeito piscante ao texto.
- *   - `INVERT`: Inverte as cores do texto e do fundo.
+ *   - 'RESET': Reseta as cores e efeitos aplicados.
+ *   - 'BOLD': Aplica negrito ao texto.
+ *   - 'UNDERLINE': Aplica sublinhado ao texto.
+ *   - 'BLINK': Aplica efeito piscante ao texto.
+ *   - 'INVERT': Inverte as cores do texto e do fundo.
  * 
  * - Cores de texto:
- *   - `BLUE`: Define a cor do texto como azul.
- *   - `CYAN`: Define a cor do texto como ciano.
- *   - `GREEN`: Define a cor do texto como verde água.
- *   - `RED`: Define a cor do texto como vermelho.
- *   - `MAGENTA`: Define a cor do texto como magenta.
- *   - `YELLOW`: Define a cor do texto como amarelo.
- *   - `PINK`: Define a cor do texto como rosa.
- *   - `ORANGE`: Define a cor do texto como laranja.
- *   - `PURPLE`: Define a cor do texto como roxo.
- *   - `BROWN`: Define a cor do texto como marrom.
- *   - `GRAY`: Define a cor do texto como cinza claro.
- *   - `BLACK`: Define a cor do texto como preto.
- *   - `WHITE`: Define a cor do texto como branco.
+ *   - 'BLUE': Define a cor do texto como azul.
+ *   - 'CYAN': Define a cor do texto como ciano.
+ *   - 'GREEN': Define a cor do texto como verde água.
+ *   - 'RED': Define a cor do texto como vermelho.
+ *   - 'MAGENTA': Define a cor do texto como magenta.
+ *   - 'YELLOW': Define a cor do texto como amarelo.
+ *   - 'PINK': Define a cor do texto como rosa.
+ *   - 'ORANGE': Define a cor do texto como laranja.
+ *   - 'PURPLE': Define a cor do texto como roxo.
+ *   - 'BROWN': Define a cor do texto como marrom.
+ *   - 'GRAY': Define a cor do texto como cinza claro.
+ *   - 'BLACK': Define a cor do texto como preto.
+ *   - 'WHITE': Define a cor do texto como branco.
  * 
  * - Cores de fundo:
- *   - `BLUE_BG`: Define o fundo como azul.
- *   - `CYAN_BG`: Define o fundo como ciano.
- *   - `GREEN_BG`: Define o fundo como verde água.
- *   - `RED_BG`: Define o fundo como vermelho.
- *   - `MAGENTA_BG`: Define o fundo como magenta.
- *   - `YELLOW_BG`: Define o fundo como amarelo.
- *   - `PINK_BG`: Define o fundo como rosa.
- *   - `ORANGE_BG`: Define o fundo como laranja.
- *   - `PURPLE_BG`: Define o fundo como roxo.
- *   - `BROWN_BG`: Define o fundo como marrom.
- *   - `GRAY_BG`: Define o fundo como cinza claro.
- *   - `BLACK_BG`: Define o fundo como preto.
- *   - `WHITE_BG`: Define o fundo como branco.
+ *   - 'BLUE_BG': Define o fundo como azul.
+ *   - 'CYAN_BG': Define o fundo como ciano.
+ *   - 'GREEN_BG': Define o fundo como verde água.
+ *   - 'RED_BG': Define o fundo como vermelho.
+ *   - 'MAGENTA_BG': Define o fundo como magenta.
+ *   - 'YELLOW_BG': Define o fundo como amarelo.
+ *   - 'PINK_BG': Define o fundo como rosa.
+ *   - 'ORANGE_BG': Define o fundo como laranja.
+ *   - 'PURPLE_BG': Define o fundo como roxo.
+ *   - 'BROWN_BG': Define o fundo como marrom.
+ *   - 'GRAY_BG': Define o fundo como cinza claro.
+ *   - 'BLACK_BG': Define o fundo como preto.
+ *   - 'WHITE_BG': Define o fundo como branco.
  * 
- * - **Formatação de texto**:
- *   - `f(color, text)`: Aplica a formatação de uma cor especificada ao texto, com reset no final.
- *   - `fError(text)`: Formata o texto para erros, com negrito e vermelho.
- *   - `fSuccess(text)`: Formata o texto para sucesso, com negrito e verde.
- *   - `fTitle(text)`: Formata o texto como título, com negrito e sublinhado.
- *   - `fIf(color_true, color_false, condition, text)`: Aplica uma formatação condicional, escolhendo entre duas cores com base na condição.
+ * - Formatação de texto:
+ *   - 'f(color, text)': Aplica a formatação de uma cor especificada ao texto, com reset no final.
+ *   - 'fLn(fmt, text)': Aplica a formatação de uma cor especificada ao texto, com reset e "\n" no final.
+ *   - 'fError(text)': Formata o texto para erros, com negrito e vermelho.
+ *   - 'fSuccess(text)': Formata o texto para sucesso, com negrito e verde.
+ *   - 'fTitle(text)': Formata o texto como título, com negrito e sublinhado.
+ *   - 'fIf(color_true, color_false, condition, text)': Aplica uma formatação condicional, escolhendo entre duas cores com base na condição.
  * 
  * @note Esta biblioteca usa códigos ANSI, que são suportados na maioria dos terminais Unix e em alguns terminais de sistemas Windows (como o Windows Terminal).
  * 
+ * @author Victor Gabriel Barbosa
  * @date 12/10/2024
  * @version 2.0
  */
@@ -104,6 +106,13 @@
  * @param text O texto que receberá a formatação.
  */
 #define f(fmt, text) fmt text RESET
+
+/**
+ * @brief Aplica uma formatação específica ao texto, reseta a formatação e adiciona '\n' ao final.
+ * @param fmt A formatação aplicada ao texto (exemplo: negrito ou cor específica).
+ * @param text O texto que receberá a formatação.
+ */
+#define fLn(fmt, text) fmt text "\n" RESET
 
 /**
  * @brief Aplica formatação para mensagens de erro.

@@ -51,7 +51,7 @@
 #include <setjmp.h>
 #include "stringlib.h"
 
-jmp_buf jump_buffer; 
+jmp_buf jump_buffer; /**< Buffer temporário para salvar o local do salto */
 
 /**
  * @brief Inicia um bloco de código onde exceções podem ser capturadas.
@@ -124,7 +124,7 @@ jmp_buf jump_buffer;
       return;                                                       \
     }                                                               \
     double elapsed_time = ((double)(end - start)) / CLOCKS_PER_SEC; \
-    printf("Tempo de execução: %g segundos\n", elapsed_time);       \
+    printf("\nTempo de execução: %g segundos\n", elapsed_time);     \
     elapsed_time;                                                   \
   })
 
