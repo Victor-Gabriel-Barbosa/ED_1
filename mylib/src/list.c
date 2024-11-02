@@ -66,13 +66,13 @@ list listNew() {
  * @param lst Ponteiro para a lista a ser destruída.
  * @return NULL após a destruição da lista.
  */
-list listDestroy(list lst) {
+list listFree(list lst) {
   if (lst == NULL) return NULL; 
   NodeL* aux = lst->head; 
   while (aux != NULL) { 
     NodeL* temp = aux; 
     aux = aux->prox;
-    if (temp->info != NULL) temp->info = objDestroy(temp->info); 
+    if (temp->info != NULL) temp->info = objFree(temp->info); 
     free(temp); 
   }
   free(lst);
@@ -117,7 +117,7 @@ size_t listSize(const list lst) {
  * @param info O objeto a ser armazenado no novo nó.
  * @return A lista atualizada com o novo nó no início.
  */
-list listAddIni(list lst, const obj info) {
+list listPushFront(list lst, const obj info) {
   if (lst == NULL || info == NULL) return NULL; 
   NodeL* newNode = (NodeL*)malloc(sizeof(NodeL));
   if (newNode == NULL) return lst; 
@@ -142,7 +142,7 @@ list listAddIni(list lst, const obj info) {
  * @param info O objeto a ser armazenado no novo nó.
  * @return A lista atualizada com o novo nó no final.
  */
-list listAddEnd(list lst, const obj info) {
+list listPushBack(list lst, const obj info) {
   if (lst == NULL || info == NULL) return NULL;
   NodeL* newNode = (NodeL*)malloc(sizeof(NodeL));
   if (newNode == NULL) return lst;  
@@ -172,7 +172,7 @@ list listReplace(list lst, const obj info1, const obj info2) {
   NodeL* aux = lst->head;
   while (aux != NULL) {
     if (objCmp(aux->info, info1) == 0) {
-      objDestroy(aux->info);
+      objFree(aux->info);
       aux->info = objCopy(info2);
       return lst;
     }
@@ -198,7 +198,7 @@ size_t listReplaceAll(list lst, const obj info1, const obj info2) {
   NodeL* aux = lst->head;
   while (aux != NULL) {
     if (objCmp(aux->info, info1) == 0) {
-      objDestroy(aux->info);
+      objFree(aux->info);
       aux->info = objCopy(info2);
       count++;
     }
@@ -240,7 +240,49 @@ list listRemove(list lst, const int pos) {
     aux->ant->prox = aux->prox;
     aux->prox->ant = aux->ant;
   }
-  if (aux->info != NULL) aux->info = objDestroy(aux->info);
+  if (aux->info != NULL) aux->info = objFree(aux->info);
+  free(aux);
+  lst->N--;
+  return lst;
+}
+
+/**
+ * @brief Remove e retorna o primeiro elemento da lista.
+ *
+ * A função remove e retorna o primeiro objeto da lista.
+ * 
+ * @param lst A lista da qual o nó será removido.
+ * @param obj Ponteiro para armazenar o objeto encontrado.
+ * @return A lista após a remoção do primeiro objeto.
+ */
+list listPopFront(list lst, obj* info) {
+  if (listIsEmpty(lst) || info == NULL) return lst;
+  NodeL* aux = lst->head;
+  *info = objCopy(aux->info);
+  lst->head = aux->prox;
+  (lst->head != NULL) ? (lst->head->ant = NULL) : (lst->tail = NULL);
+  if (aux->info != NULL) aux->info = objFree(aux->info);
+  free(aux);
+  lst->N--;
+  return lst;
+}
+
+/**
+ * @brief Remove e retorna o último elemento da lista.
+ *
+ * A função remove e retorna o último objeto da lista.
+ * 
+ * @param lst A lista da qual o nó será removido.
+ * @param obj Ponteiro para armazenar o objeto encontrado.
+ * @return A lista após a remoção do último nó.
+ */
+list listPopBack(list lst, obj* info) {
+  if (listIsEmpty(lst) || info == NULL) return lst;
+  NodeL* aux = lst->tail;
+  *info = objCopy(aux->info);
+  lst->tail = aux->ant;
+  (lst->tail!= NULL) ? (lst->tail->prox = NULL) : (lst->head = NULL);
+  if (aux->info!= NULL) aux->info = objFree(aux->info);
   free(aux);
   lst->N--;
   return lst;
@@ -265,7 +307,7 @@ list listRemoveIf(list lst, const obj info) {
       else prev->prox = aux->prox;
       if (aux->prox!= NULL) aux->prox->ant = prev;
       else lst->tail = prev;
-      objDestroy(aux->info);
+      objFree(aux->info);
       free(aux);
       lst->N--;
       return lst;
@@ -293,7 +335,7 @@ size_t listRemoveAllIf(list lst, const obj info) {
   while (aux != NULL) {
     if (objCmp(aux->info, info) == 0) {
       NodeL* next = aux->prox;
-      objDestroy(aux->info);
+      objFree(aux->info);
       free(aux);
       if (prev == NULL) lst->head = next;
       else prev->prox = next;
@@ -446,7 +488,7 @@ void insertionSort(NodeL* low, NodeL* high) {
 }
 
 /**
- * @brief Reorganiza um subárvore para manter a propriedade do heap.
+ * @brief Reorganiza uma subárvore para manter a propriedade do heap.
  *
  * A função ajusta uma subárvore com raiz no índice 'i' de um array de nós 
  * para garantir que a propriedade do heap (máximo ou mínimo) seja mantida.
@@ -491,11 +533,11 @@ void heapSort(NodeL* low, NodeL* high) {
     temp = temp->prox;
   }
   NodeL** arr = malloc(n * sizeof(NodeL*));
-  if (arr == NULL) return;  // Falha de alocação
+  if (arr == NULL) return; 
   temp = low;
   for (int i = 0; i < n; i++) {
-      arr[i] = temp;
-      temp = temp->prox;
+    arr[i] = temp;
+    temp = temp->prox;
   }
   for (int i = n / 2 - 1; i >= 0; i--) heapify(arr, n, i);
   for (int i = n - 1; i >= 0; i--) {
@@ -624,7 +666,7 @@ int quickSort(NodeL* low, NodeL* high) {
 list listSort(list lst) {
   if (listIsEmpty(lst) || lst->N <= 1) return lst;
   NodeL* high = lst->tail;
-  if (quickSort(lst->head, high) != 0) fprintf(stderr, "Error: listSort failed\n");
+  if (quickSort(lst->head, high) != 0) fprintf(stderr, "</>A ordenação falhou</>\n");
   return lst;
 } 
 
@@ -651,19 +693,19 @@ list listMerge(const list lst1, const list lst2) {
   NodeL* aux2 = lst2->head;
   while (aux1 != NULL && aux2 != NULL) {
     if (objCmp(aux1->info, aux2->info) <= 0) {
-      listAddEnd(mergedList, aux1->info);
+      listPushBack(mergedList, aux1->info);
       aux1 = aux1->prox;
     } else {
-      listAddEnd(mergedList, aux2->info);
+      listPushBack(mergedList, aux2->info);
       aux2 = aux2->prox;
     }
   }
   while (aux1 != NULL) {
-    listAddEnd(mergedList, aux1->info);
+    listPushBack(mergedList, aux1->info);
     aux1 = aux1->prox;
   }
   while (aux2 != NULL) {
-    listAddEnd(mergedList, aux2->info);
+    listPushBack(mergedList, aux2->info);
     aux2 = aux2->prox;
   }
   return mergedList;
@@ -689,9 +731,9 @@ string listToString(const list lst) {
   string str = stringNew();
   stringAddChar(str, '[');
   while (aux != NULL) {
-    string temp = toString(aux->info);
+    string temp = objToString(aux->info);
     str = stringAppend(str, temp);
-    stringDestroy(temp);
+    stringFree(temp);
     if (aux->prox != NULL) str = stringCat(str, ", ");
     aux = aux->prox;
   }
@@ -716,6 +758,6 @@ int listPrint(const list lst) {
   string str = listToString(lst);
   if (str == NULL) return 0;
   stringPrint(str);
-  stringDestroy(str);
+  stringFree(str);
   return 1;
 }  

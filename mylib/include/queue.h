@@ -5,14 +5,17 @@
  * Este arquivo contém a implementação de uma fila genérica que permite armazenar elementos de qualquer tipo.
  * A fila segue o modelo FIFO (First In, First Out), onde o primeiro elemento inserido é o primeiro a ser removido.
  * 
+ * Macros:
+ * - 'queueAdd': Adiciona um valor ao final da fila.
+ * 
  * Funções disponíveis:
  * - 'sizeofQueue': Calcula o tamanho em bytes da estrutura de dados 'queue_t'.
  * - 'queueNew': Cria uma nova fila.
- * - 'queueDestroy': Destrói a fila, liberando a memória alocada.
+ * - 'queueFree':Libera a memória associada a fila.
  * - 'queueIsEmpty': Verifica se a fila está vazia.
  * - 'queueSize': Retorna o número de elementos na fila.
- * - 'queueEnqueue': Adiciona um novo elemento ao final da fila.
- * - 'queueDequeue': Remove um elemento do início da fila.
+ * - 'queuePush': Adiciona um novo elemento ao final da fila.
+ * - 'queuePop': Remove um elemento do início da fila.
  * - 'queueFront': Consulta o elemento na frente da fila sem removê-lo.
  * - 'queueCopy': Cria uma cópia de uma fila.
  * - 'queueCmp': Compara duas filas.
@@ -54,7 +57,7 @@ queue queueNew();
  * @param qeu Ponteiro para a fila a ser destruída.
  * @return NULL, indicando que a fila foi destruída e não deve mais ser utilizada.
  */
-queue queueDestroy(queue qeu);
+queue queueFree(queue qeu);
 
 /**
  * @brief Verifica se a fila está vazia.
@@ -79,7 +82,7 @@ size_t queueSize(const queue qeu);
  * @param info O valor a ser inserido na fila.
  * @return Ponteiro para a fila atualizada, ou NULL se a fila for NULL ou a alocação falhar.
  */
-queue queueEnqueue(queue qeu, obj info);
+queue queuePush(queue qeu, obj info);
 
 /**
  * @brief Adiciona um valor ao final da fila.
@@ -90,7 +93,7 @@ queue queueEnqueue(queue qeu, obj info);
  * @param qeu Fila onde o valor será adicionado.
  * @param value Valor a ser adicionado na fila.
  */
-#define queueAdd(qeu, value) queueEnqueue(qeu, toObj(value))
+#define queueAdd(qeu, value) queuePush(qeu, toObj(value))
 
 /**
  * @brief Remove e retorna o elemento do início da fila.
@@ -99,7 +102,7 @@ queue queueEnqueue(queue qeu, obj info);
  * @param info Ponteiro onde o valor do elemento removido será armazenado.
  * @return Ponteiro para a fila atualizada, ou a fila inalterada se estiver vazia.
  */
-queue queueDequeue(queue qeu, obj* info);
+queue queuePop(queue qeu, obj* info);
 
 /**
  * @brief Obtém o elemento do início da fila sem removê-lo.

@@ -12,16 +12,18 @@
  * Funções disponíveis:
  * - 'sizeofList': Calcula o tamanho em bytes da estrutura de dados 'list_t'. 
  * - 'listNew': Cria uma nova lista.
- * - 'listDestroy': Destrói uma lista, liberando toda a memória alocada.
+ * - 'listFree': Libera a memória associada à lista.
  * - 'listIsEmpty': Verifica se a lista está vazia.
  * - 'listSize': Retorna o número de elementos na lista.
- * - 'listAddIni': Insere um novo elemento no início da lista.
- * - 'listAddEnd': Insere um novo elemento no final da lista.
+ * - 'listPushFront': Insere um novo elemento no início da lista.
+ * - 'listPushBack': Insere um novo elemento no final da lista.
  * - 'listReplace': Substitui a primeira ocorrência de um objeto em uma lista.
  * - 'listReplaceAll': Substitui todas as ocorrências de um objeto em uma lista.
+ * - 'listRemove': Remove um elemento da lista em uma posição específica.
+ * - 'listPopFront': Remove e retorna o primeiro elemento da lista.
+ * - 'listPopBack': Remove e retorna o último elemento da lista.
  * - 'listRemoveIf': Remove a primeira as ocorrência de um objeto em uma lista.
  * - 'listRemoveAllIf': Remove todas as ocorrências de um objeto em uma lista.
- * - 'listRemove': Remove um elemento da lista em uma posição específica.
  * - 'listSearch': Busca um elemento na lista em uma posição específica.
  * - 'listIndex': Busca o índice de um elemento na lista.
  * - 'listCopy': Cria uma cópia de uma lista encadeada.
@@ -68,7 +70,7 @@ list listNew();
  * @param lst Ponteiro para a lista a ser destruída.
  * @return NULL após a destruição da lista.
  */
-list listDestroy(list lst);
+list listFree(list lst);
 
 /**
  * @brief Verifica se uma lista encadeada está vazia.
@@ -93,7 +95,7 @@ size_t listSize(const list lst);
  * @param info O objeto a ser armazenado no novo nó.
  * @return A lista atualizada com o novo nó no início.
  */
-list listAddIni(list lst, const obj info);
+list listPushFront(list lst, const obj info);
 
 /**
  * @brief Adiciona um novo nó ao final da lista.
@@ -102,7 +104,7 @@ list listAddIni(list lst, const obj info);
  * @param info O objeto a ser armazenado no novo nó.
  * @return A lista atualizada com o novo nó no final.
  */
-list listAddEnd(list lst, const obj info);
+list listPushBack(list lst, const obj info);
 
 /**
  * @brief Adiciona um valor ao final da lista.
@@ -113,7 +115,7 @@ list listAddEnd(list lst, const obj info);
  * @param lst Lista onde o valor será adicionado.
  * @param value Valor a ser adicionado na lista.
  */
-#define listAdd(lst, value) listAddEnd(lst, toObj(value))
+#define listAdd(lst, value) listPushBack(lst, toObj(value))
 
 /**
  * @brief Substitui a primeira ocorrência de um objeto em uma lista.
@@ -143,6 +145,28 @@ size_t listReplaceAll(list lst, const obj info1, const obj info2);
  * @return A lista após a remoção do nó.
  */
 list listRemove(list lst, const int pos);
+
+/**
+ * @brief Remove e retorna o primeiro elemento da lista.
+ *
+ * A função remove e retorna o primeiro objeto da lista.
+ * 
+ * @param lst A lista da qual o nó será removido.
+ * @param obj Ponteiro para armazenar o objeto encontrado.
+ * @return A lista após a remoção do primeiro objeto.
+ */
+list listPopFront(list lst, obj* info);
+
+/**
+ * @brief Remove e retorna o último elemento da lista.
+ *
+ * A função remove e retorna o último objeto da lista.
+ * 
+ * @param lst A lista da qual o nó será removido.
+ * @param obj Ponteiro para armazenar o objeto encontrado.
+ * @return A lista após a remoção do último nó.
+ */
+list listPopBack(list lst, obj* info);
 
 /**
  * @brief Remove a primeira as ocorrência de um objeto em uma lista.

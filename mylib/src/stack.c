@@ -53,22 +53,22 @@ stack stackNew() {
 } 
 
 /**
- * @brief Destrói uma pilha e libera a memória associada a ela.
+ * @brief Libera a memória associada a uma pilha.
  * 
  * Esta função percorre todos os elementos da pilha e libera a memória 
  * ocupada por cada nó e seus dados. Após liberar todos os nós, a função 
  * também libera a memória alocada para a estrutura da pilha. Se a pilha 
  * fornecida for 'NULL', a função não faz nada e retorna 'NULL'.
  * 
- * @param stk Ponteiro para a pilha a ser destruída.
+ * @param stk Ponteiro para a pilha a ser liberada.
  * @return 'NULL' após liberar a pilha.
  */
-stack stackDestroy(stack stk) {
+stack stackFree(stack stk) {
   if (stk == NULL) return NULL;
   NodeS* aux = stk->top;
   while (aux != NULL) {
     NodeS* temp = aux->prox;
-    if (aux->info != NULL) aux->info = objDestroy(aux->info);
+    if (aux->info != NULL) aux->info = objFree(aux->info);
     free(aux);
     aux = temp;
   }
@@ -227,7 +227,7 @@ int stackCmp(const stack stk1, const stack stk2) {
  * Esta função gera uma string que representa todos os elementos da pilha, 
  * formatando-os entre chaves '{}'. Se a pilha estiver vazia, a função 
  * retorna 'NULL'. A função percorre os elementos da pilha a partir do topo, 
- * utilizando a função 'toString' para converter cada elemento em uma 
+ * utilizando a função 'objToString' para converter cada elemento em uma 
  * string. As strings resultantes são concatenadas, separadas por vírgulas. 
  * Após a construção da string final, ela é retornada.
  * 
@@ -240,9 +240,9 @@ string stackToString(const stack stk) {
   string str = stringNew();
   stringAddChar(str, '{');
   while (aux != NULL) {
-    string temp = toString(aux->info);
+    string temp = objToString(aux->info);
     str = stringAppend(str, temp);
-    stringDestroy(temp);
+    stringFree(temp);
     if (aux->prox != NULL) str = stringCat(str, ", ");
     aux = aux->prox;
   }
@@ -268,6 +268,6 @@ int stackPrint(const stack stk) {
   string str = stackToString(stk);
   if (str == NULL) return 0;
   stringPrint(str);
-  stringDestroy(str);
+  stringFree(str);
   return 1;
 }  

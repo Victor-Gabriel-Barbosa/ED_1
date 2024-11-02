@@ -8,10 +8,11 @@
  * Funções disponíveis:
  * - 'sizeofStack': Calcula o tamanho em bytes da estrutura de dados 'stack_t'.
  * - 'stackNew': Cria uma nova pilha.
- * - 'stackDestroy': Destrói a pilha, liberando toda a memória alocada.
+ * - 'stackFree': Libera a memória associada a pilha.
  * - 'stackIsEmpty': Verifica se a pilha está vazia.
  * - 'stackSize': Retorna o número de elementos na pilha.
  * - 'stackPush': Empilha um novo elemento no topo da pilha.
+ * - 'stackAdd': Adiciona um elemento à pilha.
  * - 'stackPop': Remove o elemento no topo da pilha.
  * - 'stackTop': Consulta o elemento no topo da pilha sem removê-lo.
  * - 'stackCopy': Cria uma cópia de uma pilha.
@@ -49,12 +50,12 @@ size_t sizeofStack();
 stack stackNew();
 
 /**
- * @brief Destrói uma pilha e libera a memória associada a ela.
+ * @brief Libera a memória associada a pilha.
  * 
  * @param stk Ponteiro para a pilha a ser destruída.
  * @return 'NULL' após liberar a pilha.
  */
-stack stackDestroy(stack stk);
+stack stackFree(stack stk);
 
 /**
  * @brief Verifica se a pilha está vazia.

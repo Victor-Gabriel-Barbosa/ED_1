@@ -9,11 +9,14 @@
  * e operações auxiliares como limpar o buffer de entrada e validar alocações de memória.
  * 
  * Macros:
+ * - 'try': Inicia um bloco de código onde exceções podem ser capturadas.
+ * - 'catch': Captura exceções lançadas dentro de um bloco 'try'.
+ * - 'throw': Lança uma exceção dentro de um bloco 'try'.
  * - 'sizeArray': Calcula o número de elementos em um array.
  * - 'randInt': Seleciona aleatoriamente um elemento do array dado.
- * - 'timeInt':  Mede o tempo de execução de uma função ou bloco de código.
+ * - 'timer':  Mede o tempo de execução de uma função ou bloco de código.
  * - 'foreach': Permite a iteração sobre arrays de tamanho conhecido em tempo de compilação.
- * - 'print': Conta automaticamente o número de argumentos e chama a função printArgs para exibir.
+ * - 'print': Imprime um número variável de strings.
  *
  * Funções principais:
  * - 'printsf': Imprime uma string formatada com suporte a novos tipos de dados.
@@ -30,8 +33,7 @@
  * - 'filePrint': Exibe o conteúdo de um arquivo com uma cor especificada.
  * - 'fileRename': Renomeia um arquivo.
  * - 'fileAppend': Adiciona texto ao final de um arquivo.
- * - 'fileCompare': Compara dois arquivos para verificar se são idênticos.
- * 
+ * - 'fileCmp': Compara dois arquivos para verificar se são idênticos.
  * 
  * @note Funções que interagem com o terminal podem ser dependentes da plataforma.
  * 
@@ -49,7 +51,7 @@
 #include <setjmp.h>
 #include "stringlib.h"
 
-jmp_buf jump_buffer;
+jmp_buf jump_buffer; 
 
 /**
  * @brief Inicia um bloco de código onde exceções podem ser capturadas.
@@ -136,9 +138,12 @@ jmp_buf jump_buffer;
  * @warning Funciona apenas para arrays de tamanho conhecido em tempo de compilação.
  */
 #define foreach(item, array) \
-  for (typeof((array)[0]) *ptr = (array), *item = ptr; \
-    item < ptr + (sizeof(array) / sizeof((array)[0])); \
-    item++)
+  for ( \
+    __typeof__(array[0]) *item = (array), \
+    *item##_end = (array) + (sizeof(array) / sizeof((array)[0])); \
+    item < item##_end; \
+    item++ \
+  )
 
 /**
  * @brief Imprime um número variável de strings.
@@ -283,6 +288,6 @@ int fileAppend(const char* fileName, const char* text);
  * @param file2 Nome do segundo arquivo.
  * @return 1 se os arquivos são idênticos, ou 0 caso contrário.
  */
-int fileCompare(const char* file1, const char* file2);
+int fileCmp(const char* file1, const char* file2);
 
 #endif

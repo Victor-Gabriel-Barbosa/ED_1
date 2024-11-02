@@ -13,6 +13,7 @@
  * Funções Disponíveis:
  * - 'sizeofTree': Retorna o tamanho da estrutura tree_t em bytes.
  * - 'treeNew()': Cria uma nova árvore binária AVL.
+ * - 'treeFree': Libera a memória alocada para a árvore binária.
  * - 'treeInsert()': Insere um novo elemento na árvore AVL.
  * - 'treeRemove()': Remove um elemento da árvore AVL.
  * - 'treeSearch()': Inserção, remoção e busca de dados.
@@ -25,7 +26,7 @@
  * - 'treeCmp()': Compara duas árvores binárias AVL de forma semelhante ao strcmp.
  * - 'treeToString()': Converte uma árvore binária AVL em uma string.
  * - 'treePrint()': Imprime os dados da árvore binária AVL (em ordem).
- *
+ * 
  * Os dados armazenados na árvore são do tipo genérico 'obj', 
  * o que permite que a árvore armazene diferentes tipos de dados 
  * de maneira flexível. Os usuários devem garantir que os dados 
@@ -55,12 +56,12 @@ size_t sizeofTree();
 tree treeNew();
 
 /**
- * @brief Destrói a árvore binária, liberando toda a memória alocada.
+ * @brief Libera a memória alocada para a árvore binária.
  * 
- * @param tree Ponteiro para a árvore binária a ser destruída.
+ * @param tree Ponteiro para a árvore binária a ser liberada.
  * @return Ponteiro para a árvore.
  */
-tree treeDestroy(tree tree);
+tree treeFree(tree tree);
 
 /**
  * @brief Verifica se a árvore é vazia.
@@ -155,17 +156,6 @@ obj treeFindMax(const tree tre);
  * @return obj O valor mínimo encontrado na árvore.
  */
 obj treeFindMin(const tree tre);
-
-/**
- * @brief Remove um valor de uma árvore binária.
- * 
- * A macro 'treeDelete' facilita a remoção de um valor ('value') de uma árvore binária ('tre'),
- * convertendo o valor para o tipo apropriado e chamando a função de remoção 'treeRemove'.
- *
- * @param tre Árvore binária da qual o valor será removido.
- * @param value Valor a ser removido da árvore.
- */
-#define treeDelete(tre, value) tre = treeRemove(tre, toObj(value));
 
 /**
  * @brief Inverte a árvore binária AVL.

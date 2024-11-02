@@ -87,7 +87,7 @@ string stringInit(const char* str) {
  * @param str String a ser liberado.
  * @return 1 se a string não é vazia, 0 caso contrário.
  */
-int stringDestroy(string str) {
+int stringFree(string str) {
   if (str == NULL) return 0;
   free(str->data);
   str->data = NULL;
@@ -462,7 +462,7 @@ string stringSnprintf(string dest, const char* format, ...) {
  * @param info Tipo do dado que será transformado.
  * @return Uma nova instância de string contendo o conteúdo transformado.
  */
-string toString(const obj info) {
+string objToString(const obj info) {
   string str = stringNew();
   size_t initialCapacity = 64; 
   if (!stringResize(str, initialCapacity)) return NULL;
@@ -514,7 +514,7 @@ string toString(const obj info) {
       memcpy(str->data, strList->data, strList->size);
       str->data[strList->size] = '\0';
       str->size = strList->size;
-      stringDestroy(strList); 
+      stringFree(strList); 
       return str;
     }
     case TYPE_QUEUE: {
@@ -525,7 +525,7 @@ string toString(const obj info) {
       memcpy(str->data, strQueue->data, strQueue->size);
       str->data[strQueue->size] = '\0';
       str->size = strQueue->size;
-      stringDestroy(strQueue); 
+      stringFree(strQueue); 
       return str;
     }
     case TYPE_STACK: {
@@ -536,7 +536,7 @@ string toString(const obj info) {
       memcpy(str->data, strStack->data, strStack->size);
       str->data[strStack->size] = '\0';
       str->size = strStack->size;
-      stringDestroy(strStack); 
+      stringFree(strStack); 
       return str;
     }
     case TYPE_TREE: {
@@ -547,7 +547,7 @@ string toString(const obj info) {
       memcpy(str->data, strTree->data, strTree->size);
       str->data[strTree->size] = '\0';
       str->size = strTree->size;
-      stringDestroy(strTree);
+      stringFree(strTree);
       return str;
     }
     case TYPE_UNKNOWN: {

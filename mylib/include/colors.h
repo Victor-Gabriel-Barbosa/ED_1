@@ -7,14 +7,14 @@
  * 
  * Definições disponíveis:
  * 
- * - **Efeitos de texto**:
+ * - Efeitos de texto:
  *   - `RESET`: Reseta as cores e efeitos aplicados.
  *   - `BOLD`: Aplica negrito ao texto.
  *   - `UNDERLINE`: Aplica sublinhado ao texto.
  *   - `BLINK`: Aplica efeito piscante ao texto.
  *   - `INVERT`: Inverte as cores do texto e do fundo.
  * 
- * - **Cores de texto**:
+ * - Cores de texto:
  *   - `BLUE`: Define a cor do texto como azul.
  *   - `CYAN`: Define a cor do texto como ciano.
  *   - `GREEN`: Define a cor do texto como verde água.
@@ -29,7 +29,7 @@
  *   - `BLACK`: Define a cor do texto como preto.
  *   - `WHITE`: Define a cor do texto como branco.
  * 
- * - **Cores de fundo**:
+ * - Cores de fundo:
  *   - `BLUE_BG`: Define o fundo como azul.
  *   - `CYAN_BG`: Define o fundo como ciano.
  *   - `GREEN_BG`: Define o fundo como verde água.

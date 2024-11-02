@@ -172,6 +172,17 @@ obj treeToObj(tree value, size_t size) {
 }
 
 /**
+ * @brief Converte um objeto abstrato (obj) para obj.
+ * 
+ * @param value Estrutura objeto.
+ * @param size Tamanho do objeto (não utilizado nesta função).
+ * @return Objeto contendo o objeto.
+ */
+obj objToObj(obj value, size_t size) {
+  return voidToObj(value->data, value->size, value->type);
+}
+
+/**
  * @brief Converte um valor genérico e desconhecido em um objeto.
  * 
  * @param value Ponteiro para o valor.
@@ -188,7 +199,7 @@ obj unknownToObj(void* value, size_t size) {
  * @param a Objeto a ser destruído.
  * @return Retorna NULL após destruir o objeto.
  */
-obj objDestroy(obj a) {
+obj objFree(obj a) {
   if (a == NULL) return a;
   free(a->data);
   free(a);

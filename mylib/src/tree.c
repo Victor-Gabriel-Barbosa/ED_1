@@ -38,15 +38,15 @@ tree treeNew() {
 }
 
 /**
- * @brief Destrói a árvore e libera a memória associada.
+ * @brief Libera a memória alocada para a árvore binária.
  * 
- * @param tre Um ponteiro para a árvore a ser destruída.
+ * @param tre Um ponteiro para a árvore a ser liberada.
  * @return  NULL após liberar a memória.
  */
-tree treeDestroy(tree tre) {
+tree treeFree(tree tre) {
   if (tre == NULL) return NULL;  
-  treeDestroy(tre->left); 
-  treeDestroy(tre->right);  
+  treeFree(tre->left); 
+  treeFree(tre->right);  
   free(tre); 
   return NULL;
 }
@@ -351,7 +351,7 @@ int treeCmp(const tree tree1, const tree tree2) {
  */
 string treeToString(const tree tre) {
   if (tre == NULL) return stringNew();
-  string currentStr = toString(tre->info);
+  string currentStr = objToString(tre->info);
   string leftStr = treeToString(tre->left);
   string rightStr = treeToString(tre->right);
   string result = stringNew();
@@ -368,9 +368,9 @@ string treeToString(const tree tre) {
     }
   }
   stringAddChar(result, '>');
-  stringDestroy(currentStr);
-  stringDestroy(leftStr);
-  stringDestroy(rightStr);
+  stringFree(currentStr);
+  stringFree(leftStr);
+  stringFree(rightStr);
   return result;
 }
 
@@ -388,6 +388,6 @@ int treePrint(const tree tre) {
   string str = treeToString(tre);
   if (str == NULL) return 0;
   stringPrint(str);
-  stringDestroy(str);
+  stringFree(str);
   return 1; 
 }

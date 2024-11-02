@@ -59,18 +59,18 @@ queue queueNew() {
  * 
  * Esta função percorre todos os nós da fila e libera a memória 
  * associada a cada um deles. Se os nós contiverem objetos, 
- * a função 'objDestroy' é chamada para liberar esses objetos. 
+ * a função 'objFree' é chamada para liberar esses objetos. 
  * Após liberar todos os nós, a fila em si também é liberada.
  *
  * @param qeu Ponteiro para a fila a ser destruída.
  * @return NULL, indicando que a fila foi destruída e não deve mais ser utilizada.
  */
-queue queueDestroy(queue qeu) {
+queue queueFree(queue qeu) {
   if (qeu == NULL) return qeu;
   NodeQ* aux = qeu->head;
   while (aux != NULL) {
     NodeQ* temp = aux->prox;
-    if (aux->info != NULL) aux->info = objDestroy(aux->info);
+    if (aux->info != NULL) aux->info = objFree(aux->info);
     free(aux);
     aux = temp;
   }
@@ -116,7 +116,7 @@ size_t queueSize(const queue qeu) {
  * @param info O valor a ser inserido na fila.
  * @return Ponteiro para a fila atualizada, ou NULL se a fila for NULL ou a alocação falhar.
  */
-queue queueEnqueue(queue qeu, const obj info) {
+queue queuePush(queue qeu, const obj info) {
   if (qeu == NULL) return NULL;
   NodeQ* newNode = (NodeQ*) malloc(sizeof(NodeQ));
   if (newNode == NULL) return qeu; 
@@ -140,7 +140,7 @@ queue queueEnqueue(queue qeu, const obj info) {
  * @param info Ponteiro onde o valor do elemento removido será armazenado.
  * @return Ponteiro para a fila atualizada, ou a fila inalterada se estiver vazia.
  */
-queue queueDequeue(queue qeu, obj* info) {
+queue queuePop(queue qeu, obj* info) {
   if (queueIsEmpty(qeu)) return qeu;
   NodeQ* temp = qeu->head;
   *info = temp->info;
@@ -179,7 +179,7 @@ queue queueCopy(const queue qeu) {
   queue newQeu = queueNew();
   NodeQ* aux = qeu->head;
   while (aux != NULL) {
-    queueEnqueue(newQeu, objCopy(aux->info));
+    queuePush(newQeu, objCopy(aux->info));
     aux = aux->prox;
   }
   return newQeu;
@@ -230,9 +230,9 @@ string queueToString(const queue qeu) {
   string str = stringNew();
   stringAddChar(str, '(');
   while (aux != NULL) {
-    string temp = toString(aux->info);
+    string temp = objToString(aux->info);
     str = stringAppend(str, temp);
-    stringDestroy(temp);
+    stringFree(temp);
     if (aux->prox != NULL) str = stringCat(str, ", ");
     aux = aux->prox;
   }
@@ -255,6 +255,6 @@ int queuePrint(const queue qeu) {
   string str = queueToString(qeu);
   if (str == NULL) return 0;
   stringPrint(str);
-  stringDestroy(str);
+  stringFree(str);
   return 1; 
 }  

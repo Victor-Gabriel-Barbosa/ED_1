@@ -21,8 +21,10 @@
  * - 'listToObj': Encapsula um valor do tipo 'list'.
  * - 'queueToObj': Encapsula um valor do tipo 'queue'.
  * - 'stackToObj': Encapsula um valor do tipo 'stack'.
+ * - 'treeToObj': Encapsula um valor do tipo 'tree'.
+ * - 'objToObj': Encapsula um valor do tipo 'obj'.
  * - 'unknownToObj': Encapsula um valor genérico com tipo desconhecido.
- * - 'objDestroy': Libera a memória alocada para um objeto 'obj'.
+ * - 'objFree': Libera a memória alocada para um objeto 'obj'.
  * - 'objCopy': Cria uma cópia de um objeto.
  * - 'objCmp': Compara dois objetos 'obj'.
  * - 'objGetType': Retorna o tipo de dado armazenado em um objeto 'obj'.
@@ -39,7 +41,7 @@
  * 
  * @note Tipos customizados como 'list', 'queue' e 'stack' podem ser usados em conjunto com essa biblioteca, permitindo o uso genérico dessas estruturas.
  * 
- * @note A função 'autoDestroy' deve ser usada sempre que um objeto 'obj' não for mais necessário, para evitar vazamentos de memória.
+ * @note A função 'autoFree' deve ser usada sempre que um objeto 'obj' não for mais necessário, para evitar vazamentos de memória.
  * 
  * @author Victor Gabriel Barbosa
  * @date 20/10/2024
@@ -97,6 +99,7 @@ typedef enum {
   TYPE_QUEUE,    /**< Tipo fila (queue). */
   TYPE_STACK,    /**< Tipo pilha (stack). */
   TYPE_TREE,     /**< Tipo árvore (tree). */
+  TYPE_OBJ,      /**< Tipo objeto (obj) */
   TYPE_UNKNOWN   /**< Tipo genérico desconhecido, usado para tipos personalizados (void*). */
 } ObjType;
 
@@ -210,6 +213,15 @@ obj stackToObj(stack value, size_t size);
 obj treeToObj(tree value, size_t size);
 
 /**
+ * @brief Converte um objeto abstrato (obj) para obj.
+ * 
+ * @param value Estrutura objeto.
+ * @param size Tamanho do objeto (não utilizado nesta função).
+ * @return Objeto contendo o objeto.
+ */
+obj objToObj(obj value, size_t size);
+
+/**
  * @brief Converte um valor desconhecido para obj.
  * 
  * @param value Ponteiro para os dados.
@@ -224,7 +236,7 @@ obj unknownToObj(void* value, size_t size);
  * @param a Objeto a ser destruída.
  * @return NULL após a destruição do obj.
  */
-obj objDestroy(obj a);
+obj objFree(obj a);
 
 /**
  * @brief Obtém o tipo de dado armazenado em obj.
@@ -300,21 +312,23 @@ static inline int objSwap(obj* a, obj* b) {
  * @param value Valor a ser convertido.
  * @return Objeto correspondente ao tipo do valor.
  */
-#define toObj(value) _Generic((value), \
-  const char: charToObj, \
-  char: charToObj, \
-  int: intToObj, \
-  float: floatToObj, \
-  double: doubleToObj, \
-  const char*: charPtrToObj, \
-  char*: charPtrToObj, \
-  bool: boolToObj, \
-  string: stringToObj, \
-  list: listToObj, \
-  queue: queueToObj, \
-  stack: stackToObj, \
-  tree: treeToObj, \
-  default: unknownToObj \
+#define toObj(value)           \
+  _Generic((value),            \
+    const char: charToObj,     \
+    char: charToObj,           \
+    int: intToObj,             \
+    float: floatToObj,         \
+    double: doubleToObj,       \
+    const char*: charPtrToObj, \
+    char*: charPtrToObj,       \
+    bool: boolToObj,           \
+    string: stringToObj,       \
+    list: listToObj,           \
+    queue: queueToObj,         \
+    stack: stackToObj,         \
+    tree: treeToObj,           \
+    obj: objToObj,             \
+    default: unknownToObj      \
 )(value, sizeof(value))
 
 /**
@@ -327,20 +341,22 @@ static inline int objSwap(obj* a, obj* b) {
  * @return Um identificador de tipo (ex.: TYPE_INT, TYPE_FLOAT, etc.) ou
  * TYPE_UNKNOWN se o tipo não for reconhecido.
  */
-#define getTypeValue(value) _Generic((value), \
-  const char: TYPE_CHAR, \
-  char: TYPE_CHAR, \
-  bool: TYPE_BOOL, \
-  int: TYPE_INT, \
-  float: TYPE_FLOAT, \
-  double: TYPE_DOUBLE, \
+#define getTypeValue(value)   \
+ _Generic((value),            \
+  const char: TYPE_CHAR,      \
+  char: TYPE_CHAR,            \
+  bool: TYPE_BOOL,            \
+  int: TYPE_INT,              \
+  float: TYPE_FLOAT,          \
+  double: TYPE_DOUBLE,        \
   const char*: TYPE_CHAR_PTR, \
-  char*: TYPE_CHAR_PTR, \
-  string: TYPE_STRING, \
-  list: TYPE_LIST, \
-  queue: TYPE_QUEUE, \
-  stack: TYPE_STACK, \
-  tree: TYPE_TREE, \
+  char*: TYPE_CHAR_PTR,       \
+  string: TYPE_STRING,        \
+  list: TYPE_LIST,            \
+  queue: TYPE_QUEUE,          \
+  stack: TYPE_STACK,          \
+  tree: TYPE_TREE,            \
+  obj: TYPE_OBJ,              \
   default: TYPE_UNKNOWN)
 
 /**
@@ -353,6 +369,6 @@ static inline int objSwap(obj* a, obj* b) {
  * @return Um valor booleano (true ou false) indicando se o tipo do objeto
  * corresponde ao tipo do valor.
  */
-#define objIsType(objet, value) (objGetType(objet) == getTypeValue(value))
+#define objIsType(object, value) (objGetType(object) == getTypeValue(value))
 
 #endif

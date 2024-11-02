@@ -10,7 +10,7 @@
  * - 'sizeofString': Calcula o tamanho em bytes da estrutura de dados 'string_t'.
  * - 'stringNew': Cria uma nova string vazia.
  * - 'stringInit': Inicializa uma string com o conteúdo de uma string literal.
- * - 'stringDestroy': Libera a memória alocada para uma string.
+ * - 'stringFree': Libera a memória alocada para uma string.
  * - 'stringIsEmpty': Verifica se uma string está vazia.
  * - 'stringSize': Retorna o tamanho da string.
  * - 'stringResize': Redimensiona a capacidade de armazenamento de uma string.
@@ -29,7 +29,7 @@
  * - 'stringGetChar': Acessa um caractere da string por índice.
  * - 'stringSnprintf': Simula o snprintf para Strings dinâmicas.
  * - 'stringPrint': Exibe a string no console.
- * - 'toString': Transforma um dado genérico em uma string.
+ * - 'objToString': Transforma um dado genérico em uma string.
  * 
  * Esta biblioteca foi projetada para facilitar o gerenciamento da Strings em C, permitindo operações que ajustam 
  * automaticamente a memória conforme necessário, tornando o uso da Strings dinâmicas mais seguro e eficiente.
@@ -37,7 +37,7 @@
  * @note As Strings são estruturas dinâmicas e, portanto, a memória é ajustada automaticamente durante as operações 
  * que envolvem adição ou remoção de caracteres.
  * 
- * @warning Sempre liberar a memória de uma string com 'stringDestroy' para evitar vazamento de memória.
+ * @warning Sempre liberar a memória de uma string com 'stringFree' para evitar vazamento de memória.
  * 
  * @author Victor Gabriel Barbosa
  * @date 20/10/2024
@@ -69,7 +69,7 @@ string stringNew();
  * @param str Ponteiro para string a ser liberada.
  * @return 1 se string não é vazia, 0 caso contrário.
  */
-int stringDestroy(string str);
+int stringFree(string str);
 
 /** 
  * @brief Inicializa uma string com o conteúdo de uma string literal.
@@ -241,7 +241,7 @@ string stringSnprintf(string dest, const char* format, ...);
  * @param info Objeto obj.
  * @return Uma nova instância de string contendo o conteúdo transformado.
  */
-string toString(const obj info);
+string objToString(const obj info);
 
 /**
  * @brief Converte um valor qualquer em uma string.
@@ -249,7 +249,12 @@ string toString(const obj info);
  * @param value Valor a ser convertido.
  * @return Uma nova instância de string contendo o conteúdo transformado
  */
-#define toStr(value) (toString(toObj(value)))
+#define toString(value) ({     \
+  obj o = toObj(value);        \
+  string str = objToString(o); \
+  objFree(o);                  \
+  str;                         \
+})
 
 /** 
 * @brief Exibe uma string na tela.
