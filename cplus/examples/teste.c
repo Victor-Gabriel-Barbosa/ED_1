@@ -9,7 +9,7 @@ typedef struct testes {
 } teste;
 
 int main() {
-  printf(fLn(BOLD UNDERLINE CYAN, "TESTE DA BIBLIOTECA C_PLUS"));
+  printf(fLn(BOLD UNDERLINE c(112), "TESTE DA BIBLIOTECA C_PLUS"));
   srand(time(NULL));
   list lista = listNew();
   queue fila = queueNew();

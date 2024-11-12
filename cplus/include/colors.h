@@ -51,6 +51,8 @@
  *   - 'fSuccess(text)': Formata o texto para sucesso, com negrito e verde.
  *   - 'fTitle(text)': Formata o texto como título, com negrito e sublinhado.
  *   - 'fIf(color_true, color_false, condition, text)': Aplica uma formatação condicional, escolhendo entre duas cores com base na condição.
+ *   - 'c': Define uma cor de texto com código ANSI específico.
+ *   - 'cBG': Define uma cor de fundo com código ANSI específico.
  * 
  * @note Esta biblioteca usa códigos ANSI, que são suportados na maioria dos terminais Unix e em alguns terminais de sistemas Windows (como o Windows Terminal).
  * 
@@ -152,12 +154,12 @@
  * @brief Define uma cor de texto com código ANSI específico.
  * @param code O código de cor ANSI a ser aplicado (de 0 a 255).
  */
-#define cColor(code) "\033[38;5;" #code "m"
+#define c(code) "\033[38;5;" #code "m"
 
 /**
  * @brief Define uma cor de fundo com código ANSI específico.
  * @param code O código de cor ANSI a ser aplicado ao fundo (de 0 a 255).
  */
-#define cColorBG(code) "\033[48;5;" #code "m"
+#define cBG(code) "\033[48;5;" #code "m"
 
 #endif
